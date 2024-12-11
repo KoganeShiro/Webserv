@@ -2,7 +2,7 @@
 
 # Table of Contents
 1. [Rules](#rules)
-2. [What is a Web Server ?](#what-is-a-web-server-?)
+2. [What is a Web Server ?](#what-is-a-web-server)
 3. [HTTP](#http)
 4. [Ressources](#ressources-on-webserv)
 
