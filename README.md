@@ -67,7 +67,7 @@
        `getprotobyname`: Retrieves protocol information, useful for setting up sockets.
 
 
-## What is a Web Server ?
+## What is a Web Server
 ### Definition
 A web server is a computer system or software that hosts websites and delivers web pages to users over the internet or an intranet. It handles incoming requests from clients (such as browsers) and serves them the requested web pages.
 
