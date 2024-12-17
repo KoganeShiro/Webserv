@@ -4,6 +4,7 @@
 1. [Rules](#rules)
 2. [What is a Web Server ?](#what-is-a-web-server)
 3. [HTTP](#http)
+5. [Pseudo code](#pseudo-code)
 4. [Ressources](#ressources-on-webserv)
 
 ## Rules
@@ -109,10 +110,73 @@ HTTP is a vital protocol that facilitates communication and data exchange on the
 - [starck overflow](https://stackoverflow.com/questions/60128646/http-in-simple-terms)
 
 
+## Pseudo Code
+Input pqrser: handles read
+Worker: handles responses
+
+in all messages : 
+track session and client ID
+
+Start Server
+Parse Config file
+Start Error Log process
+Check Memory Checking process 
+Open several sockets: one for each server (host:port), and a defqult one
+Listen on all sockets
+    select/poll to check if something happens on sockets and create new session
+    fill buffer from sockets and check if the buffer contains indications for end of header /r/n/r/n OR header too long OR timeout 
+    if indication that end of header is reached , send the first part of buffer (till end of header) to the input-parser, keep 
+        the rest of the buffer - and put this session on hold
+
+    input parser: check the "type of message" (GET POST DELETE...) and parse the header
+         -> if not compliant: send error request to WORKER (send errorpage and ask socket to close session)
+         -> if compliant and body is not expected : send parsed request to WORKER (should send page/file) and inform SOCKET to resume session
+         -> if compliant and body is expected : ask Socket for the body (indicating length of body)
+               -> if body is compliant, parse it and send request to worker
+               -> if not: send error request to WORKER (send errorpage and ask socket to close session)
+
+Worker:
+    
+    manage queue 
+        manage responses from messqges in queque-> error: Prepare errorcode and erropage ? output parse message...-> GET : output parse message...
+
+                error (no permission)/ page not found etc.
+
+                    static page found : OK 200 + header + page
+
+                    dynamic page ?: call cgi ?
+
+                -> POST : output parse message...
+
+                    error (no permission)/ page not found etc.
+
+                    standard Post : save page...
+
+                    call CGI : OK 200 + header + page
+
+
+        -> DELETE : output parse message...
+            
+
+        error (no permission)/ page not found etc.
+
+            standard Post : save page...
+
+            call CGI : OK 200 + header + page
+
+
+CGI: 
+    need to dig...
+
+
 ## Ressources on Webserv
-[medium articles](https://m4nnb3ll.medium.com/webserv-building-a-non-blocking-web-server-in-c-98-a-42-project-04c7365e4ec7)
-[medium general article](https://osasazamegbe.medium.com/showing-building-an-http-server-from-scratch-in-c-2da7c0db6cb7)
-[french article](https://hackmd.io/@fttranscendance/H1mLWxbr_)
-[Programmation reseau via socket](https://www.codequoi.com/programmation-reseau-via-socket-en-c/)
-https://github.com/Kaydooo/Webserv_42
-https://github.com/cclaude42/webserv
+
+- [List of HTTP status code](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
+- [CGI](https://stackoverflow.com/questions/2089271/what-is-common-gateway-interface-cgi)
+
+- [medium articles on non blocking webserv](https://m4nnb3ll.medium.com/webserv-building-a-non-blocking-web-server-in-c-98-a-42-project-04c7365e4ec7)
+- [medium general article on a cpp webserv](https://osasazamegbe.medium.com/showing-building-an-http-server-from-scratch-in-c-2da7c0db6cb7)
+- [french article](https://hackmd.io/@fttranscendance/H1mLWxbr_)
+- [Programmation reseau via socket](https://www.codequoi.com/programmation-reseau-via-socket-en-c/)
+- https://github.com/Kaydooo/Webserv_42
+- https://github.com/cclaude42/webserv
