@@ -1,5 +1,5 @@
 
-#include "webserv.hpp"
+#include "WebServ.hpp"
 
 void    setup_server(char *config_file)
 {
@@ -53,5 +53,13 @@ int main(int argc, char **argv)
     setup_server(argv[1]); //configuration parsing
     listen_on_socket(); //will call request_parser()
     worker_response(); //send the response of the request
+    
+    /*
+    // Load configuration
+        Server server(config);
+    // Initialize server
+        server.run();
+    */
+    
     return (0);
 }

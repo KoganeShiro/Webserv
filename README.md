@@ -111,7 +111,7 @@ HTTP is a vital protocol that facilitates communication and data exchange on the
 
 
 ## Pseudo Code
-Input pqrser: handles read
+Input parser: handles read
 Worker: handles responses
 
 in all messages : 
@@ -121,7 +121,7 @@ Start Server
 Parse Config file
 Start Error Log process
 Check Memory Checking process 
-Open several sockets: one for each server (host:port), and a defqult one
+Open several sockets: one for each server (host:port), and a default one
 Listen on all sockets
     select/poll to check if something happens on sockets and create new session
     fill buffer from sockets and check if the buffer contains indications for end of header /r/n/r/n OR header too long OR timeout 
@@ -138,7 +138,7 @@ Listen on all sockets
 Worker:
     
     manage queue 
-        manage responses from messqges in queque-> error: Prepare errorcode and erropage ? output parse message...-> GET : output parse message...
+        manage responses from messqges in queue-> error: Prepare errorcode and erropage ? output parse message...-> GET : output parse message...
 
                 error (no permission)/ page not found etc.
 
@@ -173,6 +173,8 @@ CGI:
 
 - [List of HTTP status code](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
 - [CGI](https://stackoverflow.com/questions/2089271/what-is-common-gateway-interface-cgi)
+
+- [Request, Response](https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages)
 
 - [medium articles on non blocking webserv](https://m4nnb3ll.medium.com/webserv-building-a-non-blocking-web-server-in-c-98-a-42-project-04c7365e4ec7)
 - [medium general article on a cpp webserv](https://osasazamegbe.medium.com/showing-building-an-http-server-from-scratch-in-c-2da7c0db6cb7)

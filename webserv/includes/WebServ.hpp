@@ -11,6 +11,8 @@
 # define CYAN "\033[1;36m"
 # define RESET "\033[0m"
 
+#include <map>
+#include <vector>
 #include <unistd.h>
 #include <netdb.h>
 #include <cerrno>
@@ -26,15 +28,28 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
-//maybe do classes ?
+#include "Server.hpp"
+#include "Socket.hpp"
+#include "DeleteMethod.hpp"
+#include "GetMethod.hpp"
+#include "PostMethod.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
+#include "Worker.hpp"
+#include "Connection.hpp"
 
-struct data
+
+//maybe do classes ?
+//main include file
+
+struct Config_data
 {
     int nb_of_server;
         //make an array of data ???
     std::string server_name;
     int listen_port;
         //can have multiple port, array of int ??
+    int timeout;
     std::string root_path;
     std::string *methods; //array of GET POST DELETE
     std::string cgi_path;
