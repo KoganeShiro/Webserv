@@ -5,16 +5,14 @@
 //  OR
 //return the appropriate error page to the worker
 
-std::string gen_htmlbody()
+const std::string &gen_htmlbody();
 {
     //if method == GET, check if the file exist else
     //check what status_code and call generate_page
 }
 
-#include <fstream> // For file handling
-#include <sys/stat.h> // For checking file existence
-
-std::string gen_htmlbody(const Request& request) {
+std::string gen_htmlbody(const Request& request)
+{
     std::string method = request.get_method(); // Get the HTTP method from the request
     std::string path = request.get_path(); // Get the requested path
 
@@ -36,7 +34,8 @@ std::string gen_htmlbody(const Request& request) {
 }
 
 // Function to read file content into a string
-std::string read_file_content(const std::string& filepath) {
+std::string read_file_content(const std::string& filepath)
+{
     std::ifstream file(filepath);
     if (!file.is_open()) {
         return ""; // Return empty string if file cannot be opened
@@ -46,7 +45,8 @@ std::string read_file_content(const std::string& filepath) {
     return content; // Return the content of the file
 }
 
-std::string generate_page(int status_code) {
+std::string generate_page(int status_code)
+{
     // Generate appropriate error page based on status code
     // Return Response object with error page content
     std::string error_message = get_status_message(status_code);
@@ -55,7 +55,7 @@ std::string generate_page(int status_code) {
     // Replace placeholders in the template
     replace_string(html_template, "{{STATUS_CODE}}", std::to_string(status_code));
     replace_string(html_template, "{{ERROR_MESSAGE}}", error_message);
-    replaceString(html_template, "{{METHOD}}", std::to_string(status_code));
+    replace_string(html_template, "{{METHOD}}", std::to_string(status_code));
     
     return (html_template);
 }

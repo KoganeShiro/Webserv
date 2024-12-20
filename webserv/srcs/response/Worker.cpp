@@ -34,9 +34,9 @@ void Worker::process_request(const Request& request)
 
 void Worker::send_response(const Response& response)
 {
-    std::string response.set_body(gen_htmlbody());
-    std::string responseStr = response.http_response();
-    ssize_t bytesSent = send(this->_socket->sockfd, fullResponse.c_str(),
+    response.set_body(gen_htmlbody());
+    std::string fullResponse = response.http_response();
+    ssize_t bytesSent = send(this._socket->_sockfd, fullResponse.c_str(),
             fullResponse.length(), 0);
     if (bytesSent < 0) {
         perror("Failed to send response");

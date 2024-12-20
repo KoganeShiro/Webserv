@@ -27,6 +27,7 @@
 #include <csignal>
 #include <sys/stat.h>
 #include <dirent.h>
+#include <fstream>
 
 #include "Server.hpp"
 #include "Socket.hpp"
@@ -55,3 +56,9 @@ struct Config_data
     std::string cgi_path;
 
 };
+
+
+std::string replace_string(std::string res, std::string to_replace, std::string replace_with);
+    //could use the same logic as sed
+
+const std::string &gen_htmlbody();

@@ -30,11 +30,11 @@ public:
     Request();
     ~Request();
 
-    get_method() const;
-    get_path() const;
-    get_header() const;
+    std::string get_method() const;
+    std::string get_path() const;
+    std::string get_header() const;
     std::string get_header_element(const std::string& key) const;
-    get_body() const;
+    std::string get_body() const;
 
     void set_method(const std::string& method);
     void set_path(const std::string& path);

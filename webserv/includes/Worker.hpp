@@ -10,6 +10,7 @@ private:
 
 public:
     Worker(Socket& socket);
+    Worker &Worker::operator=(const Worker &other);
     ~Worker();
     void register_method(const std::string& methodName, IHttpMethod* handler);
     void process_request(const Request& request);
