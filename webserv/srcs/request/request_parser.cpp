@@ -1,8 +1,8 @@
 
 #include "WebServ.hpp"
 
-Request parse_request(Connection conn) {
+Request request_parser(Connection conn) {
     // Read from connection
     // Parse HTTP request
-    // Return Request struct
+    // Return Request class
 }

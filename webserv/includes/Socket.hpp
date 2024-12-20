@@ -9,12 +9,14 @@ Socket represents the server-side listening socket.
 
 class Socket {
 private:
-    int sockfd;
-    int createSocket();
-    void bindSocket(int port);
-    void listenForConnections();
+    int _sockfd;
+    int _create_socket();
+    void _bind_socket(int port);
+    void _listen_for_connections();
 
 public:
     Socket(int port);
+    ~Socket();
     Connection accept();
+    int get_sockfd();
 };

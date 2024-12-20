@@ -16,6 +16,7 @@ private:
     std::string _body;
 
 public:
+    Response();
     Response(int statusCode, const std::string& statusMessage);
     void set_header(const std::string& key, const std::string& value);
     void set_body(const std::string& body);
@@ -23,7 +24,4 @@ public:
 
     std::string get_status_message(int _status_code);
     std::string read_html_file(std::string file_path);
-
-    replace_string(std::string res, std::string to_replace, std::string replace_with);
-    //could use the same logic as sed
 };

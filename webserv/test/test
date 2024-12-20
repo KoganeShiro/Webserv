@@ -1,0 +1,111 @@
+Here are some test files and scenarios you can use:
+1. Configuration File Test
+Create a file named test_config.conf:
+
+text
+server {
+    listen 8080;
+    server_name localhost;
+    client_max_body_size 10M;
+
+    location / {
+        root /var/www/html;
+        index index.html;
+    }
+
+    location /uploads {
+        upload_store /tmp/uploads;
+        client_body_temp_path /tmp;
+        client_body_in_file_only on;
+    }
+
+    location /cgi-bin {
+        fastcgi_pass 127.0.0.1:9000;
+        include fastcgi_params;
+    }
+}
+
+server {
+    listen 8081;
+    server_name example.com;
+
+    location / {
+        return 301 http://www.example.com$request_uri;
+    }
+}
+
+This configuration file tests multiple server blocks, different ports, and various location directives.
+2. Static HTML File
+Create a file named index.html in your server's root directory:
+
+xml
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>C++98 Web Server Test</title>
+</head>
+<body>
+    <h1>Welcome to the C++98 Web Server</h1>
+    <p>This is a static HTML file served by the server.</p>
+</body>
+</html>
+
+3. CGI Script
+Create a simple CGI script named test.cgi:
+
+bash
+#!/bin/bash
+echo "Content-type: text/html"
+echo ""
+echo "<html><body>"
+echo "<h1>CGI Test</h1>"
+echo "<p>This is output from a CGI script.</p>"
+echo "</body></html>"
+
+Make sure to set the appropriate permissions: chmod +x test.cgi
+4. Large File Upload Test
+Create a large file (e.g., 15MB) to test file upload limits and functionality.
+5. Non-blocking I/O Test Script
+Create a Python script to simulate multiple concurrent connections:
+
+python
+import asyncio
+import aiohttp
+
+async def make_request(session, url):
+    async with session.get(url) as response:
+        await response.text()
+
+async def main():
+    async with aiohttp.ClientSession() as session:
+        tasks = [make_request(session, 'http://localhost:8080/') for _ in range(1000)]
+        await asyncio.gather(*tasks)
+
+asyncio.run(main())
+
+Testing Scenarios
+
+    Basic Functionality: Access http://localhost:8080/ in a browser to verify static file serving.
+    Multiple Ports: Test both configured ports (8080 and 8081) to ensure proper routing.
+    File Upload: Use a tool like cURL to upload files and test size limits:
+
+text
+curl -X POST -F "file=@largefile.bin" http://localhost:8080/uploads
+
+CGI Execution: Access the CGI script through the browser or cURL.
+Non-blocking I/O: Run the Python script to test concurrent connections.
+Error Handling: Try accessing non-existent pages to test error responses.
+Method Testing: Use cURL to test different HTTP methods:
+
+text
+curl -X GET http://localhost:8080/
+curl -X POST -d "data" http://localhost:8080/test
+curl -X DELETE http://localhost:8080/resource
+
+Stress Testing: Use tools like Apache Bench or wrk to perform stress tests:
+
+    text
+    ab -n 10000 -c 100 http://localhost:8080/
+
+Remember to monitor your server's performance, resource usage, and error logs during these tests to ensure it meets all the specified requirements, especially regarding non-blocking I/O and proper use of poll() or equivalent functions

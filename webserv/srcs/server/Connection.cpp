@@ -2,7 +2,7 @@
 #include "WebServ.hpp"
 
 // Constructor that initializes the connection with the client file descriptor
-Connection::Connection(int clientfd) : clientfd(clientfd)
+Connection::Connection(int clientfd) : _clientfd(clientfd)
 {}
 
 // Method to receive data from the client
@@ -27,6 +27,6 @@ std::string Connection::receive()
 
 // Method to close the connection
 void Connection::close() {
-    ::close(clientfd); // Close the socket connection
-    clientfd = -1; // Set file descriptor to an invalid state
+    ::close(this->_clientfd); // Close the socket connection
+    this->_clientfd = -1; // Set file descriptor to an invalid state
 }

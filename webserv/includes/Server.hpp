@@ -6,11 +6,14 @@
 class Server
 {
 private:
-    Socket socket;
-    Worker worker;
-    void handle_connection();
+    Config_data _data;
+    Socket _socket;
+    Worker _worker;
+    void _handle_connection(Connection user_connect);
 
 public:
-    Server();
+    Server(const std::string config);
     void run();
+    int get_port();
+    //other getter ??
 };
