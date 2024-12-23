@@ -10,6 +10,9 @@ private:
 
 public:
     Worker(Socket& socket);
+
+    Worker(Socket& socket, Server& server); // Constructor with pointer or reference to server to be able to access the configuration? Filepath etc. needed to execute requests.
+
     Worker &Worker::operator=(const Worker &other);
     ~Worker();
     void register_method(const std::string& methodName, IHttpMethod* handler);
