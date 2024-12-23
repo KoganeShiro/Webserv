@@ -37,6 +37,9 @@ void Server::run()
     while (true) { // Main loop to keep the server running
         try {
             this->_socket = Socket(this->get_port());
+
+// it seems we need something here to "select" or "poll"...
+		
             Connection user_connect(this->_socket.get_sockfd()); // Accept a new client connection
             _handle_connection(user_connect); // Handle the accepted connection
         } catch (const std::exception& e) {
