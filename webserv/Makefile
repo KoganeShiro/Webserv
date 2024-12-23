@@ -1,34 +1,37 @@
 
 
 CC = g++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -I/includes/WebServ.hpp
+CFLAGS = -Wall -Wextra -std=c++98 -Iincludes/
+#CFLAGS = -Wall -Wextra -Werror -std=c++98 -Iincludes/
 
-SRCS_CGI =		cgi_handler.cpp
+SRCS_CGI =		#cgi_handler.cpp
 
-SRCS_REQUEST =	request_parser.cpp \
+SRCS_REQUEST =	#request_parser.cpp \
 				Request.cpp	
 
-SRCS_RESPONSE =	DeleteMethod.cpp \
+SRCS_RESPONSE =	#DeleteMethod.cpp \
 				GetMethod.cpp \
 				PostMethod.cpp \
 				Response.cpp \
 				Worker.cpp
 
-SRCS_SERVER =	config_parser.cpp \
+SRCS_SERVER =	#config_parser.cpp \
 				Connection.cpp \
 				Server.cpp \
 				Socket.cpp
 
-SRCS_UTILS =	gen_webpage.cpp
+SRCS_UTILS =	#gen_webpage.cpp
 		
-SRCS =			main.cpp
+SRCS =			parsing_test.cpp
+#main.cpp
 
 OBJ_PATH = obj/
-SRCS_PATH = src/
-CGI_PATH = src/cgi
-REQUEST_PATH = src/request
-RESPONSE_PATH = src/response
-SERVER_PATH = src/server
+SRCS_PATH = srcs/
+CGI_PATH = srcs/cgi/
+REQUEST_PATH = srcs/request/
+RESPONSE_PATH = srcs/response/
+SERVER_PATH = srcs/server/
+UTILS_PATH = srcs/utils/
 
 SRCS_FILES = $(addprefix $(SRCS_PATH), $(SRCS))
 CGI_FILES = $(addprefix $(CGI_PATH), $(SRCS_CGI))
@@ -37,30 +40,30 @@ RESPONSE_FILES = $(addprefix $(RESPONSE_PATH), $(SRCS_RESPONSE))
 SERVER_FILES = $(addprefix $(SERVER_PATH), $(SRCS_SERVER))
 UTILS_FILES = $(addprefix $(UTILS_PATH), $(SRCS_UTILS))
 
-ALL_SRCS = $(SRCS_FILES) $(PARSE_FILES) $(UTILS_FILES)
-OBJS = $(ALL_SRCS:$(SRCS_PATH)%.c=$(OBJ_PATH)%.o)
+ALL_SRCS = $(SRCS_FILES) $(CGI_FILES) $(REQUEST_FILES) $(RESPONSE_FILES) $(SERVER_FILES) $(UTILS_FILES)
+OBJS = $(ALL_SRCS:srcs/%.cpp=$(OBJ_PATH)srcs/%.o)
 
-NAME = WebServ
+NAME = webServ
 
 all: $(OBJ_PATH) $(NAME)
 
+$(OBJ_PATH):
+	mkdir -p $(OBJ_PATH)
 
-${OBJ_PATH}:
-		mkdir -p ${OBJ_PATH}
-
-${NAME}: ${OBJS}
-			${CC} ${CFLAGS} -o $@ $^
+$(NAME): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
 	@echo "\r\033[K\033[38;2;0;170;0;1mSuccessfully compiled to \033[38;2;255;145;5;3m./$(NAME)\033[0m\033[38;2;0;170;0;1m!\033[0m"
 
-${OBJ_PATH}%.o: %.cpp
-			${CC} ${CFLAGS} -c $< -o $@
+$(OBJ_PATH)srcs/%.o: srcs/%.cpp
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-			rm -f ${OBJS}
-			rm -rf ${OBJ_PATH}
+	rm -f $(OBJS)
+	rm -rf $(OBJ_PATH)
 
 fclean: clean
-			rm -f ${NAME}
+	rm -f $(NAME)
 
 re: fclean all
 

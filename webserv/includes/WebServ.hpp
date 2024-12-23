@@ -28,37 +28,62 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <fstream>
+#include <string>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <algorithm>
 
-#include "Server.hpp"
-#include "Socket.hpp"
-#include "DeleteMethod.hpp"
-#include "GetMethod.hpp"
-#include "PostMethod.hpp"
-#include "Request.hpp"
-#include "Response.hpp"
-#include "Worker.hpp"
-#include "Connection.hpp"
+// #include "Server.hpp"
+// #include "Socket.hpp"
+// #include "DeleteMethod.hpp"
+// #include "GetMethod.hpp"
+// #include "PostMethod.hpp"
+// #include "Request.hpp"
+// #include "Response.hpp"
+// #include "Worker.hpp"
+// #include "Connection.hpp"
 
-
-//maybe do classes ?
 //main include file
 
-struct Config_data
+typedef struct S_Route_config
 {
-    int nb_of_server;
-        //make an array of data ???
-    std::string server_name;
-    int listen_port;
-        //can have multiple port, array of int ??
-    int timeout;
-    std::string root_path;
-    std::string *methods; //array of GET POST DELETE
+    std::vector<std::string> accepted_methods;
+    std::string redirection; //Stores the URL for HTTP redirection
+    std::string root_dir;
+    bool dir_listing;
+    std::string default_file; //index.html
+    std::string cgi_extension; //.php ?
+    std::string upload_dir; //dir where we upload file
+
+} Route_config;
+
+typedef struct S_Config_data
+{
+    // Server configuration
+    std::string host; //ip address or hostname
+    int port;
+    std::vector<std::string> server_names; // server names (domains)
+    bool is_default_server; //host:port combination
+
+    // Web pages
+    std::string error_pages; //template page
+    std::string method_pages;
+
+    size_t client_body_size_limit; //Sets the maximum allowed size for client request bodies
+
+    // Routes configuration
+    Route_config *route_config;
+    std::map<std::string, Route_config> routes;
+
+    // CGI configuration
     std::string cgi_path;
 
-};
+} Config_data;
 
 
-std::string replace_string(std::string res, std::string to_replace, std::string replace_with);
-    //could use the same logic as sed
 
-const std::string &gen_htmlbody();
+// std::string replace_string(std::string res, std::string to_replace, std::string replace_with);
+//     //could use the same logic as sed
+
+// const std::string &gen_htmlbody();
