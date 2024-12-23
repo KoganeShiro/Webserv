@@ -93,3 +93,50 @@ Avoid functions having more than 25 lines long
     ├── cgi/
     │   └── cgi_handler.cpp
     └── main.cpp
+
+
+## github code that kinda works
+
+https://github.com/toukoum/42Cursus-webserv
+
+- Everything seems to work, maybe some error handling need to be perform
+
+---
+
+https://github.com/mousliiim/WebServ
+
+- Everything seems to work but dunno how to use DELETE method...
+
+---
+
+https://github.com/dubmix/42-Webserv
+
+- DELETE, GET, redir, upload file but i can't find where it is stock... Dunno about POST
+
+---
+
+https://github.com/LucieLeBriquer/webserv
+
+- GET, POST, upload file, redir works, dunno about DELETE method..
+
+---
+
+https://github.com/JCluzet/webserv
+
+- CGI script not working
+    because:
+
+  `error while loading shared libraries: libargon2.so.0: cannot open shared object file: No such file or directory`
+
+only GET seems to work
+
+https://github.com/oph-design/webserv
+
+- GET, redir works
+
+https://github.com/solaldunckel/webserv
+
+- GET, redir seems to work
+
+---
+
