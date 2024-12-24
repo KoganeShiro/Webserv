@@ -1,3 +1,76 @@
 <!DOCTYPE html>
-
 <!--Page where we could see all the files in uploads and so delete them-->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Method</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .delete-btn {
+            color: #e74c3c;
+            cursor: pointer;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .delete-btn:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Uploaded Files</h1>
+        <p>Below is the list of files in the uploads directory. You can delete any file by clicking the delete link.</p>
+        <ul id="file-list">
+            <li><span>test-copy.txt</span><a href="./../uploads/test-copy.txt" class="delete-btn">Delete</a></li>
+        </ul>
+    </div>
+</body>
+
+</html>

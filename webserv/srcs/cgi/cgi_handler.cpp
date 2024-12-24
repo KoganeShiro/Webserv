@@ -12,7 +12,7 @@ When a CGI request is received, the server should:
         Send the CGI script\'s output back to the client
 */
 
-Response handleCGI(const Request& request, const std::string& scriptPath) {
+Response handleCGI(const Request& request, const std::string& scriptPath
     // Execute CGI script
     // Capture output
     // Generate and return Response object

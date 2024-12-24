@@ -1,7 +1,8 @@
 
 #include "WebServ.hpp"
 
-static int _is_file_config(const std::string& file) {
+static int _is_file_config(const std::string& file)
+{
     if (file.size() >= 7 && file.compare(file.size() - 7, 7, ".config") == 0) {
         std::cout << "\033[1m\033[32mfile is a .config\033[0m\n";
         return EXIT_SUCCESS;
@@ -10,7 +11,8 @@ static int _is_file_config(const std::string& file) {
     return EXIT_FAILURE;
 }
 
-static char* get_next_line(int fd) {
+static char* get_next_line(int fd)
+{
     std::string line;
     char c;
     while (read(fd, &c, 1) > 0) {
@@ -23,13 +25,15 @@ static char* get_next_line(int fd) {
     return result;
 }
 
-static int fill_struct(const std::string& line, size_t start_idx, Config_data* config) {
+static int fill_struct(const std::string& line, size_t start_idx, Config_data* config)
+{
     // Fill in the Config_data structure based on your line processing
     // Returning EXIT_SUCCESS for now; replace with your logic
     return EXIT_SUCCESS;
 }
 
-static int _read_rtfile(int fd, Config_data* config) {
+static int _read_rtfile(int fd, Config_data* config)
+{
     char* line = get_next_line(fd);
     while (line != NULL) {
         std::string str_line(line);
@@ -50,7 +54,8 @@ static int _read_rtfile(int fd, Config_data* config) {
     return EXIT_SUCCESS;
 }
 
-int parse_file(const std::string& file, Config_data* config) {
+int parse_file(const std::string& file, Config_data* config)
+{
     if (_is_file_config(file) == EXIT_FAILURE) {
         return EXIT_FAILURE;
     }
@@ -70,7 +75,8 @@ int parse_file(const std::string& file, Config_data* config) {
     return EXIT_SUCCESS;
 }
 
-int test(const std::string& file) {
+int test(const std::string& file)
+{
     Config_data* config = new Config_data();
 
     std::cout << "\033[1m\033[37m========= " << file << " =========\033[0m\n";
