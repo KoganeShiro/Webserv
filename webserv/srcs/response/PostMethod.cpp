@@ -1,7 +1,8 @@
 
 #include "WebServ.hpp"
 
-Response handle(const Request& request) {
+Response handle(const Request& request)
+{
     // Handle POST request
     // Process submitted data
     // Return Response object

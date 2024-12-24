@@ -6,6 +6,7 @@ Types:
 
     feat: New feature
     add: add file
+    update: coding
     fix: Bug fix
     docs: Documentation changes
     style: Code style changes
@@ -76,6 +77,7 @@ Avoid functions having more than 25 lines long
 - [ ] Multiple Hosts in one Server Block
 
 ## tree
+```
 .
 └── srcs/
     ├── response/
@@ -93,7 +95,7 @@ Avoid functions having more than 25 lines long
     ├── cgi/
     │   └── cgi_handler.cpp
     └── main.cpp
-
+```
 
 ## github code that kinda works
 

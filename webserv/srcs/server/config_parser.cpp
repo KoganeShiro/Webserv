@@ -30,7 +30,7 @@ Config_data *hard_code(Config_data *config, Route_config *route)
     route->cgi_extension = ".php";
     route->upload_dir = "/html_page/www/uploads";
 
-    config->routes["/"] = "/html_page/www/html/index.html";
+    //config->routes["/"] = "/html_page/www/html/index.html";
 
     // CGI configuration
     config->cgi_path = "/usr/bin/php-cgi";
@@ -47,7 +47,9 @@ Config_data *config_parser(const std::string config)
     // Return Config struct
     return (hard_code(&config, &route));
 }
-static int _is_file_config(const std::string& file) {
+
+static int _is_file_config(const std::string& file)
+{
     if (file.size() >= 7 && file.compare(file.size() - 7, 7, ".config") == 0) {
         std::cout << "\033[1m\033[32mfile is a .config\033[0m\n";
         return (EXIT_SUCCESS);
@@ -56,11 +58,14 @@ static int _is_file_config(const std::string& file) {
     return (EXIT_FAILURE);
 }
 
-static char* get_next_line(int fd) {
+static char* get_next_line(int fd)
+{
     std::string line;
     char c;
     while (read(fd, &c, 1) > 0) {
-        if (c == '\n') break;
+        if (c == '\n') {
+            break;
+        }
         line += c;
     }
     if (line.empty()) return NULL;
@@ -75,7 +80,8 @@ static int fill_struct(const std::string& line, size_t start_idx, Config_data* c
     return (EXIT_SUCCESS);
 }
 
-static int _read_rtfile(int fd, Config_data* config) {
+static int _read_rtfile(int fd, Config_data* config)
+{
     char* line = get_next_line(fd);
     while (line != NULL) {
         std::string str_line(line);
@@ -96,7 +102,8 @@ static int _read_rtfile(int fd, Config_data* config) {
     return (EXIT_SUCCESS);
 }
 
-int parse_file(const std::string& file, Config_data* config) {
+int parse_file(const std::string& file, Config_data* config)
+{
     if (_is_file_config(file) == EXIT_FAILURE) {
         return (EXIT_FAILURE);
     }
@@ -116,7 +123,8 @@ int parse_file(const std::string& file, Config_data* config) {
     return (EXIT_SUCCESS);
 }
 
-int test(const std::string& file) {
+int test(const std::string& file)
+{
     Config_data* config = new Config_data();
 
     std::cout << "\033[1m\033[37m========= " << file << " =========\033[0m\n";
