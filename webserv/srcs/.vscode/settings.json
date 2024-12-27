@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "cstring": "cpp",
+        "fstream": "cpp",
+        "string": "cpp",
+        "cstdlib": "cpp"
+    }
+}

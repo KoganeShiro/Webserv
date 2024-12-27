@@ -13,6 +13,7 @@ private:
 
 public:
     Connection(int clientfd);
+    int get_clientfd(void);
     std::string receive();
     void close();
 
