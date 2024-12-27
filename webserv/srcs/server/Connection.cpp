@@ -26,7 +26,8 @@ std::string Connection::receive()
 }
 
 // Method to close the connection
-void Connection::close() {
+void Connection::close()
+{
     ::close(this->_clientfd); // Close the socket connection
     this->_clientfd = -1; // Set file descriptor to an invalid state
 }

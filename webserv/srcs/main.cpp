@@ -151,6 +151,7 @@ int main(int argc, char **argv)
         std::cout <<
             RED "Usage: ./WebServ <configuration file>" RESET
         << std::endl;
+        return ;
     }
     // setup_server(argv[1]); //configuration parsing
         //Server server(setup_server(argv[1]));

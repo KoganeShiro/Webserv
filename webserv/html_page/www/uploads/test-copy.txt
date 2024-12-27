@@ -1,0 +1,5 @@
+CLONE of test.txt
+
+this is a test
+
+i am in uploads dir

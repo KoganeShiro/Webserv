@@ -1,7 +1,8 @@
 
 #include "WebServ.hpp"
 
-Response handle(const Request& request) {
+Response handle(const Request& request)
+{
     // Handle GET request
     // Read file or generate content
     // Return Response object
