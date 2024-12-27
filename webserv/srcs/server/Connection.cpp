@@ -31,3 +31,9 @@ void Connection::close()
     ::close(this->_clientfd); // Close the socket connection
     this->_clientfd = -1; // Set file descriptor to an invalid state
 }
+
+int Connection::get_clientfd(void)
+{
+    return (this->_clientfd);
+}
+

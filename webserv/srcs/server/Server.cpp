@@ -42,7 +42,8 @@ void Server::run()
 		
             Connection user_connect(this->_socket.get_sockfd()); // Accept a new client connection
             _handle_connection(user_connect); // Handle the accepted connection
-        } catch (const std::exception& e) {
+        } 
+        catch (const std::exception& e) {
             std::cerr << "Error accepting connection: " << e.what() << std::endl;
             continue; // Continue to the next iteration of the loop
         }
