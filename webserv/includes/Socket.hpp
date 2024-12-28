@@ -23,5 +23,6 @@ public:
     ~Socket();
     void accept_connection();
     int get_sockfd();
+    void add_to_epoll(int epoll_fd);//ajout Damien
 
 };

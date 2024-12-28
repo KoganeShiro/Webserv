@@ -15,12 +15,31 @@ void    listen_on_socket()
 
 */
 
+//ajout Damien
+void Socket::add_to_epoll(int epoll_fd) {
+    epoll_event event;
+    event.data.fd = this->_sockfd; // Associer le fd du socket
+    event.events = EPOLLIN;       // Événement pour écouter les connexions
+    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, this->_sockfd, &event) < 0) {
+        throw std::runtime_error("Failed to add socket to epoll");
+    }
+}
+
 Socket::Socket(int port)
 {
     this->_sockfd = this->_create_socket(); // Create a new socket
     this->_bind_socket(port); // Bind the socket to the specified port
     this->_listen_for_connections(); // Start listening for incoming connections
     this->configure_epoll();//check the events happening in the socket
+}
+
+//ajout Damien
+Socket::~Socket() {
+    try {
+        this->close_socket();
+    } catch (const std::exception& e) {
+        std::cerr << "Error during socket destruction: " << e.what() << std::endl;
+    }
 }
 
 // Helper method to create a new socket

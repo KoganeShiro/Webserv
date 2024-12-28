@@ -34,17 +34,33 @@
 #include <cstdio>
 #include <algorithm>
 
-// #include "Server.hpp"
-// #include "Socket.hpp"
-// #include "DeleteMethod.hpp"
-// #include "GetMethod.hpp"
-// #include "PostMethod.hpp"
-// #include "Request.hpp"
-// #include "Response.hpp"
-// #include "Worker.hpp"
-// #include "Connection.hpp"
+#include "Server.hpp"
+#include "Socket.hpp"
+#include "DeleteMethod.hpp"
+#include "GetMethod.hpp"
+#include "PostMethod.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
+#include "Worker.hpp"
+#include "Connection.hpp"
 
 //main include file
+
+// ---------------Damien---------------------
+#define BUFFER_SIZE 4096
+#define MAX_EVENTS 10
+
+#define MAX_SERVERS 10
+ServerConfig servers[MAX_SERVERS];
+int server_count = 0; // Nombre de serveurs actifs
+
+// struct ServerConfig 
+// {
+//     int port;              // Port
+//     char root_dir[256];    
+//     int socket_fd;         // Socket fd
+// };
+// ---------------END Damien-----------------
 
 typedef struct S_Route_config
 {
@@ -64,7 +80,7 @@ typedef struct S_Config_data
     std::string host; //ip address or hostname
     int port;
     std::vector<std::string> server_names; // server names (domains)
-    bool is_default_server; //host:port combination
+    bool is_default_server; //host:port combination OPTIONNEL ??
 
     // Web pages
     std::string error_pages; //template page
