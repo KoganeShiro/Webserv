@@ -43,6 +43,7 @@
 #include "Response.hpp"
 #include "Worker.hpp"
 #include "Connection.hpp"
+#include "Cgi.hpp"
 
 //main include file
 
@@ -74,6 +75,12 @@ typedef struct S_Route_config
 
 } Route_config;
 
+typedef struct S_CGI_config
+{
+    std::vector<CGI> tab_cgi;
+    int nb_cgi;
+} CGI_config;
+
 typedef struct S_Config_data
 {
     // Server configuration
@@ -93,6 +100,7 @@ typedef struct S_Config_data
     std::map<std::string, Route_config> routes;
 
     // CGI configuration
+    CGI_config *tab_cgi;
     std::string cgi_path;
 
 } Config_data;
