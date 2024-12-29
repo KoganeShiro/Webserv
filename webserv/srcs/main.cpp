@@ -55,7 +55,12 @@
 //         //--> have a template where code error and text will be change dynamically ?
 // }
 
+Response ft_worker_response(Config_data data, Request request)
+{
+    Worker worker(data, request);
 
+    return (worker.run());
+}
 
 //---- AJOUT DAMIEN ----
 void    run_epoll(int epoll_fd, std::vector<Server> servers)
@@ -114,7 +119,7 @@ int main(int argc, char **argv)
         std::cout <<
             RED "Usage: ./WebServ <configuration file>" RESET
         << std::endl;
-        return ;
+        return(EXIT_FAILURE) ;
     }    
     // 1. Parser le fichier de configuration
     std::vector<Config_data> configs = parse_config(argv[1]);
@@ -146,7 +151,7 @@ int main(int argc, char **argv)
         servers[i].shutdown(); // Ajouter une methode pour fermer proprement
     }
 
-    return 0;
+    return (EXIT_SUCCESS);
 }
 
 
