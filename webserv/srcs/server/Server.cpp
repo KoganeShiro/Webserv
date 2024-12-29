@@ -11,7 +11,8 @@ Server::Server(std::string const config)
 }
 
 //ajout Damien
-void Server::add_to_epoll(int epoll_fd) {
+void Server::add_to_epoll(int epoll_fd)
+{
     this->_socket.add_to_epoll(epoll_fd);
 
 int  Server::get_socket_fd()
@@ -19,27 +20,14 @@ int  Server::get_socket_fd()
     return (this->_socket.get_sockfd());
 }
 
-void Server::_handle_connection(Connection user_connect)
+Request *init_request(Connection user_connect)
 {
-    //dunno if try catch is the right struct
-    this-> _worker = Worker(this->_socket); //make a setter function ?
-    try {
-        std::string request = user_connect.receive(); // Receive request from client
-        //fill buffer until end of header (\r\n\r\n)
-        //put this buffer in request_parser() param
-        //on hold
-        if (!request.empty() && find("\r\n\r\n")) {
-            //maybe have a better class init ??
-            Request parsed_request = request_parser(request); // Parse the incoming request
-            this->_worker.process_request(parsed_request); // Use Worker to process the request
-            //if request_parser no ERROR
-            // if require body, resume and fill the buffer
-        }
-    } catch (const std::exception& e) {
-        std::cerr << "Error handling connection: " << e.what() << std::endl;
-    }
-    //if everything is done, we can close this session
-    user_connect.close(); // Ensure that the connection is closed after handling
+    Request request;
+    Request *parsed_request;
+    std::string request_buffer; //add all the data red
+    
+    //init new Request() = *this;
+    return (parsed_request);
 }
 
 //Dans le main faire un run d'epoll

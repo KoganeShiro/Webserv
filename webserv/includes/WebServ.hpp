@@ -55,12 +55,12 @@
 ServerConfig servers[MAX_SERVERS];
 int server_count = 0; // Nombre de serveurs actifs
 
-// struct ServerConfig 
-// {
-//     int port;              // Port
-//     char root_dir[256];    
-//     int socket_fd;         // Socket fd
-// };
+struct ServerConfig 
+{
+    int port;              // Port
+    char root_dir[256];    
+    int socket_fd;         // Socket fd
+};
 // ---------------END Damien-----------------
 
 typedef struct S_Route_config
@@ -105,7 +105,9 @@ typedef struct S_Config_data
 
 } Config_data;
 
+Config_data config_parser(const std::string config);
 
+Request *init_request(Connection user_connect);
 
 // std::string replace_string(std::string res, std::string to_replace, std::string replace_with);
 //     //could use the same logic as sed

@@ -9,7 +9,8 @@ Connection represents an individual client connection.
 class Connection
 {
 private:
-    int _clientfd;
+    int _clientfd; //---> sockfd
+    Request *request;
 
 public:
     Connection(int clientfd);

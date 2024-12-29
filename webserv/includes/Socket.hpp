@@ -19,6 +19,7 @@ private:
     void    _listen_for_connections(void);
 
 public:
+    Socket();
     Socket(int port);
     ~Socket();
     void accept_connection();
