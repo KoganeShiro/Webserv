@@ -6,7 +6,7 @@
 Can make strict rules for conf file
 */
 
-Config_data *hard_code(Config_data *config, Route_config *route)
+Config_data hard_code(Config_data *config, Route_config *route)
 {
     // Server configuration
     config->host = "127.0.0.1";
@@ -34,18 +34,18 @@ Config_data *hard_code(Config_data *config, Route_config *route)
 
     // CGI configuration
     config->cgi_path = "/usr/bin/php-cgi";
-    return (config);
+    return (*config);
 }
 
-Config_data *config_parser(const std::string config)
+Config_data config_parser(const std::string config)
 {
-    Config_data config;
+    Config_data config_data;
     Route_config route;
 
     //open file
     // Read and parse configuration file
     // Return Config struct
-    return (hard_code(&config, &route));
+    return (hard_code(&config_data, &route));
 }
 
 static int _is_file_config(const std::string& file)
