@@ -13,7 +13,6 @@ Server::Server(std::string const config)
 //ajout Damien
 void Server::add_to_epoll(int epoll_fd) {
     this->_socket.add_to_epoll(epoll_fd);
-}
 
 int  Server::get_socket_fd()
 {
@@ -42,7 +41,6 @@ void Server::_handle_connection(Connection user_connect)
     //if everything is done, we can close this session
     user_connect.close(); // Ensure that the connection is closed after handling
 }
-
 
 //Dans le main faire un run d'epoll
 // void Server::run()
