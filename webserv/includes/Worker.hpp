@@ -7,17 +7,31 @@ private:
     std::map<std::string, IHttpMethod*> _method_handlers;
    // Socket& _socket;
     Config_data _config;
-    Request _request;
+    Request *_request;
     Response _response;
     std::string _fullpath;
-    std::string _location;
+    std::string _req_location;
     std::string _file;
+    std::string _route;
+    int _status_code;
+    bool _file_exists();
+    bool _file_readable();
+    bool _file_writable();
+    bool _is_cgi();
+    std::string checkRoute() const;
+    bool _is_directory();
+    void check_for_errors();
+    bool is_valid_method();
+    bool method_is_available();
+    bool servername_is_valid();
+    std::string cgi_type();
+
 
 public:
-    Worker(Socket& socket);
+   // Worker(Socket& socket);
 
   //  Worker(Socket& socket, Server& server); // Constructor with pointer or reference to server to be able to access the configuration? Filepath etc. needed to execute requests.
-    Worker(Config_data c, Request request); // Constructor with pointer or reference to server to be able to access the configuration? Filepath etc. needed to execute requests.
+    Worker(Config_data c, Request *request); // Constructor with pointer or reference to server to be able to access the configuration? Filepath etc. needed to execute requests.
 
     Worker &Worker::operator=(const Worker &other);
     ~Worker();

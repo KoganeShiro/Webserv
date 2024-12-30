@@ -6,19 +6,154 @@
 Worker::Worker(Socket& socket) : _socket(socket)
 {}
 */
-Worker::Worker(Config_data c, Request request)
+
+std::string Worker::cgi_type()
 {
+    return (_config.routes[_route].cgi_extension);
+}
+
+bool Worker::_is_cgi()
+{
+    if (_config.routes[_route].cgi_extension != "") {
+        if (_fullpath.rfind(_config.routes[_route].cgi_extension) == _fullpath.length() - _config.routes[_route].cgi_extension.length()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Worker::_file_exists()
+{
+    struct stat buffer;
+    return (stat (_fullpath.c_str(), &buffer) == 0);
+}
+
+bool Worker::_file_readable()
+{
+    if (access(_fullpath.c_str(), R_OK) == 0) {
+        return true;
+    }
+    return false;
+}
+
+bool Worker::_file_writable()
+{
+        if (access(_fullpath.c_str(), W_OK) == 0) {
+            return true;
+        }
+        return false;
+}
+
+std::string Worker::checkRoute() const
+{
+    std::string route = "";
+    int length = 0;
+    for (std::map< std::string, Route_config >::const_iterator it = _config.routes.begin(); it != _config.routes.end(); ++it) {
+        if ((_request->get_path()).rfind(it->first, 0) == 0)
+        {
+            if ((it->first).length() > length) {
+                route = it->first;
+                length = route.length();
+            }
+        }
+    }
+    return route;
+}
+
+bool Worker::method_is_available()
+{
+    for (std::map<std::string, IHttpMethod*>::iterator it = _method_handlers.begin(); it != _method_handlers.end(); ++it) {
+        if (it->first == _request->get_method()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Worker::is_valid_method()
+{
+    for (std::vector<std::string>::iterator it = _config.routes[_route].accepted_methods.begin(); it != _config.routes[_route].accepted_methods.end(); ++it) {
+        if (*it == _request->get_method()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Worker::servername_is_valid()
+{
+    for (std::vector<std::string>::iterator it = _config.server_names.begin(); it != _config.server_names.end(); ++it) {
+        if (*it == _request->get_header_element("Host")) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Worker::_is_directory()
+{
+    struct stat buffer;
+    if (stat (_fullpath.c_str(), &buffer) == 0) {
+        return S_ISDIR(buffer.st_mode);
+    }
+    return false;
+}
+
+void Worker::check_for_errors()
+{
+    if (! is_valid_method() || ! method_is_available()) {
+        _status_code = 405;
+        return;
+    }
+    if (! servername_is_valid()) {
+        _status_code = 404;
+        return;
+    }
+    if (_route.empty()) {
+        _status_code = 404;
+        return;
+    }
+/*    if (_config.routes[_route].redirection != "") {
+        _status_code = 301;
+        return;
+    }
+*/
+/*  if (!_file_exists()) {
+        _status_code = 404;
+        return;
+    }
+    if (!_file_readable()) {
+        _status_code = 403;
+        return;
+    }
+    if (_is_directory() && !_config.routes[_route].dir_listing) {
+        _status_code = 403;
+        return;
+    }
+    _status_code = 200;
+*/
+}
+
+Worker::Worker(Config_data c, Request *request)
+{
+    _status_code = 0;
     _method_handlers["GET"] = new GetMethod();
     _method_handlers["POST"] = new PostMethod();
     _method_handlers["DELETE"] = new DeleteMethod();
     _config = c;
-    _request = request;    
-    _location = _request.get_path().substr(0,_request.get_path().find_last_of('/')); // Get the location of the file
-    if (_location.empty()) {
-        _location = "/";
+    _request = request;
+    _route = checkRoute();    
+    if (! _route.empty())
+    {
+        _fullpath = _config.routes[_route].root_dir + _request->get_path().substr(_route.length());
+        if (_fullpath[_fullpath.length() - 1] == '/')
+            _fullpath += _config.routes[_route].default_file;
     }
-    _file = _request.get_path().substr(_request.get_path().find_last_of('/') + 1); // Get the file name
-    _fullpath = _config.route_config->root_dir + _request.get_path();
+    else
+        _status_code = 404;
+    _file = _fullpath.substr(_fullpath.find_last_of('/') + 1); // Get the file name
+
+    check_for_errors();
 
     
 }
@@ -39,29 +174,25 @@ Worker::~Worker()
     for (std::map<std::string, IHttpMethod*>::iterator it = _method_handlers.begin(); it != _method_handlers.end(); ++it) {
         delete it->second;
     }
+    delete _request;
 }
 
 
 Response Worker::run()
 {
     Response response;
-    _request.get_path();
-    _config.routes["/"].accepted_methods( ["GET", "POST", "DELETE"]);
-
-
-
-
-    std::string method = _request.get_method();  
-    if (_method_handlers.find(method) != _method_handlers.end()) {
-        IHttpMethod* handler = _method_handlers[method];
-        response = handler->handle(_request);
+    if (_status_code > 399) {
+        response = Response(_status_code, "Error");
+        return response;
+    }    
+ /*   if (_is_cgi()) {
+        Cgi cgi(_config, _request, _fullpath, cgi_type());
+        response = cgi.run();
+        return response;
     }
-    else {
-        response = Response(405, "Method Not Allowed");
-    }
-    
-    return response;
-    //send_response(response);
+*/
+    response = _method_handlers[_request->get_method()]->handle(*_request);
+    return response;    
 }
 
 /*
