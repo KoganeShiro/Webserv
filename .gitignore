@@ -1,6 +1,6 @@
-# Prerequisites
 *.d
 *.vscode
+*/out
 
 # Compiled Object files
 *.slo
@@ -31,3 +31,4 @@
 *.exe
 *.out
 *.app
+*/webServ

@@ -1,4 +1,4 @@
-#include "./../includes/WebServ.hpp"
+#include "WebServ.hpp"
 
 #include <fstream>
 #include <string>
@@ -8,12 +8,46 @@
 #define BUFFER_SIZE 4096
 #define INDEX_PATH "./../html_page/www/html/index.html"
 
+#include <iostream>
+
+void print_Request(Request *request)
+{
+    if (request == NULL)
+    {
+        std::cout <<RED "Request is NULL" RESET << std::endl;
+        return;
+    }
+
+    std::cout << "Request Details:" << std::endl;
+    std::cout << "Request Buffer: `" << request->get_request_buffer() << "`" << std::endl;
+    std::cout << "----------------" << std::endl;
+    std::cout << "Method: `" << request->get_method() << "`" << std::endl;
+    std::cout << "Path: `" << request->get_path() << "`" << std::endl;
+    std::cout << "HTTP Version: `" << request->get_http_version() << "`" << std::endl;
+    std::cout << "Content Length: `" << request->get_content_length() << "`" << std::endl;
+    std::cout << "Good Request: `" << (request->get_good_request() ? "Yes" : "No") << "`" << std::endl;
+    std::cout << "Is Ready: `" << (request->get_is_ready() ? "Yes" : "No") << "`" << std::endl;
+
+    std::cout << "\nHeaders:" << std::endl;
+    std::cout << "--------" << std::endl;
+    // Assuming you have a method to get all headers
+    std::map<std::string, std::string> headers = request->get_header();
+    for (std::map<std::string, std::string>::const_iterator it = headers.begin(); it != headers.end(); ++it)
+    {
+        std::cout << "`" << it->first << "`" << ": "
+         << "`" << it->second << "`" << std::endl;
+    }
+
+    std::cout << "\nBody:" << std::endl;
+    std::cout << "-----" << std::endl;
+    std::cout << "`" << request->get_body() << "`" << std::endl;
+}
+
 
 std::string readFileIntoString(const std::string& filename)
 {
     std::ifstream file(filename.c_str());
-    if (!file.is_open())
-    {
+    if (!file.is_open()) {
         return "<h1>ERROR opening index.html</h1>";
     }
     
@@ -40,7 +74,9 @@ int server()
 
   bool active = true;
   int connection;
-    Request *request;
+    Request *new_request;
+    Request request;
+    ssize_t bytesRead;
   while (active)
   {
     unsigned long resultLen = sizeof(sockaddr);
@@ -49,25 +85,26 @@ int server()
     char buffer[BUFFER_SIZE];
 
   while (1) {
-    ssize_t bytesRead = read(connection, buffer, BUFFER_SIZE);
-    request->add_to_request(buffer); //??
-    if (request->get_is_ready() == true) break;
+    bytesRead = read(connection, buffer, BUFFER_SIZE);
+    request.add_to_request(buffer); //??
+    if (request.get_is_ready() == true) break;
     else continue;
    }
-
-    Request *new_request = request->parsed_request();
+    new_request = request.parsed_request();
   
     std::cout << "Request:" << std::endl;
-    std::cout << buffer << std::endl;
+    std::cout << buffer << std::endl << "==================" << std::endl;
+
+    print_Request(new_request);
 
     std::string content = readFileIntoString(INDEX_PATH);
-    std::string response = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + std::to_string(content.length()) + "\n\n" + content;
+    std::string response = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + to_string(content.length()) + "\n\n" + content;
     send(connection, response.c_str(), response.size(), 0);
     close(connection);
   }
 
   close(fdSocket);
-  delete request;
+  delete (new_request);
 
   return (EXIT_SUCCESS);
 }

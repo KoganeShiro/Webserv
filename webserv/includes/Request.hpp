@@ -46,8 +46,9 @@ public:
 
     std::string get_method() const;
     std::string get_path() const;
-    //std::string get_header() const;
+    std::string get_all_header() const;
     std::string get_header_element(const std::string& key) const;
+    std::map<std::string, std::string> get_header() const;
     std::string get_body() const;
     bool get_good_request() const;
     bool get_is_ready() const;
@@ -66,6 +67,7 @@ public:
     void set_content_length(int lenght);
     void set_to_null();
 
-    void add_to_request(std::string to_add); //will call request parser
+    /* IN REQUEST_PARSER */
+    void add_to_request(std::string to_add);
     Request *parsed_request();
 };
