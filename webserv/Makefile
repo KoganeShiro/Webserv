@@ -6,8 +6,8 @@ CFLAGS = -Wall -Wextra -std=c++98 -Iincludes/
 
 SRCS_CGI =		#cgi_handler.cpp
 
-SRCS_REQUEST =	Request.cpp	
-#request_parser.cpp
+SRCS_REQUEST =	Request.cpp	\
+				request_parser.cpp
 
 SRCS_RESPONSE =	#DeleteMethod.cpp \
 				GetMethod.cpp \
