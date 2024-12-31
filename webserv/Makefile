@@ -6,8 +6,8 @@ CFLAGS = -Wall -Wextra -std=c++98 -Iincludes/
 
 SRCS_CGI =		#cgi_handler.cpp
 
-SRCS_REQUEST =	#request_parser.cpp \
-				Request.cpp	
+SRCS_REQUEST =	Request.cpp	
+#request_parser.cpp
 
 SRCS_RESPONSE =	#DeleteMethod.cpp \
 				GetMethod.cpp \
@@ -22,7 +22,8 @@ SRCS_SERVER =	#config_parser.cpp \
 
 SRCS_UTILS =	#gen_webpage.cpp
 		
-SRCS =			parsing_test.cpp
+SRCS =			request_parser.cpp
+#parsing_test.cpp
 #main.cpp
 
 OBJ_PATH = obj/

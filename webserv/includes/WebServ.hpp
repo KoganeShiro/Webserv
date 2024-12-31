@@ -46,14 +46,24 @@
 #include "Cgi.hpp"
 
 //main include file
+#include <sstream>
+#include <string>
+
+template <typename T>
+std::string to_string(T value)
+{
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
+}
 
 // ---------------Damien---------------------
 #define BUFFER_SIZE 4096
 #define MAX_EVENTS 10
 
 #define MAX_SERVERS 10
-ServerConfig servers[MAX_SERVERS];
-int server_count = 0; // Nombre de serveurs actifs
+//ServerConfig servers[MAX_SERVERS];
+//int server_count = 0; // Nombre de serveurs actifs
 
 struct ServerConfig 
 {
