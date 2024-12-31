@@ -5,7 +5,7 @@
 #include <sstream>
 
 #define PORT 1234
-#define BUFFER_SIZE 4096
+#define BUFFER_SIZE 96
 #define INDEX_PATH "./../html_page/www/html/index.html"
 
 #include <iostream>

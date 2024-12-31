@@ -11,12 +11,17 @@ Request::Request() :_request_buffer(""),
 
 Request::Request(Request const &other) :
     _request_buffer(other._request_buffer),
-    _request(other._request), _headers(other._headers),
-    _method(other._method), _path(other._path),
+    _request(other._request),
+    _headers(other._headers),
+    _method(other._method),
+    _path(other._path),
+    _http_version(other._http_version),
     _content_length(other._content_length),
-    _body(other._body), _good_request(other._good_request),
-    _is_ready(other._is_ready), _http_version(other._http_version)
+    _body(other._body),
+    _good_request(other._good_request),
+    _is_ready(other._is_ready)
 {}
+
 
 // Getter for HTTP method
 std::string Request::get_method() const
