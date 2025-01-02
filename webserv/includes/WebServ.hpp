@@ -33,12 +33,13 @@
 #include <cstdlib>
 #include <cstdio>
 #include <algorithm>
+#include <sstream>
 
-#include "Server.hpp"
-#include "Socket.hpp"
-#include "DeleteMethod.hpp"
+// #include "Server.hpp"
+// #include "Socket.hpp"
+//#include "DeleteMethod.hpp"
 #include "GetMethod.hpp"
-#include "PostMethod.hpp"
+//#include "PostMethod.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Worker.hpp"
@@ -50,6 +51,7 @@
 // ---------------Damien---------------------
 #define BUFFER_SIZE 4096
 #define MAX_EVENTS 10
+#define MAX_FILE_SIZE 1000000
 
 #define MAX_SERVERS 10
 ServerConfig servers[MAX_SERVERS];
@@ -104,11 +106,11 @@ typedef struct S_Config_data
     std::string cgi_path;
 
 } Config_data;
-
+/*
 Config_data config_parser(const std::string config);
 
 Request *init_request(Connection user_connect);
-
+*/
 // std::string replace_string(std::string res, std::string to_replace, std::string replace_with);
 //     //could use the same logic as sed
 

@@ -30,22 +30,22 @@ private:
     bool _is_ready;
 
 public:
-    Request();
-    ~Request();
+//    Request();
+//    ~Request();
 
     std::string get_method() const;
     std::string get_path() const;
-    std::string get_header() const;
+//    std::string get_header() const;
     std::string get_header_element(const std::string& key) const;
     std::string get_body() const;
-    bool get_good_request() const;
-    std::string get_request() const;
+//    bool get_good_request() const;
+//    std::string get_request() const;
 
     void set_method(const std::string& method);
     void set_path(const std::string& path);
     void add_header(const std::string& key, const std::string& value);
     void set_body(const std::string& body);
-    void set_good_request(const bool ok);
-    void add_to_request(std::string to_add);
+//    void set_good_request(const bool ok);
+//    void add_to_request(std::string to_add);
 
 };

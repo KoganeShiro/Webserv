@@ -11,7 +11,7 @@ SRCS_REQUEST =	#request_parser.cpp \
 
 SRCS_RESPONSE =	#DeleteMethod.cpp \
 				GetMethod.cpp \
-				PostMethod.cpp \
+				#PostMethod.cpp \
 				Response.cpp \
 				Worker.cpp
 
@@ -22,8 +22,8 @@ SRCS_SERVER =	#config_parser.cpp \
 
 SRCS_UTILS =	#gen_webpage.cpp
 		
-SRCS =			parsing_test.cpp
-#main.cpp
+SRCS =			#parsing_test.cpp \
+				main.cpp
 
 OBJ_PATH = obj/
 SRCS_PATH = srcs/

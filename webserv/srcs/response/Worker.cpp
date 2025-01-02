@@ -138,8 +138,8 @@ Worker::Worker(Config_data c, Request *request)
 {
     _status_code = 0;
     _method_handlers["GET"] = new GetMethod();
-    _method_handlers["POST"] = new PostMethod();
-    _method_handlers["DELETE"] = new DeleteMethod();
+  //  _method_handlers["POST"] = new PostMethod();
+  //  _method_handlers["DELETE"] = new DeleteMethod();
     _config = c;
     _request = request;
     _route = checkRoute();    
@@ -151,7 +151,7 @@ Worker::Worker(Config_data c, Request *request)
     }
     else
         _status_code = 404;
-    _file = _fullpath.substr(_fullpath.find_last_of('/') + 1); // Get the file name
+//    _file = _fullpath.substr(_fullpath.find_last_of('/') + 1); // Get the file name
 
     check_for_errors();
 
@@ -191,7 +191,7 @@ Response Worker::run()
         return response;
     }
 */
-    response = _method_handlers[_request->get_method()]->handle(*_request);
+    response = _method_handlers[_request->get_method()]->handle(*_request, _fullpath);
     return response;    
 }
 
