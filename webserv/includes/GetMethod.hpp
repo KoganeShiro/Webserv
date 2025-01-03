@@ -1,6 +1,19 @@
+#pragma once
 
 #include "WebServ.hpp"
 #include "IHttpMethod.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
+#include "Config_data.hpp"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sys/stat.h>
+#include <map>
+#include <unistd.h>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
 
 
 
@@ -15,7 +28,7 @@ private:
     std::string _fullpath;
   //  std::string _req_location;
   //  std::string _file;
-  //  std::string _route;
+    std::string _route;
     int _status_code;
     bool _file_exists();
     bool _file_readable();
@@ -36,9 +49,5 @@ private:
 
 
 public:
-    Response handle(const Request& request, std::string& fullpath) override {
-        // Handle GET request
-        // Read file or generate content
-        // Return Response object
-    }
+    Response handle(const Request& request, std::string& fullpath, Config_data c, std::string route);
 };

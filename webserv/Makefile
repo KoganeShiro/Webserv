@@ -6,14 +6,15 @@ CFLAGS = -Wall -Wextra -std=c++98 -Iincludes/
 
 SRCS_CGI =		#cgi_handler.cpp
 
-SRCS_REQUEST =	#request_parser.cpp \
-				Request.cpp	
+SRCS_REQUEST =	Request.cpp	
+#request_parser.cpp
+				
 
-SRCS_RESPONSE =	#DeleteMethod.cpp \
-				GetMethod.cpp \
-				#PostMethod.cpp \
+SRCS_RESPONSE =	GetMethod.cpp \
 				Response.cpp \
-				Worker.cpp
+				Worker.cpp \
+				testmain.cpp
+
 
 SRCS_SERVER =	#config_parser.cpp \
 				Connection.cpp \

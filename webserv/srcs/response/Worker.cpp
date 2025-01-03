@@ -1,5 +1,7 @@
 
-#include "WebServ.hpp"
+//#include "WebServ.hpp"
+
+#include "Worker.hpp"
 
 //method_handler()
 /*
@@ -46,8 +48,9 @@ bool Worker::_file_writable()
 
 std::string Worker::checkRoute() const
 {
+    std::cout << "CheckRoute: Request path: " << _request->get_path() << std::endl;
     std::string route = "";
-    int length = 0;
+    long unsigned int length = 0;
     for (std::map< std::string, Route_config >::const_iterator it = _config.routes.begin(); it != _config.routes.end(); ++it) {
         if ((_request->get_path()).rfind(it->first, 0) == 0)
         {
@@ -57,6 +60,7 @@ std::string Worker::checkRoute() const
             }
         }
     }
+    std::cout << "CheckRoute: Route: " << route << std::endl;
     return route;
 }
 
@@ -64,9 +68,11 @@ bool Worker::method_is_available()
 {
     for (std::map<std::string, IHttpMethod*>::iterator it = _method_handlers.begin(); it != _method_handlers.end(); ++it) {
         if (it->first == _request->get_method()) {
+            std::cout << "Method available" << std::endl;
             return true;
         }
     }
+    std::cout << "Method not available" << std::endl;
     return false;
 }
 
@@ -103,14 +109,17 @@ void Worker::check_for_errors()
 {
     if (! is_valid_method() || ! method_is_available()) {
         _status_code = 405;
+        std::cout << "Method not allowed" << std::endl;
         return;
     }
     if (! servername_is_valid()) {
         _status_code = 404;
+        std::cout << "Server name not found" << std::endl;
         return;
     }
     if (_route.empty()) {
         _status_code = 404;
+        std::cout << "Route not found" << std::endl;
         return;
     }
 /*    if (_config.routes[_route].redirection != "") {
@@ -145,14 +154,23 @@ Worker::Worker(Config_data c, Request *request)
     _route = checkRoute();    
     if (! _route.empty())
     {
-        _fullpath = _config.routes[_route].root_dir + _request->get_path().substr(_route.length());
+        /*
+        std::cout << "Route: " << _route << std::endl;
+        std::cout << "Root dir: " << _config.routes[_route].root_dir << std::endl;
+        std::cout << "Request path: " << _request->get_path() << std::endl;
+        std::cout << "Request path length: " << _request->get_path().length() << std::endl;
+        std::cout << "Route length: " << _route.length() << std::endl;
+        std::cout << "Request path substr: " << _request->get_path().substr(_route.length()) << std::endl;
+*/
+
+        _fullpath = (_config.routes[_route].root_dir + _request->get_path()).substr(1);
         if (_fullpath[_fullpath.length() - 1] == '/')
-            _fullpath += _config.routes[_route].default_file;
+           _fullpath += _config.routes[_route].default_file;
     }
     else
         _status_code = 404;
 //    _file = _fullpath.substr(_fullpath.find_last_of('/') + 1); // Get the file name
-
+    std::cout << "Fullpath: " << _fullpath << std::endl;
     check_for_errors();
 
     
@@ -182,7 +200,8 @@ Response Worker::run()
 {
     Response response;
     if (_status_code > 399) {
-        response = Response(_status_code, "Error");
+        response = Response(_status_code, "Error", _config);
+        std::cout << "Error reponse generated from Worker: " << _status_code << std::endl;
         return response;
     }    
  /*   if (_is_cgi()) {
@@ -191,7 +210,8 @@ Response Worker::run()
         return response;
     }
 */
-    response = _method_handlers[_request->get_method()]->handle(*_request, _fullpath);
+    std::cout << "Method: " << _request->get_method() << std::endl;
+    response = _method_handlers[_request->get_method()]->handle(*_request, _fullpath, _config, _route);
     return response;    
 }
 

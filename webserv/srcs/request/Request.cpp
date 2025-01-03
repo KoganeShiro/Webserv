@@ -1,5 +1,7 @@
 
-#include "WebServ.hpp"
+//#include "WebServ.hpp"
+
+#include "Request.hpp"
 
 // Getter for HTTP method
 std::string Request::get_method() const
@@ -16,18 +18,19 @@ std::string Request::get_path() const
 // Getter for specific header value by key
 std::string Request::get_header_element(const std::string& key) const
 {
-    auto it = _headers.find(key);
+    std::map<std::string, std::string>::const_iterator it = _headers.find(key);
     if (it != _headers.end()) {
         return (it->second);
     }
     return (""); // Return empty string if header not found
 }
-
+/*
 // Getter for all the request header
 std::string Request::get_header_element(const std::string& key) const
 {
     return (this->_header_str);
 }
+*/
 
 // Getter for request body
 std::string Request::get_body() const
