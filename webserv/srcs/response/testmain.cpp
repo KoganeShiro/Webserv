@@ -30,10 +30,10 @@ Config_data hard_code(Config_data *config, Route_config *route)
     route->root_dir = "html_page/www/html";
     route->dir_listing = true;
     route->default_file = "index.html";
-    route->use_cgi = true;
-    route->upload_dir = "html_page/www/uploads";
+    route->use_cgi = false;
+ //   route->upload_dir = "html_page/www/html";
     route->redirection_path = "https://www.google.com";
-    route->redirection_nb = 302 ;
+    route->redirection_nb = 0 ;
 
     config->routes["/"] = *route;
 
@@ -69,8 +69,11 @@ int main(int argc, char **argv)
     Config_data config = config_parser("test.config");
     Request *request = new Request();
     request->set_path("/index12.html");
-    request->set_method("GET");
+    request->set_method("DELETE");
+    request->set_body("Hello, World!");
     request->add_header("Host", "localhost");
+    request->add_header("Content-Type", "text/html");
+    request->add_header("Content-Length", "13");
 //    request.set_body("Hello, World!");
 //    request.set_headers("Content-Type", "text/html");
 //    request.set_headers("Content-Length", "13");

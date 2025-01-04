@@ -4,7 +4,7 @@
 #include "WebServ.hpp"
 #include "IHttpMethod.hpp"
 
-class Response;
+//class Response;
 
 /*
 POST: Submits data to be processed
@@ -40,7 +40,7 @@ private:
   //  bool method_is_available();
   //  bool servername_is_valid();
   //  std::string cgi_type();
-  std::string readfile(std::string filename);
+  // std::string readfile(std::string filename);
   int writefile(std::string filename, std::string content);
   int filesize(std::string filename);
   std::string getMimeType(const std::string& fileName);

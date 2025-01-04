@@ -161,8 +161,8 @@ Worker::Worker(Config_data c, Request *request)
 {
     _status_code = 0;
     _method_handlers["GET"] = new GetMethod();
-  //  _method_handlers["POST"] = new PostMethod();
-  //  _method_handlers["DELETE"] = new DeleteMethod();
+    _method_handlers["POST"] = new PostMethod();
+    _method_handlers["DELETE"] = new DeleteMethod();
     _config = c;
     _request = request;
     _route = checkRoute();

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "GetMethod.hpp"
-//#include "PostMethod.hpp"
-//#include "DeleteMethod.hpp"
+#include "PostMethod.hpp"
+#include "DeleteMethod.hpp"
 
 class Worker {
 private:

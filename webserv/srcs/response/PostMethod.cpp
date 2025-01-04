@@ -2,24 +2,6 @@
 #include "PostMethod.hpp"
 
 
-/*
-Response handle(const Request& request)
-{
-    // Handle POST request
-    // Process submitted data
-    // Return Response object
-    // EXEMPLE 
-    
-    // Process the request
-    if (_is_valid_data(data)) {
-        newResource = createResource(data)
-        return (Response(201, "Created", newResource));
-    }
-    else {
-        return (Response(400, "Bad Request"));
-    }
-}
-*/
 
 
 bool PostMethod::_file_exists()
@@ -86,7 +68,7 @@ std::string PostMethod::getMimeType(const std::string& fileName) {
 
     return "application/octet-stream"; // Default binary type
 }
-
+/*
 std::string PostMethod::readfile(std::string filename) {
     
     std::ifstream file(filename.c_str()); // Open the file in read mode
@@ -105,25 +87,29 @@ std::string PostMethod::readfile(std::string filename) {
     file.close(); // Close the file
     return content;    
 }
-
+*/
 int PostMethod::writefile(std::string filename, std::string content) {
-  /*  
-    std::ifstream file(filename.c_str()); // Open the file in read mode
+
+    if (_file_exists() && ! _file_writable()) {
+        std::cerr << "Error: File exists and is not writable:" << filename << std::endl;
+        return -1;
+    }
+    
+
+    std::ofstream file(filename.c_str()); // Open the file in write mode
+
     if (!file) {
-        std::cerr << "Error: Could not open:" << filename << std::endl;        
+        std::cerr << "Error: Could not create the file to write in!" << std::endl;
+        return -1;
     }
 
-    std::string content;
-    std::string line;
+    // Write the string to the file
+    file << content;
 
-    // Read the file line by line
-    while (std::getline(file, line)) {
-        content += line + "\n"; // Append each line to the content string
-    }
+    // Close the file
+    file.close();
 
-    file.close(); // Close the file
-    return content;    
-    */
+    return 0;
 }
 
 
@@ -188,14 +174,13 @@ Response PostMethod::handle(const Request& request, std::string& fullpath, Confi
     */
     else {
         if (writefile(_fullpath, _request.get_body()) == -1) {
-            response = Response(500, "Internal Server Error", _config);
+            response = Response(500, "Internal Server Error. Could not create file", _config);
             std::cout << "Error writing file: " << _fullpath << std::endl;
             return response;
         }
-//        response = Response(200, "OK", _config);    
-//        std::string content = readfile(_fullpath);                
-//        response.set_body(content);
-//        response.set_header("Content-Type", getMimeType(_fullpath));
+        response = Response(201, "Created", _config);    
+        response.set_header("Location", _request.get_path());
+   //     response.set_header("Content-Type", getMimeType(_fullpath));
     }    
 
     

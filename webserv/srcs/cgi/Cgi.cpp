@@ -163,9 +163,9 @@ static  Route_config get_route(std::ifstream& file, std::string line)
         else if (line.find("index ") != std::string::npos) {
             current_route.default_file = line.substr(7);
         }
-        else if (line.find("upload_store ") != std::string::npos) {
-            current_route.upload_dir = line.substr(14);
-        }
+//        else if (line.find("upload_store ") != std::string::npos) {
+//            current_route.upload_dir = line.substr(14);
+//        }
         if(!std::getline(file, line))
             break;
         trim(line);
@@ -249,7 +249,7 @@ void    print(std::vector<Config_data> data, std::vector<CGI> cgi){
                 << "\n\t-dir_listing :" << it->second.dir_listing
                 << "\n\t-use of cgi :" << it->second.use_cgi
                 << "\n\t-default files :" << it->second.default_file
-                << "\n\t-upload directory :" << it->second.upload_dir
+//                << "\n\t-upload directory :" << it->second.upload_dir
                 << "\n\t-redirection_nb : " << it->second.redirection_nb
                 << " ; redirection_path : " << it->second.redirection_path 
                 << "\n\t-accepted methods : " ;

@@ -26,7 +26,7 @@ typedef struct S_Route_config
     bool    dir_listing;
     bool    use_cgi;
     std::string default_file; //index.html
-    std::string upload_dir; //dir where we upload file
+  //  std::string upload_dir; //dir where we upload file
 } Route_config;
 
 typedef struct S_Config_data
