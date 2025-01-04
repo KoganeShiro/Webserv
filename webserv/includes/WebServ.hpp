@@ -1,4 +1,3 @@
-
 #pragma once
 
 # define RED "\033[1;31m"
@@ -36,37 +35,6 @@
 #include <sstream>
 
 
-//#include "Cgi.hpp"
-//#include "Config_data.hpp"
-//#include "Request.hpp"
-//#include "Response.hpp"
-// #include "Server.hpp"
-// #include "Socket.hpp"
-//#include "DeleteMethod.hpp"
-//#include "IHttpMethod.hpp"
-//#include "GetMethod.hpp"
-//#include "PostMethod.hpp"
-
-//#include "Worker.hpp"
-//#include "Connection.hpp"
-
-
-
-// #include "Server.hpp"
-// #include "Socket.hpp"
-// #include "DeleteMethod.hpp"
-// #include "GetMethod.hpp"
-// #include "PostMethod.hpp"
-#include "Request.hpp"
-// #include "Response.hpp"
-// #include "Worker.hpp"
-#include "Connection.hpp"
-#include "Cgi.hpp"
-
-//main include file
-#include <sstream>
-#include <string>
-
 template <typename T>
 std::string to_string(T value)
 {
@@ -75,11 +43,46 @@ std::string to_string(T value)
     return oss.str();
 }
 
+
+// struct ServerConfig 
+// {
+//     int port;              // Port
+//     char root_dir[256];    
+//     int socket_fd;         // Socket fd
+// };
+
 //#define BUFFER_SIZE 4096
+#define HEADER_SIZE 8000
 #define MAX_EVENTS 10
 #define MAX_FILE_SIZE 1000000
 #define MAX_SERVERS 10
-
+#define EXPLAINATION "A VALID config file should follow this format :\n\t\
+-A server initialisation should start whith 'server {' and nothing else on the line\n\t\
+-'host' should be follow by a IP adress\n\t\
+-'listen' should be follow by a space and a number corresponding to a port and nothing else\n\t\
+-'server_name'(facultative) should be follow by a space and the name of the server in ONE word\n\t\
+-'client_max_body_size' should be follow by a space and a value terminate by K, M or G all in one word\n\t\
+-'default_file' should be follow by an url\n\t\
+-'directory_page' should be follow by a space and the path of an html file\n\t\
+-'location' should be follow by a path and a '{'\n\t\t\
+-In 'location', 'method' should be follow by at least one of GET PUSH or DELETE\n\t\t\
+-In 'location', 'return' follow by 301,302,303,307 or 308 should be follow by an url\n\t\t\
+-In 'location', 'root' follow by the path of a directory\n\t\t\
+-In 'location', 'autoindex' follow by ON or OFF(default)\n\t\t\
+-In 'location', 'index' follow by a file path\n\t\t\
+-In 'location', 'upload_store' follow by a directory path\n\t\
+-In 'location', 'use_cgi' follow by YES or NO(default)\n\t\
+-Another '}' should be use alone on a newline to close a 'location'\n\t\
+-And another '}' should be use alone on a newline to close a 'server'\n\n\
+-Cgi should be declare like this :\n\
+cgi {\n\
+\tlanguage name {\n\
+\t\tcgi_path path;\n\
+\t\tcgi_extension .extension ;\n\
+\t\tcgi_timeout time in second > 0;\n\
+-And another '}' should be use alone on a newline to close a 'cgi'\n\
+\t}\n\
+}\n\n\n"
 
 
 /*
