@@ -19,15 +19,9 @@ name=FirstName%20LastName&email=bsmth%40example.com
 
 /*
 checked body length
-
 check for chunked
-
 check if right host ?
 */
-
-#define AGAIN 0
-#define BAD_HEADER 1
-#define GOOD 2
 
 class Request
 {
@@ -54,7 +48,6 @@ public:
     std::string get_header_element(const std::string& key) const;
     std::map<std::string, std::string> get_header() const;
     std::string get_body() const;
-
     bool get_good_request() const;
     int get_is_ready() const;
     std::string get_request_buffer() const ;
@@ -65,7 +58,14 @@ public:
     void set_path(const std::string& path);
     void add_header(const std::string& key, const std::string& value);
     void set_body(const std::string& body);
-    void set_good_request(const bool ok);
+    void set_good_request(const bool all_good);
+    void set_is_ready(const int ready);
+    void set_request_buffer(const std::string request_buffer);
+    void set_http_version(const std::string http_version);
+    void set_content_length(int lenght);
+    void set_to_null();
+
+    /* IN REQUEST_PARSER */
     void add_to_request(std::string to_add);
     Request *parsed_request();
 };

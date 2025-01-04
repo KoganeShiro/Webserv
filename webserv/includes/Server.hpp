@@ -2,6 +2,9 @@
 # pragma once
 
 #include "WebServ.hpp"
+#include "Cgi.hpp"
+#include "Connection.hpp"
+#include "Socket.hpp"
 
 class Server
 {

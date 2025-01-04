@@ -2,20 +2,6 @@
 
 #include "WebServ.hpp"
 #include "IHttpMethod.hpp"
-#include "Request.hpp"
-#include "Response.hpp"
-#include "Config_data.hpp"
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sys/stat.h>
-#include <map>
-#include <unistd.h>
-#include <sstream>
-#include <algorithm>
-#include <iterator>
-
-
 
 /*
 GET: Retrieves a resource

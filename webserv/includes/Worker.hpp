@@ -1,23 +1,8 @@
 #pragma once
 
-//#include "WebServ.hpp"
-#include "IHttpMethod.hpp"
-#include "Request.hpp"
-#include "Response.hpp"
-#include "Config_data.hpp"
 #include "GetMethod.hpp"
-// #include "PostMethod.hpp"
-// #include "DeleteMethod.hpp"
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sys/stat.h>
-#include <map>
-#include <unistd.h>
-#include <sstream>
-#include <algorithm>
-#include <iterator>
-
+#include "PostMethod.hpp"
+#include "DeleteMethod.hpp"
 
 class Worker {
 private:

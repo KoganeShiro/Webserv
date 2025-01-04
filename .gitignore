@@ -1,6 +1,7 @@
 *.d
 *.vscode
 */out
+*/obj
 
 # Compiled Object files
 *.slo

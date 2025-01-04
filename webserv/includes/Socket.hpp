@@ -2,6 +2,7 @@
 #pragma once
 
 #include "WebServ.hpp"
+#include "Connection.hpp"
 
 /*
 Socket represents the server-side listening socket.
@@ -24,6 +25,6 @@ public:
     ~Socket();
     void accept_connection();
     int get_sockfd();
-    void add_to_epoll(int epoll_fd);//ajout Damien
+    void add_to_epoll(int epoll_fd);
 
 };

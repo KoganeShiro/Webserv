@@ -1,19 +1,8 @@
 
 #pragma once
 
-//#include "WebServ.hpp"
-#include "Config_data.hpp"
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <map>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <sstream>
-#include <algorithm>
-#include <iterator>
-#include <dirent.h>
-#include <sys/types.h>
+#include "WebServ.hpp"
+#include "Cgi.hpp"
 
 
 /*
