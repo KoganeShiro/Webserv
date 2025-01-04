@@ -58,7 +58,7 @@ std::string to_string(T value)
 }
 
 // ---------------Damien---------------------
-#define BUFFER_SIZE 4096
+//#define BUFFER_SIZE 4096
 #define MAX_EVENTS 10
 
 #define MAX_SERVERS 10
