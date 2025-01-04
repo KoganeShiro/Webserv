@@ -3,10 +3,6 @@
 
 #include "WebServ.hpp"
 
-#include <iostream>
-#include <string>
-#include <map>
-#include <vector>
 
 
 /*
@@ -48,8 +44,9 @@ private:
     std::string _body;   // Request body (for POST/PUT requests)
     bool _good_request;
     int _is_ready;
-
+    
 public:
+
     Request();
     Request(Request const &other);
     ~Request();

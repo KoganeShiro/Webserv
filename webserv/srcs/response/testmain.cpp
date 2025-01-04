@@ -2,7 +2,7 @@
 #include "Worker.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
-#include "Config_data.hpp"
+#include "Cgi.hpp"
 
 
 
@@ -11,12 +11,12 @@ Config_data hard_code(Config_data *config, Route_config *route)
     // Server configuration
     config->host = "127.0.0.1";
     config->port = 8080;
-    config->server_names.push_back("localhost");    
+    config->server_name ="localhost";    
     config->is_default_server = true;
 
     // Error pages
     config->error_pages = "html_page/template/error/index.html";
-    config->method_pages = "html_page/template/method_success/index.html";
+    // config->method_pages = "html_page/template/method_success/index.html";
     config->directory_page = "html_page/template/directory_listing/directory.html";
 
     // Client body size limit (10MB)
@@ -32,18 +32,18 @@ Config_data hard_code(Config_data *config, Route_config *route)
     route->default_file = "index.html";
     route->use_cgi = true;
     route->upload_dir = "html_page/www/uploads";
-    route->redirection = "https://www.google.com";
-    route->type_redir = 302 ;
+    route->redirection_path = "https://www.google.com";
+    route->redirection_nb = 302 ;
 
     config->routes["/"] = *route;
 
-    config->tab_cgi = new std::vector<CGI>;
+    //config->tab_cgi = new std::vector<CGI>;
 
     // CGI configuration
     //config->cgi_path = "/usr/bin/php-cgi";
-    CGI cgi("php", "/usr/bin/php-cgi", "php", 10);
+   CGI cgi("php", "/usr/bin/php-cgi", "php", 10);
 
-    config->tab_cgi->push_back(cgi); 
+//  config->tab_cgi.push_back(cgi); 
     return (*config);
 }
 
@@ -78,6 +78,6 @@ int main(int argc, char **argv)
     Worker worker(config, request);
     Response response = worker.run();
     std::cout << response.http_response() ;
-    delete config.tab_cgi;
+   // delete config.tab_cgi;
     return 0;
 }

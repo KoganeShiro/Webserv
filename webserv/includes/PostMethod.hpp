@@ -5,7 +5,7 @@
 #include "IHttpMethod.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
-#include "Config_data.hpp"
+#include "Cgi.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -51,7 +51,7 @@ private:
   //  bool servername_is_valid();
   //  std::string cgi_type();
   std::string readfile(std::string filename);
-  std::string writefile(std::string filename);
+  int writefile(std::string filename, std::string content);
   int filesize(std::string filename);
   std::string getMimeType(const std::string& fileName);
 

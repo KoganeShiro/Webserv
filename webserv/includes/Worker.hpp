@@ -4,7 +4,7 @@
 #include "IHttpMethod.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
-#include "Config_data.hpp"
+#include "Cgi.hpp"
 #include "GetMethod.hpp"
 // #include "PostMethod.hpp"
 // #include "DeleteMethod.hpp"

@@ -4,7 +4,7 @@
 #include "IHttpMethod.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
-#include "Config_data.hpp"
+#include "Cgi.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>

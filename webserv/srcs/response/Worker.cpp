@@ -21,7 +21,7 @@ void Worker::check_cgi()
             _fullpath = _fullpath.substr(0,start_query_str);
         }
         std::string file_extension = _fullpath.substr(_fullpath.find_last_of('.') + 1);
-        for (std::vector<CGI>::iterator it = _config.tab_cgi->begin(); it != _config.tab_cgi->end(); ++it) {
+        for (std::vector<CGI>::iterator it = _config.tab_cgi.begin(); it != _config.tab_cgi.end(); ++it) {
             if (it->get_extension() == file_extension) {
                 _cgi_type = it->get_name();
                 _use_cgi = true;
@@ -98,11 +98,14 @@ bool Worker::is_valid_method()
 
 bool Worker::servername_is_valid()
 {
-    for (std::vector<std::string>::iterator it = _config.server_names.begin(); it != _config.server_names.end(); ++it) {
-        if (*it == _request->get_header_element("Host")) {
-            return true;
-        }
+    if (_config.server_name == _request->get_header_element("Host")) {
+        return true;
     }
+   // for (std::vector<std::string>::iterator it = _config.server_names.begin(); it != _config.server_names.end(); ++it) {
+     //   if (*it == _request->get_header_element("Host")) {
+      //      return true;
+      //  }
+   // }
     return false;
 }
 
@@ -132,8 +135,8 @@ void Worker::check_for_errors()
         std::cout << "Route not found" << std::endl;
         return;
     }
-    if (_config.routes[_route].type_redir > 299 && _config.routes[_route].redirection != "") {
-        _status_code = _config.routes[_route].type_redir;
+    if (_config.routes[_route].redirection_nb > 299 && _config.routes[_route].redirection_path != "") {
+        _status_code = _config.routes[_route].redirection_nb;
         std::cout << "Redirection" << std::endl;
         return;
     }
@@ -211,7 +214,7 @@ Response Worker::run()
     }
     if (_status_code > 299) {
         response = Response(_status_code, "Redirect", _config);
-        response.set_header("Location", _config.routes[_route].redirection);
+        response.set_header("Location", _config.routes[_route].redirection_path);
         std::cout << "Redirect reponse generated from Worker: " << _status_code << std::endl;
         return response;
     }    
