@@ -123,7 +123,7 @@ Response GetMethod::handle(const Request& request, std::string& fullpath, Config
         return response;
     }
     else if (_is_directory() && _config.routes[_route].dir_listing) {
-        response = Response(200, "OK", _fullpath);
+        response = Response(200, "OK", _fullpath, true);
         std::cout << "Directory listing OK:" << _fullpath << std::endl;
         return response;
     }

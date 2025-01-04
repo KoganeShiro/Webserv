@@ -9,19 +9,29 @@ Worker::Worker(Socket& socket) : _socket(socket)
 {}
 */
 
-std::string Worker::cgi_type()
+void Worker::check_cgi()
 {
-    return (_config.routes[_route].cgi_extension);
-}
-
-bool Worker::_is_cgi()
-{
-    if (_config.routes[_route].cgi_extension != "") {
-        if (_fullpath.rfind(_config.routes[_route].cgi_extension) == _fullpath.length() - _config.routes[_route].cgi_extension.length()) {
-            return true;
+    _use_cgi = false;
+    if (_config.routes[_route].use_cgi)
+    {
+        size_t start_query_str = _fullpath.find('?');
+        if (start_query_str != std::string::npos)
+        {
+            _querystring = _fullpath.substr(start_query_str + 1);
+            _fullpath = _fullpath.substr(0,start_query_str);
         }
+        std::string file_extension = _fullpath.substr(_fullpath.find_last_of('.') + 1);
+        for (std::vector<CGI>::iterator it = _config.tab_cgi->begin(); it != _config.tab_cgi->end(); ++it) {
+            if (it->get_extension() == file_extension) {
+                _cgi_type = it->get_name();
+                _use_cgi = true;
+                break;
+            }
+        }
+//        if (_cgi_type.empty()) {
+//            _status_code = 415;
+//        }
     }
-    return false;
 }
 
 bool Worker::_file_exists()
@@ -122,11 +132,12 @@ void Worker::check_for_errors()
         std::cout << "Route not found" << std::endl;
         return;
     }
-/*    if (_config.routes[_route].redirection != "") {
-        _status_code = 301;
+    if (_config.routes[_route].type_redir > 299 && _config.routes[_route].redirection != "") {
+        _status_code = _config.routes[_route].type_redir;
+        std::cout << "Redirection" << std::endl;
         return;
     }
-*/
+
 /*  if (!_file_exists()) {
         _status_code = 404;
         return;
@@ -151,29 +162,22 @@ Worker::Worker(Config_data c, Request *request)
   //  _method_handlers["DELETE"] = new DeleteMethod();
     _config = c;
     _request = request;
-    _route = checkRoute();    
+    _route = checkRoute();
+
     if (! _route.empty())
     {
-        /*
-        std::cout << "Route: " << _route << std::endl;
-        std::cout << "Root dir: " << _config.routes[_route].root_dir << std::endl;
-        std::cout << "Request path: " << _request->get_path() << std::endl;
-        std::cout << "Request path length: " << _request->get_path().length() << std::endl;
-        std::cout << "Route length: " << _route.length() << std::endl;
-        std::cout << "Request path substr: " << _request->get_path().substr(_route.length()) << std::endl;
-*/
-
-        _fullpath = (_config.routes[_route].root_dir + _request->get_path()).substr(1);
+        _fullpath = (_config.routes[_route].root_dir + _request->get_path());
         if (_fullpath[_fullpath.length() - 1] == '/')
            _fullpath += _config.routes[_route].default_file;
     }
     else
         _status_code = 404;
 //    _file = _fullpath.substr(_fullpath.find_last_of('/') + 1); // Get the file name
+    check_cgi();
     std::cout << "Fullpath: " << _fullpath << std::endl;
+    std::cout << "Query String: " << _querystring << std::endl;
+    std::cout << "CGI Type: " << _cgi_type << std::endl;
     check_for_errors();
-
-    
 }
 /*
 void Worker::register_method(const std::string& method_name, IHttpMethod* handler)
@@ -199,17 +203,22 @@ Worker::~Worker()
 Response Worker::run()
 {
     Response response;
+
     if (_status_code > 399) {
         response = Response(_status_code, "Error", _config);
         std::cout << "Error reponse generated from Worker: " << _status_code << std::endl;
         return response;
-    }    
- /*   if (_is_cgi()) {
-        Cgi cgi(_config, _request, _fullpath, cgi_type());
-        response = cgi.run();
-        return response;
     }
-*/
+    if (_status_code > 299) {
+        response = Response(_status_code, "Redirect", _config);
+        response.set_header("Location", _config.routes[_route].redirection);
+        std::cout << "Redirect reponse generated from Worker: " << _status_code << std::endl;
+        return response;
+    }    
+    if (_use_cgi) {
+        // response = run cgi (returns response (ststus code, message and body (with header)
+        return response;        
+    }
     std::cout << "Method: " << _request->get_method() << std::endl;
     response = _method_handlers[_request->get_method()]->handle(*_request, _fullpath, _config, _route);
     return response;    

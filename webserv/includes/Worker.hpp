@@ -30,18 +30,20 @@ private:
     std::string _req_location;
     std::string _file;
     std::string _route;
+    std::string _querystring;
+    std::string _cgi_type;
+    bool _use_cgi;
     int _status_code;
     bool _file_exists();
     bool _file_readable();
     bool _file_writable();
-    bool _is_cgi();
+    void check_cgi();
     std::string checkRoute() const;
     bool _is_directory();
     void check_for_errors();
     bool is_valid_method();
     bool method_is_available();
-    bool servername_is_valid();
-    std::string cgi_type();
+    bool servername_is_valid();    
 
 
 public:

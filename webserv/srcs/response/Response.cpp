@@ -33,10 +33,10 @@ std::string readfile(std::string filename) {
     return content;    
 }
 
-std::string Response::generate_page(int status_code, std::string status_message)
+std::string Response::generate_error_page(int status_code, std::string status_message)
 {   
 	std::string filename(_config.error_pages); 
-    std::string html_template = readfile(filename.substr(1)); // Read the template file
+    std::string html_template = readfile(filename); // Read the template file
     
     // Replace placeholders in the template
 	std::ostringstream oss;
@@ -52,8 +52,8 @@ std::string Response::generate_page(int status_code, std::string status_message)
 
 std::string Response::generate_directory_listing(std::string directory)
 {   
-	std::string filename("/html_page/template/directory_listing/directory.html"); 
-    std::string html_template = readfile(filename.substr(1)); // Read the template file
+	std::string filename(_config.directory_page); 
+    std::string html_template = readfile(filename); // Read the template file
 
 	std::string toInsert;
 	std::string path = directory;
@@ -74,12 +74,20 @@ std::string Response::generate_directory_listing(std::string directory)
     return (html_template);
 }
 
-Response::Response(int statusCode, const std::string& statusMessage, std::string directory)
+Response::Response(int statusCode, const std::string& statusMessage, std::string directory, bool isDirectory)
 {
-	_statusCode = statusCode;
-	_statusMessage = statusMessage;
-	_config.error_pages = directory;
-	set_body(generate_directory_listing(directory));
+	_header_and_body_in_one = false;
+	if (isDirectory) {
+		_statusCode = statusCode;
+		_statusMessage = statusMessage;
+		_config.error_pages = directory;
+		set_body(generate_directory_listing(directory));
+	}
+	else {
+		_statusCode = statusCode;
+		_statusMessage = statusMessage;
+		set_body(generate_error_page(_statusCode, _statusMessage));
+	}	
 }
 
 
@@ -95,6 +103,8 @@ Response::Response()
 {
 	_statusCode = 200;
 	_statusMessage = "OK";
+	set_body("");
+	_header_and_body_in_one = false;
 }
 
 
@@ -104,18 +114,31 @@ Response::Response(int statusCode, const std::string& statusMessage, const std::
 	_statusMessage = statusMessage;
 	_config = c;
 	set_body(body);
+	_header_and_body_in_one = false;
 	
 }
+
+Response::Response(int statusCode, const std::string& statusMessage, const std::string& header_and_body)
+{
+	_statusCode = statusCode;
+	_statusMessage = statusMessage;
+	set_body(header_and_body);
+	_header_and_body_in_one = true;	
+}
+
 
 Response::Response(int statusCode, const std::string& statusMessage, Config_data c)
 {
 	_config = c;
 	_statusCode = statusCode;
 	_statusMessage = statusMessage;
+	_header_and_body_in_one = false;
 
 	if (_statusCode > 399) {
-	set_body(generate_page(_statusCode, _statusMessage));
-
+		set_body(generate_error_page(_statusCode, _statusMessage));
+	}
+	else {
+		set_body("");
 	}
 }
 
@@ -125,6 +148,9 @@ Response &Response::operator=(const Response &response)
 	_statusMessage = response._statusMessage;
 	_headers = response._headers;
 	_body = response._body;
+	_header_and_body_in_one = response._header_and_body_in_one;
+	_config = response._config;
+
 	return (*this);
 }
 
@@ -171,7 +197,12 @@ std::string Response::http_response() const
 		"HTTP/1.1 " << this->_statusCode
 		<< " " << this->_statusMessage
 
-	<< "\r\n";    
+	<< "\r\n";
+	if (_header_and_body_in_one)
+	{
+		oss << _body;
+		return (oss.str());		
+	}
 	for (it = _headers.begin(); it != _headers.end(); ++it) {
 		oss << it->first << ": " << it->second << "\r\n";
 	}

@@ -36,19 +36,15 @@ typedef struct S_Route_config
 {
     std::vector<std::string> accepted_methods;
     std::string redirection; //Stores the URL for HTTP redirection
+    int type_redir;
     std::string root_dir;
     bool dir_listing;
-    std::string default_file; //index.html
-    std::string cgi_extension; //.php ?
+    bool use_cgi;
+    std::string default_file; //index.html    
     std::string upload_dir; //dir where we upload file
 
 } Route_config;
 
-typedef struct S_CGI_config
-{
-    std::vector<CGI> tab_cgi;
-    int nb_cgi;
-} CGI_config;
 
 typedef struct S_Config_data
 {
@@ -61,6 +57,7 @@ typedef struct S_Config_data
     // Web pages
     std::string error_pages; //template page
     std::string method_pages;
+    std::string directory_page;
 
     size_t client_body_size_limit; //Sets the maximum allowed size for client request bodies
 
@@ -69,7 +66,7 @@ typedef struct S_Config_data
     std::map<std::string, Route_config> routes;
 
     // CGI configuration
-    CGI_config *tab_cgi;
+    std::vector<CGI> *tab_cgi;
     std::string cgi_path;
 
 } Config_data;
