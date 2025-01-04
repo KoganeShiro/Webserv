@@ -1,13 +1,7 @@
 
 #pragma once
 
-// #include "WebServ.hpp"
-
-#include <iostream>
-#include <string>
-#include <map>
-#include <vector>
-
+#include "WebServ.hpp"
 
 /*
 EXEMPLE
