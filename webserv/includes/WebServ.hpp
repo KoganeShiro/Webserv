@@ -1,4 +1,3 @@
-
 #pragma once
 
 # define RED "\033[1;31m"
@@ -76,12 +75,12 @@ cgi {\n\
 \t}\n\
 }\n\n\n"
 
-
 //DEFINE for Request
 #define HEADER_SIZE 8000
 #define AGAIN 0
 #define BAD_HEADER 1
 #define GOOD 2
+
 
 
 /*

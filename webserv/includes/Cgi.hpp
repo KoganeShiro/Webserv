@@ -2,8 +2,6 @@
 
 #include "WebServ.hpp"
 
-// Config_data data;
-
 class CGI {
 private:
     std::string _name;
@@ -22,7 +20,6 @@ public:
 typedef struct S_Route_config
 {
     std::vector<std::string> accepted_methods;
-    std::map<int, std::string> redirection; //Stores the URL for HTTP redirection
     int redirection_nb;
     std::string redirection_path;
     std::string root_dir;
@@ -63,5 +60,5 @@ typedef struct S_Config_data
 } Config_data;
 
 // Déclaration des fonctions de parsing
-std::vector<CGI> parse_cgis(std::ifstream& file, std::string line);
+// std::vector<CGI> parse_cgis(std::ifstream& file, std::string line);
 std::vector<Config_data> parse_config(const char *filename);  // Déclaration dans l'en-tête principal

@@ -106,8 +106,8 @@ std::string PostMethod::readfile(std::string filename) {
     return content;    
 }
 
-std::string PostMethod::writefile(std::string filename) {
-    
+int PostMethod::writefile(std::string filename, std::string content) {
+  /*  
     std::ifstream file(filename.c_str()); // Open the file in read mode
     if (!file) {
         std::cerr << "Error: Could not open:" << filename << std::endl;        
@@ -123,6 +123,7 @@ std::string PostMethod::writefile(std::string filename) {
 
     file.close(); // Close the file
     return content;    
+    */
 }
 
 
@@ -184,12 +185,19 @@ Response PostMethod::handle(const Request& request, std::string& fullpath, Confi
         std::cout << "Directory listing OK:" << _fullpath << std::endl;
         return response;
     }
+    */
     else {
-        std::string content = readfile(_fullpath);                
-        response.set_body(content);
-        response.set_header("Content-Type", getMimeType(_fullpath));
+        if (writefile(_fullpath, _request.get_body()) == -1) {
+            response = Response(500, "Internal Server Error", _config);
+            std::cout << "Error writing file: " << _fullpath << std::endl;
+            return response;
+        }
+//        response = Response(200, "OK", _config);    
+//        std::string content = readfile(_fullpath);                
+//        response.set_body(content);
+//        response.set_header("Content-Type", getMimeType(_fullpath));
     }    
 
-    */
+    
     return (response);
 }

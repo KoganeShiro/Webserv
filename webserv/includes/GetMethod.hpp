@@ -3,6 +3,8 @@
 #include "WebServ.hpp"
 #include "IHttpMethod.hpp"
 
+class Response;
+
 /*
 GET: Retrieves a resource
 */

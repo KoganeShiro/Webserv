@@ -4,7 +4,6 @@
 #include "WebServ.hpp"
 #include "Cgi.hpp"
 
-
 /*
 array of status_code and its corresponding
 status_message

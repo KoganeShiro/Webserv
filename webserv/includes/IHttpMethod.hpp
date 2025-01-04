@@ -6,8 +6,6 @@
 #include "Request.hpp"
 
 //#include "WebServ.hpp"
-class Response;
-class Request;
 
 
 /*
