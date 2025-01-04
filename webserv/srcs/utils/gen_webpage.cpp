@@ -1,5 +1,3 @@
-#pragma once
-
 #include "WebServ.hpp"
 
 //create the appropriate error page ?
