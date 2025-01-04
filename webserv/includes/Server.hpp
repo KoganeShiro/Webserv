@@ -8,6 +8,7 @@ class Server
 private:
     Config_data _data;
     Socket _socket;
+    //Worker _worker;
     std::vector <Connection> connection_tab;//ajout Damien
 
 public:
