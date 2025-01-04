@@ -1,5 +1,6 @@
 
-#include "WebServ.hpp"
+
+#include "Request.hpp"
 #define HEADER_SIZE 8000
 
 static bool parse_request_line(Request& request, std::string& buffer, size_t& pos)
@@ -65,9 +66,9 @@ static Request request_parser(Request request, std::string& buffer)
     if (headers_end == std::string::npos) {
         //check sizeof header
         if (sizeof(buffer) > HEADER_SIZE) {
-            request.set_is_ready(BAD_HEADER)
-        }
-        return (request);
+            request.set_is_ready(BAD_HEADER);
+        } 
+        return (request); 
     }
     parse_headers(request, buffer, pos);
 
@@ -95,7 +96,7 @@ static Request request_parser(Request request, std::string& buffer)
 void Request::add_to_request(std::string to_add)
 {
     this->set_good_request(false);
-    this->set_is_ready(ENCORE);
+    this->set_is_ready(AGAIN);
     this->set_content_length(0);
 
     this->_request_buffer = this->_request_buffer.append(to_add);

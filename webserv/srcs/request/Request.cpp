@@ -8,7 +8,7 @@ Request::Request() :_request_buffer(""),
     _path(""), _http_version(""),
     _content_length(0), _body(""),
     _good_request(false),
-    _is_ready(ENCORE)
+    _is_ready(AGAIN)
 {}
 
 Request::Request(Request const &other) :

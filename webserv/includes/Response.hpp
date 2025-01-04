@@ -2,7 +2,7 @@
 #pragma once
 
 //#include "WebServ.hpp"
-#include "Config_data.hpp"
+#include "Cgi.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>

@@ -1,6 +1,6 @@
 
 #pragma once
-#include "Config_data.hpp"
+#include "Cgi.hpp"
 #include "Response.hpp"
 #include "Request.hpp"
 
