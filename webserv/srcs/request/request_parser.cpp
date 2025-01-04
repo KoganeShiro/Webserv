@@ -1,5 +1,4 @@
 
-
 #include "Request.hpp"
 #define HEADER_SIZE 8000
 
@@ -67,8 +66,8 @@ static Request request_parser(Request request, std::string& buffer)
         //check sizeof header
         if (sizeof(buffer) > HEADER_SIZE) {
             request.set_is_ready(BAD_HEADER);
-        } 
-        return (request); 
+        }
+        return (request);
     }
     parse_headers(request, buffer, pos);
 

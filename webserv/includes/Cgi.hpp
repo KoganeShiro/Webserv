@@ -1,32 +1,6 @@
 #pragma once
 
-// #include "Config.hpp"
-// #include "WebServ.hpp"
-#include <map>
-#include <vector>
-#include <unistd.h>
-#include <netdb.h>
-#include <cerrno>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <sys/select.h>
-#include <poll.h>
-#include <sys/epoll.h>
-#include <iostream>
-#include <fcntl.h>
-#include <sys/wait.h>
-#include <csignal>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <fstream>
-#include <string>
-#include <cstring>
-#include <cstdlib>
-#include <cstdio>
-#include <algorithm>
-
-
-// Config_data data;
+#include "WebServ.hpp"
 
 class CGI {
 private:
@@ -46,7 +20,6 @@ public:
 typedef struct S_Route_config
 {
     std::vector<std::string> accepted_methods;
-    //std::map<int, std::string> redirection; //Stores the URL for HTTP redirection
     int redirection_nb;
     std::string redirection_path;
     std::string root_dir;
@@ -87,5 +60,5 @@ typedef struct S_Config_data
 } Config_data;
 
 // Déclaration des fonctions de parsing
-std::vector<CGI> parse_cgis(std::ifstream& file, std::string line);
+// std::vector<CGI> parse_cgis(std::ifstream& file, std::string line);
 std::vector<Config_data> parse_config(const char *filename);  // Déclaration dans l'en-tête principal
