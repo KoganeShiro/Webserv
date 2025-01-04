@@ -1,19 +1,20 @@
 
 
 CC = g++
-CFLAGS = -Wall -Wextra -std=c++98 -Iincludes/
-#CFLAGS = -Wall -Wextra -Werror -std=c++98 -Iincludes/
+#CFLAGS = -g -Wall -Wextra -std=c++98 -Iincludes/
+CFLAGS = -g -Wall -Wextra -Werror -std=c++98 -Iincludes/
 
-SRCS_CGI =		#cgi_handler.cpp
+SRCS_CGI =		Cgi.cpp \
+#cgi_handler.cpp
 
 SRCS_REQUEST =	Request.cpp	\
 				request_parser.cpp
 
-SRCS_RESPONSE =	#DeleteMethod.cpp \
-				GetMethod.cpp \
-				PostMethod.cpp \
+SRCS_RESPONSE =	GetMethod.cpp \
 				Response.cpp \
-				Worker.cpp
+				Worker.cpp \
+				testmain.cpp
+
 
 SRCS_SERVER =	#config_parser.cpp \
 				Connection.cpp \

@@ -1,4 +1,4 @@
-
+#include "WebServ.hpp"
 
 //create the appropriate error page ?
     //array of the code and the appropriate string (map)

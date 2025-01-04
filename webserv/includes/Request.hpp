@@ -1,7 +1,13 @@
 
 #pragma once
 
-#include "WebServ.hpp"
+// #include "WebServ.hpp"
+
+#include <iostream>
+#include <string>
+#include <map>
+#include <vector>
+
 
 /*
 EXEMPLE
@@ -54,6 +60,7 @@ public:
     std::string get_header_element(const std::string& key) const;
     std::map<std::string, std::string> get_header() const;
     std::string get_body() const;
+
     bool get_good_request() const;
     int get_is_ready() const;
     std::string get_request_buffer() const ;
@@ -64,6 +71,7 @@ public:
     void set_path(const std::string& path);
     void add_header(const std::string& key, const std::string& value);
     void set_body(const std::string& body);
+
     void set_good_request(const bool all_good);
     void set_is_ready(const int ready);
     void set_request_buffer(const std::string request_buffer);
