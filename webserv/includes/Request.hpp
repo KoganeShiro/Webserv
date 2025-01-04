@@ -25,6 +25,10 @@ check for chunked
 check if right host ?
 */
 
+#define ENCORE 0
+#define HEADER_TOO_LONG 1
+#define GOOD 2
+
 class Request
 {
 private:
@@ -37,7 +41,7 @@ private:
     int _content_length;
     std::string _body;   // Request body (for POST/PUT requests)
     bool _good_request;
-    bool _is_ready;
+    int _is_ready;
 
 public:
     Request();
@@ -51,7 +55,7 @@ public:
     std::map<std::string, std::string> get_header() const;
     std::string get_body() const;
     bool get_good_request() const;
-    bool get_is_ready() const;
+    int get_is_ready() const;
     std::string get_request_buffer() const ;
     std::string get_http_version() const ;
     int get_content_length() const ;
@@ -61,7 +65,7 @@ public:
     void add_header(const std::string& key, const std::string& value);
     void set_body(const std::string& body);
     void set_good_request(const bool all_good);
-    void set_is_ready(const bool ready);
+    void set_is_ready(const int ready);
     void set_request_buffer(const std::string request_buffer);
     void set_http_version(const std::string http_version);
     void set_content_length(int lenght);

@@ -6,7 +6,7 @@ Request::Request() :_request_buffer(""),
     _path(""), _http_version(""),
     _content_length(0), _body(""),
     _good_request(false),
-    _is_ready(false)
+    _is_ready(ENCORE)
 {}
 
 Request::Request(Request const &other) :
@@ -71,7 +71,7 @@ bool Request::get_good_request() const
     return (this->_good_request);
 }
 
-bool Request::get_is_ready() const
+int Request::get_is_ready() const
 {
     return (this->_is_ready);
 }
@@ -119,7 +119,7 @@ void Request::set_good_request(const bool all_good)
     this->_good_request = all_good;
 }
 
-void Request::set_is_ready(const bool ready)
+void Request::set_is_ready(const int ready)
 {
     this->_is_ready = ready;
 }
@@ -149,7 +149,7 @@ void Request::set_to_null()
     this->_content_length = 0;
     this->_body = "";
     this->_good_request = false;
-    this->_is_ready = false;
+    this->_is_ready = ENCORE;
 }
 
 Request::~Request() {}

@@ -22,7 +22,7 @@ SRCS_SERVER =	#config_parser.cpp \
 
 SRCS_UTILS =	#gen_webpage.cpp
 		
-SRCS =			request_parser.cpp
+SRCS =			request_parser_test.cpp
 #parsing_test.cpp
 #main.cpp
 

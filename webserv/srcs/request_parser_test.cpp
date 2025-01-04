@@ -85,7 +85,7 @@ int server()
     char buffer[BUFFER_SIZE];
 
   while (1) {
-    bytesRead = read(connection, buffer, BUFFER_SIZE);
+    bytesRead = read(connection, buffer, BUFFER_SIZE - 1);
     request.add_to_request(buffer); //??
     if (request.get_is_ready() == true) break;
     else continue;
