@@ -149,7 +149,7 @@ void Request::set_to_null()
     this->_content_length = 0;
     this->_body = "";
     this->_good_request = false;
-    this->_is_ready = ENCORE;
+    this->_is_ready = AGAIN;
 }
 
 Request::~Request() {}
