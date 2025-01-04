@@ -25,8 +25,8 @@ check for chunked
 check if right host ?
 */
 
-#define ENCORE 0
-#define HEADER_TOO_LONG 1
+#define AGAIN 0
+#define BAD_HEADER 1
 #define GOOD 2
 
 class Request
