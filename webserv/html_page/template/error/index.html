@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error {{STATUS_CODE}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 24px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #ffffff;
+        }
+        #random-image {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Error {{STATUS_CODE}}</h1>
+        <p>{{ERROR_MESSAGE}}</p>
+        <img id="random-image" src="" alt="Random Error Image">
+        <a href="./../../www/html/index.html"><h2>Go back to homepage</h2></a>
+    </div>
+    <div>
+    <script>
+        window.onload = function() {
+            var images = ['computer_robot.png', 'ohno_man.png', 'disconnected.png',
+                    'shock_man.png', 'syazai_men.png', 'webpage-icon.jpeg', 'webserv42.webp', 'webserver.jpeg'];
+            var randomImage = images[Math.floor(Math.random() * images.length)];
+            document.getElementById('random-image').src = 'images/' + randomImage;
+        };
+    </script>
+    </div>
+</body>
+</html>
