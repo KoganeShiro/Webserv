@@ -1,8 +1,10 @@
 
 #pragma once
 
-// #include "WebServ.hpp"
+#include "WebServ.hpp"
 #include "Request.hpp"
+
+class Request;
 
 /*
 Connection represents an individual client connection.

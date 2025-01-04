@@ -1,6 +1,5 @@
 
 #include "Request.hpp"
-#define HEADER_SIZE 8000
 
 static bool parse_request_line(Request& request, std::string& buffer, size_t& pos)
 {

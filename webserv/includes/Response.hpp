@@ -1,20 +1,8 @@
 
 #pragma once
 
-//#include "WebServ.hpp"
+#include "WebServ.hpp"
 #include "Cgi.hpp"
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <map>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <sstream>
-#include <algorithm>
-#include <iterator>
-#include <dirent.h>
-#include <sys/types.h>
-
 
 /*
 array of status_code and its corresponding

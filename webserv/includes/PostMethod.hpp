@@ -3,18 +3,8 @@
 
 #include "WebServ.hpp"
 #include "IHttpMethod.hpp"
-#include "Request.hpp"
-#include "Response.hpp"
-#include "Cgi.hpp"
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sys/stat.h>
-#include <map>
-#include <unistd.h>
-#include <sstream>
-#include <algorithm>
-#include <iterator>
+
+class Response;
 
 /*
 POST: Submits data to be processed

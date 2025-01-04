@@ -1,8 +1,5 @@
 #include "WebServ.hpp"
-
-#include <fstream>
-#include <string>
-#include <sstream>
+#include "Request.hpp"
 
 #define PORT 1234
 #define BUFFER_SIZE 96

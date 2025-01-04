@@ -1,6 +1,3 @@
-
-//#include "WebServ.hpp"
-
 #include "Request.hpp"
 
 Request::Request() :_request_buffer(""),
@@ -24,7 +21,6 @@ Request::Request(Request const &other) :
     _is_ready(other._is_ready)
 {}
 
-
 // Getter for HTTP method
 std::string Request::get_method() const
 {
@@ -46,9 +42,9 @@ std::string Request::get_header_element(const std::string& key) const
     }
     return (""); // Return empty string if header not found
 }
-/*
-// Getter for all the request header
 
+// Getter for all the request header
+/*
 std::string Request::get_all_header() const
 {
     std::string result;
@@ -58,6 +54,7 @@ std::string Request::get_all_header() const
     return (result);
 }
 */
+
 std::map<std::string, std::string> Request::get_header() const
 {
     return (this->_headers);

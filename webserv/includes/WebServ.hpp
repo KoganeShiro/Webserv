@@ -42,19 +42,11 @@ std::string to_string(T value)
     return oss.str();
 }
 
-
-// struct ServerConfig 
-// {
-//     int port;              // Port
-//     char root_dir[256];    
-//     int socket_fd;         // Socket fd
-// };
-
-//#define BUFFER_SIZE 4096
-#define HEADER_SIZE 8000
 #define MAX_EVENTS 10
 #define MAX_FILE_SIZE 1000000
 #define MAX_SERVERS 10
+
+//DEFINE for Cgi
 #define EXPLAINATION "A VALID config file should follow this format :\n\t\
 -A server initialisation should start whith 'server {' and nothing else on the line\n\t\
 -'host' should be follow by a IP adress\n\t\
@@ -82,6 +74,13 @@ cgi {\n\
 -And another '}' should be use alone on a newline to close a 'cgi'\n\
 \t}\n\
 }\n\n\n"
+
+//DEFINE for Request
+#define HEADER_SIZE 8000
+#define AGAIN 0
+#define BAD_HEADER 1
+#define GOOD 2
+
 
 
 /*
