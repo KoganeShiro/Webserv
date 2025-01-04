@@ -14,6 +14,7 @@ Server::Server(std::string const config)
 void Server::add_to_epoll(int epoll_fd)
 {
     this->_socket.add_to_epoll(epoll_fd);
+}
 
 int  Server::get_socket_fd()
 {

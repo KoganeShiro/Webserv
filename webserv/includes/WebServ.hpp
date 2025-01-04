@@ -52,14 +52,33 @@
 
 
 
+// #include "Server.hpp"
+// #include "Socket.hpp"
+// #include "DeleteMethod.hpp"
+// #include "GetMethod.hpp"
+// #include "PostMethod.hpp"
+#include "Request.hpp"
+// #include "Response.hpp"
+// #include "Worker.hpp"
+#include "Connection.hpp"
+#include "Cgi.hpp"
 
 //main include file
+#include <sstream>
+#include <string>
 
-// ---------------Damien---------------------
-#define BUFFER_SIZE 4096
+template <typename T>
+std::string to_string(T value)
+{
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
+}
+
+//#define BUFFER_SIZE 4096
 #define MAX_EVENTS 10
 #define MAX_FILE_SIZE 1000000
-
+#define MAX_SERVERS 10
 
 
 
