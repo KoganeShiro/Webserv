@@ -28,7 +28,9 @@ private:
     void check_for_errors();
     bool is_valid_method();
     bool method_is_available();
-    bool servername_is_valid();    
+    bool servername_is_valid();
+    void build_cgi_environment(std::vector<char*>& envp);
+    std::string execute_cgi();
 
 
 public:
