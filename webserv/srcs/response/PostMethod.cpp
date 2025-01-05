@@ -37,7 +37,7 @@ bool PostMethod::_is_directory()
 
 int PostMethod::filesize(std::string filename) {
     struct stat fileStat;
-    std::cout << "Filesize check: " << filename << std::endl;
+    std::cout << "PostMethod Filesize check: " << filename << std::endl;
     if (stat(filename.c_str(), &fileStat) == 0) {
         return fileStat.st_size;
     } else {
@@ -91,7 +91,7 @@ std::string PostMethod::readfile(std::string filename) {
 int PostMethod::writefile(std::string filename, std::string content) {
 
     if (_file_exists() && ! _file_writable()) {
-        std::cerr << "Error: File exists and is not writable:" << filename << std::endl;
+        std::cerr << "PostMethod Error: File exists and is not writable:" << filename << std::endl;
         return -1;
     }
     
@@ -99,7 +99,7 @@ int PostMethod::writefile(std::string filename, std::string content) {
     std::ofstream file(filename.c_str()); // Open the file in write mode
 
     if (!file) {
-        std::cerr << "Error: Could not create the file to write in!" << std::endl;
+        std::cerr << "PostMethod Error: Could not create the file to write in!" << std::endl;
         return -1;
     }
 

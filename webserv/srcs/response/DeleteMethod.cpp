@@ -54,7 +54,7 @@ bool DeleteMethod::_is_directory()
 
 int DeleteMethod::filesize(std::string filename) {
     struct stat fileStat;
-    std::cout << "Filesize check: " << filename << std::endl;
+    std::cout << "DeleteMethod Filesize check: " << filename << std::endl;
     if (stat(filename.c_str(), &fileStat) == 0) {
         return fileStat.st_size;
     } else {
@@ -109,7 +109,7 @@ std::string PostMethod::readfile(std::string filename) {
 int DeleteMethod::deletefile(std::string filename)
 {
     if (remove(filename.c_str()) != 0) {
-        std::cerr << "Error: Could not delete file:" << filename << std::endl;
+        std::cerr << "DeleteMethod Error: Could not delete file:" << filename << std::endl;
         return -1;
     }
     return 0;
@@ -155,7 +155,7 @@ Response DeleteMethod::handle(const Request& request, std::string& fullpath, Con
     Response response;
     if (_request.get_header_element("Content-Type") == "") {
         response = Response(400, "Bad Request", _config);
-        std::cout << "PostMethod: Content-Type header missing" << std::endl;
+        std::cout << "DeleteMethod: Content-Type header missing" << std::endl;
         return response;
     }
 
@@ -209,7 +209,7 @@ Response DeleteMethod::handle(const Request& request, std::string& fullpath, Con
     else {
         if (deletefile(_fullpath) == -1) {
             response = Response(500, "Internal Server Error. Could not delete file", _config);
-            std::cout << "Error writing file: " << _fullpath << std::endl;
+            std::cout << "DeleteMethod Error writing file: " << _fullpath << std::endl;
             return response;
         }
         response = Response(204, "No Content", _config);
