@@ -48,6 +48,7 @@ std::string to_string(T value)
 
 //DEFINE for Cgi
 #define EXPLAINATION "A VALID config file should follow this format :\n\t\
+-Each line with a declaration should fini with a '{', '}' or ';'\
 -A server initialisation should start whith 'server {' and nothing else on the line\n\t\
 -'host' should be follow by a IP adress\n\t\
 -'listen' should be follow by a space and a number corresponding to a port and nothing else\n\t\
