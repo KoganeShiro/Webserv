@@ -76,7 +76,7 @@ cgi {\n\
 }\n\n\n"
 
 //DEFINE for Request
-#define HEADER_SIZE 8000
+#define MAX_HEADER_SIZE 40968192
 #define AGAIN 0
 #define BAD_HEADER 1
 #define GOOD 2
