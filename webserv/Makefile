@@ -18,13 +18,13 @@ SRCS_RESPONSE =	GetMethod.cpp \
 				Worker.cpp \
 				testmain.cpp
 
-SRCS_SERVER =	Connection.cpp \
+SRCS_SERVER =	#Connection.cpp \
 				Server.cpp \
 				Socket.cpp
 
 SRCS_UTILS =	#gen_webpage.cpp
 		
-SRCS =			request_parser_test.cpp
+SRCS =			#request_parser_test.cpp
 #parsing_test.cpp
 #main.cpp
 
