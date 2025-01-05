@@ -265,39 +265,41 @@ void Worker::send_response(const Response& response)
 
 
 
-void Worker::build_cgi_environment(std::vector<char*>& envp)
+std::vector<std::string> Worker::build_cgi_environment()
 {
+    std::vector<std::string> envp;
+    
     std::cout << "Building CGI environment" << std::endl;
     // Add environment variables directly to envp
 
-    std::cout << const_cast<char*>(("REQUEST_METHOD=" + _request->get_method()).c_str()) << std::endl;
-
-    envp.push_back(const_cast<char*>(("REQUEST_METHOD=" + _request->get_method()).c_str()));
-    envp.push_back(const_cast<char*>(("QUERY_STRING=" + _querystring).c_str()));
+    
+    envp.push_back("GATEWAY_INTERFACE=CGI/1.1");
+    envp.push_back("SERVER_PROTOCOL=HTTP/1.1");
+    envp.push_back("PATH_INFO="); // to check
+    envp.push_back("REQUEST_METHOD=" + _request->get_method());    
+    envp.push_back("QUERY_STRING=" + _querystring);
     
     // Add headers as environment variables if they exist
     if (_request->get_header_element("Content-Length") != "") {
-        envp.push_back(const_cast<char*>(("CONTENT_LENGTH=" + _request->get_header_element("Content-Length")).c_str()));
+        envp.push_back("CONTENT_LENGTH=" + _request->get_header_element("Content-Length"));
     }
     if (_request->get_header_element("Content-Type") != "") {
-        envp.push_back(const_cast<char*>(("CONTENT_TYPE=" + _request->get_header_element("Content-Type")).c_str()));
+        envp.push_back("CONTENT_TYPE=" + _request->get_header_element("Content-Type"));
     }
     std::ostringstream oss;
     oss << _config.port;
     std::string port = oss.str();
-    envp.push_back(const_cast<char*>(("SCRIPT_NAME=" + _fullpath).c_str()));
-    envp.push_back(const_cast<char*>(("SERVER_NAME=" + _config.server_name).c_str()));
-    envp.push_back(const_cast<char*>(("SERVER_PORT=" + port).c_str()));
-    // Null-terminate the array (as required by execve)
-    envp.push_back('\0');
-
+    envp.push_back("SCRIPT_NAME=" + _fullpath);
+    envp.push_back("SERVER_NAME=" + _config.server_name);
+    envp.push_back("SERVER_PORT=" + port);
+    
+    
 std::cout << "Environment variables:" << std::endl;
-    for (std::vector<char*>::iterator it = envp.begin(); it != envp.end(); ++it) {
+    for (std::vector<std::string>::iterator it = envp.begin(); it != envp.end(); ++it) {
         std::cout << *it << std::endl;
-    }
+         }
 
-
-
+return envp;
 }
 
 std::string Worker::execute_cgi() {
@@ -310,9 +312,13 @@ std::string Worker::execute_cgi() {
         std::cout << "Child process" << std::endl;
         // Child process: Execute CGI script
         // Build the environment for execve
-        std::vector<char*> envp;
-        build_cgi_environment(envp);
-
+        std::vector<std::string> envp_string = build_cgi_environment();
+        char *envp[envp_string.size() + 1];
+        for (size_t i = 0; i < envp_string.size(); i++) {
+            envp[i] = new char[envp_string[i].size() + 1];
+            std::strcpy(envp[i], envp_string[i].c_str());
+        }
+        envp[envp_string.size()] = NULL;
 
         // Redirect stdout to pipe
         dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to pipe
@@ -322,9 +328,15 @@ std::string Worker::execute_cgi() {
         std::cout << "Executing CGI script" << std::endl;
         for (std::vector<CGI>::iterator it = _config.tab_cgi.begin(); it != _config.tab_cgi.end(); ++it) {
             if (it->get_name() == _cgi_type) {
-                const char *argv[] = { it->get_path().c_str(), NULL};
-                if (execve(it->get_path().c_str(), (char *const *)argv, envp.data()) == -1) {
+                const char *argv[] = { it->get_path().c_str(), NULL}; // check !!! 
+                if (execve(it->get_path().c_str(), (char *const *)argv, envp) == -1) {
+                     
                     perror("execve failed");  // If execve fails
+                    for (size_t i = 0; envp[i] != NULL; i++) {
+                        std::cout << "Deleting envp: " << envp[i] << std::endl;
+                        delete envp[i];
+        }
+        //check for necessary cleanup
                     exit(1);
                 }
             }
@@ -337,7 +349,7 @@ std::string Worker::execute_cgi() {
         ssize_t bytes_read;
         while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer))) > 0) {
             result.append(buffer, bytes_read);
-            std::cout << "Read " << bytes_read << " bytes: " << buffer << std::endl;
+           // std::cout << "Read " << bytes_read << " bytes: " << buffer << std::endl;
         }
         close(pipefd[0]);
         waitpid(pid, NULL, 0); // Wait for child process to finish
