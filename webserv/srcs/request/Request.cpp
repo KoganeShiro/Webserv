@@ -21,6 +21,22 @@ Request::Request(Request const &other) :
     _is_ready(other._is_ready)
 {}
 
+Request &Request::operator=(Request const &other)
+{
+	if (this != &other) {
+		_request_buffer = other._request_buffer;
+        _request = other._request;
+        _headers = other._headers;
+        _path = other._path;
+        _http_version = other._http_version;
+        _content_length = other._content_length;
+        _body = other._body;
+        _good_request = other._good_request;
+        _is_ready = other._is_ready;
+	}
+	return (*this);
+}
+
 // Getter for HTTP method
 std::string Request::get_method() const
 {
