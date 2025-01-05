@@ -1,28 +1,15 @@
-// #include "../includes/WebServ.hpp"
+#include "WebServ.hpp"
 // #include "../includes/Config.hpp"
-#include "../includes/Cgi.hpp"
+// #include "../includes/Cgi.hpp"
 // #include "../includes/Request.hpp"
 // #include "../includes/Response.hpp"
-// #include "../includes/Server.hpp"
+#include "Server.hpp"
 // #include "../includes/Socket.hpp"
 // #include "../includes/DeleteMethod.hpp"
 // #include "../includes/GetMethod.hpp"
 // #include "../includes/PostMethod.hpp"
 // #include "../includes/Worker.hpp"
 // #include "../includes/Connection.hpp"
-
-//----AJOUT DAMIEN----
-#include <fstream>
-#include <string>
-#include <iostream>
-#include <cstdlib>
-#include <cstring>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/epoll.h>
-
 
 // Response ft_worker_response(Config_data data, Request request)
 // {
@@ -120,9 +107,9 @@ int main(int argc, char **argv)
         return(EXIT_FAILURE) ;
     }
     else{
-        std::cout <<
-            EXPLAINATION 
-        << std::endl;
+        // std::cout <<
+        //     EXPLAINATION 
+        // << std::endl;
     }
 
     // 1. Parser le fichier de configuration
@@ -130,11 +117,11 @@ int main(int argc, char **argv)
         std::vector<Config_data> configs = parse_config(argv[1]);
        
         // 2. Creer les instances de serveurs
-        // std::vector<Server> servers;
-        // for (size_t i = 0; i < configs.size(); ++i) {
-        //     servers.push_back(Server(configs[i]));
-        // }
-
+        std::vector<Server> servers;
+        for (size_t i = 0; i < configs.size(); ++i) {
+            servers.push_back(Server(configs[i]));
+        }
+        std::cout << servers.size();
         // // 3. Creer une instance epoll
         // int epoll_fd = epoll_create(1);
         // if (epoll_fd < 0) {
