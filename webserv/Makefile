@@ -4,11 +4,12 @@ CC = g++
 #CFLAGS = -g -Wall -Wextra -std=c++98 -Iincludes/
 CFLAGS = -g -Wall -Wextra -Werror -std=c++98 -Iincludes/
 
+
 SRCS_CGI =		Cgi.cpp \
 #cgi_handler.cpp
 
 SRCS_REQUEST =	Request.cpp	\
-				request_parser.cpp
+				#request_parser.cpp
 
 SRCS_RESPONSE =	GetMethod.cpp \
 				PostMethod.cpp \
@@ -17,15 +18,13 @@ SRCS_RESPONSE =	GetMethod.cpp \
 				Worker.cpp \
 				testmain.cpp
 
-
-SRCS_SERVER =	#config_parser.cpp \
-				Connection.cpp \
+SRCS_SERVER =	Connection.cpp \
 				Server.cpp \
 				Socket.cpp
 
 SRCS_UTILS =	#gen_webpage.cpp
 		
-SRCS =			#request_parser_test.cpp
+SRCS =			request_parser_test.cpp
 #parsing_test.cpp
 #main.cpp
 

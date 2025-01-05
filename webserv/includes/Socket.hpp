@@ -10,7 +10,7 @@ Socket represents the server-side listening socket.
 
 class Socket {
 private:
-    Connection  _connection;
+    std::vector<Connection>  _connection;
     epoll_event events_tab[42];
     int     _epollFd;
     int     _sockfd;

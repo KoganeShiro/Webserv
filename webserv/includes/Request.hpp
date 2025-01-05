@@ -36,11 +36,13 @@ private:
     std::string _body;   // Request body (for POST/PUT requests)
     bool _good_request;
     int _is_ready;
-    
+    Request request_parser(Request &request, std::string& buffer);
+
 public:
 
     Request();
     Request(Request const &other);
+    Request &operator=(Request const &other);
     ~Request();
 
     std::string get_method() const;
