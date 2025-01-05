@@ -1,5 +1,5 @@
 
-#include "WebServ.hpp"
+#include "../../includes/Socket.hpp"
 
 /*
 void    listen_on_socket()
@@ -25,6 +25,9 @@ void Socket::add_to_epoll(int epoll_fd) {
     }
 }
 
+Socket::Socket(){
+}
+
 Socket::Socket(int port)
 {
     this->_sockfd = this->_create_socket(); // Create a new socket
@@ -36,7 +39,7 @@ Socket::Socket(int port)
 //ajout Damien
 Socket::~Socket() {
     try {
-        this->close_socket();
+        close(_sockfd);
     } catch (const std::exception& e) {
         std::cerr << "Error during socket destruction: " << e.what() << std::endl;
     }
@@ -61,7 +64,7 @@ void Socket::_bind_socket(int port)
     serverAddr.sin_port = htons(port); // Convert port number to network byte order
 
     int opt = 1;
-	if (setsockopt(_connection.get_clientfd(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))){
+	if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))){
         throw std::runtime_error("Failed to set socket"); //For not having "Adress already in use"
 	}
 
@@ -87,12 +90,10 @@ void    Socket::configure_epoll(void)
         throw std::runtime_error("Epoll create failed");
     }
 
-    epoll_event event;
-    int fdSocket = _connection.get_clientfd();
-    
-    event.data.fd = fdSocket;
+    epoll_event event;    
+    event.data.fd = _sockfd;
     event.events = EPOLLIN;
-    epoll_ctl(_epollFd, EPOLL_CTL_ADD, fdSocket, &event);
+    epoll_ctl(_epollFd, EPOLL_CTL_ADD, _sockfd, &event);
 
 }
 
@@ -102,5 +103,5 @@ void Socket::accept_connection(void)
     if (clientfd < 0) {
         throw std::runtime_error("Failed to accept connection");
     }
-    this->_connection = Connection(clientfd); // Return a Connection object for the client
+    this->_connection.push_back(Connection(clientfd)); // Return a Connection object for the client
 }

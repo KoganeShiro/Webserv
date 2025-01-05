@@ -3,7 +3,7 @@
 
 #include "WebServ.hpp"
 #include "Cgi.hpp"
-#include "Connection.hpp"
+// #include "Connection.hpp"
 #include "Socket.hpp"
 
 class Server
@@ -15,10 +15,9 @@ private:
     std::vector <Connection> connection_tab;//ajout Damien
 
 public:
-    Server(const std::string config);
-    void run();
-    int get_port() const;
-    int  get_socket_fd() const;
+    Server(const Config_data config);
+    Config_data get_data() const;
+    int  get_socket_fd();
 
     void    add_connection(void);//ajout Damien
     void add_to_epoll(int epoll_fd);//ajout Damien
