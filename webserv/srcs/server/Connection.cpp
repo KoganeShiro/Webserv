@@ -9,6 +9,7 @@ Connection::Connection(int clientfd) : _clientfd(clientfd)
 std::string Connection::receive()
 {
     //A faire ?
+    
 }
 
 // Method to close the connection
