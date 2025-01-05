@@ -1,19 +1,22 @@
 
 
 CC = g++
-CFLAGS = -g -Wall -Wextra -std=c++98 -Iincludes/
-#CFLAGS = -g -Wall -Wextra -Werror -std=c++98 -Iincludes/
+#CFLAGS = -g -Wall -Wextra -std=c++98 -Iincludes/
+CFLAGS = -g -Wall -Wextra -Werror -std=c++98 -Iincludes/
 
-SRCS_CGI =		Cgi.cpp 
+
+SRCS_CGI =		Cgi.cpp \
+#cgi_handler.cpp
 
 SRCS_REQUEST =	Request.cpp	\
 				#request_parser.cpp
 
-SRCS_RESPONSE =	#GetMethod.cpp \
-				#Response.cpp \
-				#Worker.cpp \
-				#testmain.cpp
-
+SRCS_RESPONSE =	GetMethod.cpp \
+				PostMethod.cpp \
+				DeleteMethod.cpp \
+				Response.cpp \
+				Worker.cpp \
+				testmain.cpp
 
 SRCS_SERVER =	Connection.cpp \
 				Server.cpp \
@@ -45,7 +48,10 @@ OBJS = $(ALL_SRCS:srcs/%.cpp=$(OBJ_PATH)srcs/%.o)
 
 NAME = webServ
 
-all: $(OBJ_PATH) $(NAME)
+all: $(OBJ_PATH) $(NAME) destructor
+
+destructor: 
+	$(CC) $(CFLAGS) -o destructor $(UTILS_PATH)destructor.cpp
 
 $(OBJ_PATH):
 	mkdir -p $(OBJ_PATH)
@@ -63,7 +69,7 @@ clean:
 	rm -rf $(OBJ_PATH)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(NAME) destructor
 
 re: fclean all
 

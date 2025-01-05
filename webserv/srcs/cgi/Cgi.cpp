@@ -281,7 +281,7 @@ void    print(std::vector<Config_data> data, std::vector<CGI> cgi){
                 << "\n\t-dir_listing :" << it->second.dir_listing
                 << "\n\t-use of cgi :" << it->second.use_cgi
                 << "\n\t-default files :" << it->second.default_file
-                // << "\n\t-upload directory :" << it->second.upload_dir
+//                << "\n\t-upload directory :" << it->second.upload_dir
                 << "\n\t-redirection_nb : " << it->second.redirection_nb
                 << " ; redirection_path : " << it->second.redirection_path 
                 << "\n\t-accepted methods : " ;
@@ -338,4 +338,3 @@ std::vector<Config_data> parse_config(const char *filename) {
     // print(configs, cgi);
     return (configs);
 }
-

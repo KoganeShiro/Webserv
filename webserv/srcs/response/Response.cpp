@@ -105,6 +105,7 @@ Response::Response()
 	_statusMessage = "OK";
 	set_body("");
 	_header_and_body_in_one = false;
+	std::cout << ORANGE "Default Response created: " RESET << _statusCode << std::endl;
 }
 
 
@@ -115,7 +116,7 @@ Response::Response(int statusCode, const std::string& statusMessage, const std::
 	_config = c;
 	set_body(body);
 	_header_and_body_in_one = false;
-	
+	std::cout << ORANGE "Response created with Body, Message and Statuscode:" RESET << _statusCode << std::endl;
 }
 
 Response::Response(int statusCode, const std::string& statusMessage, const std::string& header_and_body)
@@ -124,6 +125,14 @@ Response::Response(int statusCode, const std::string& statusMessage, const std::
 	_statusMessage = statusMessage;
 	set_body(header_and_body);
 	_header_and_body_in_one = true;	
+	std::cout << ORANGE "Response created with header and body and Statuscode:" RESET << _statusCode << std::endl;
+}
+
+Response::Response(const std::string& header_and_body)
+{	
+	set_body(header_and_body);
+	_header_and_body_in_one = true;	
+	std::cout << ORANGE "Response created with header and body." RESET << std::endl;
 }
 
 
@@ -140,6 +149,7 @@ Response::Response(int statusCode, const std::string& statusMessage, Config_data
 	else {
 		set_body("");
 	}
+	std::cout << ORANGE "Response created with status code: " RESET << _statusCode << std::endl;
 }
 
 Response &Response::operator=(const Response &response)
@@ -193,6 +203,11 @@ std::string Response::http_response() const
 	std::ostringstream oss;
 	std::map<std::string, std::string>::const_iterator it;
 
+	if (_header_and_body_in_one)
+	{
+		oss << _body;
+		return (oss.str());		
+	}
 	oss <<
 		"HTTP/1.1 " << this->_statusCode
 		<< " " << this->_statusMessage

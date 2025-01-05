@@ -22,6 +22,7 @@ private:
 
 public:
     Response();
+    Response(const std::string& header_and_body);
     Response(int statusCode, const std::string& statusMessage, Config_data c);
     Response(int statusCode, const std::string& statusMessage, std::string directory, bool isDirectory);
     Response(int statusCode, const std::string& statusMessage, const std::string& body, Config_data c);

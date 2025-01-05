@@ -31,9 +31,9 @@ Config_data hard_code(Config_data *config, Route_config *route)
     route->dir_listing = true;
     route->default_file = "index.html";
     route->use_cgi = true;
-    route->upload_dir = "html_page/www/uploads";
+ //   route->upload_dir = "html_page/www/html";
     route->redirection_path = "https://www.google.com";
-    route->redirection_nb = 302 ;
+    route->redirection_nb = 0 ;
 
     config->routes["/"] = *route;
 
@@ -41,9 +41,9 @@ Config_data hard_code(Config_data *config, Route_config *route)
 
     // CGI configuration
     //config->cgi_path = "/usr/bin/php-cgi";
-   CGI cgi("php", "/usr/bin/php-cgi", "php", 10);
+   CGI cgi("bla", "testers/ubuntu_cgi_tester", "bla", 10);
 
-//  config->tab_cgi.push_back(cgi); 
+  config->tab_cgi.push_back(cgi); 
     return (*config);
 }
 
@@ -68,16 +68,16 @@ int main(int argc, char **argv)
 
     Config_data config = config_parser("test.config");
     Request *request = new Request();
-    request->set_path("/index12.html");
+    request->set_path("/youpi.bla/123?name=123");
     request->set_method("GET");
+    request->set_body("Hello, World!");
     request->add_header("Host", "localhost");
-//    request.set_body("Hello, World!");
-//    request.set_headers("Content-Type", "text/html");
-//    request.set_headers("Content-Length", "13");
+    request->add_header("Content-Type", "text/html");
+    request->add_header("Content-Length", "13");
+
     
     Worker worker(config, request);
     Response response = worker.run();
-    std::cout << response.http_response() ;
-   // delete config.tab_cgi;
+    std::cout << response.http_response() << std::endl;   
     return 0;
 }
