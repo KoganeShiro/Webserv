@@ -126,6 +126,12 @@ Response::Response(int statusCode, const std::string& statusMessage, const std::
 	_header_and_body_in_one = true;	
 }
 
+Response::Response(const std::string& header_and_body)
+{	
+	set_body(header_and_body);
+	_header_and_body_in_one = true;	
+}
+
 
 Response::Response(int statusCode, const std::string& statusMessage, Config_data c)
 {
@@ -193,6 +199,11 @@ std::string Response::http_response() const
 	std::ostringstream oss;
 	std::map<std::string, std::string>::const_iterator it;
 
+	if (_header_and_body_in_one)
+	{
+		oss << _body;
+		return (oss.str());		
+	}
 	oss <<
 		"HTTP/1.1 " << this->_statusCode
 		<< " " << this->_statusMessage

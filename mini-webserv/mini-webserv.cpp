@@ -6,7 +6,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define PORT 1234
+#define PORT 1235
 #define BUFFER_SIZE 4096
 
 /*

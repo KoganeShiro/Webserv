@@ -49,7 +49,10 @@ OBJS = $(ALL_SRCS:srcs/%.cpp=$(OBJ_PATH)srcs/%.o)
 
 NAME = webServ
 
-all: $(OBJ_PATH) $(NAME)
+all: $(OBJ_PATH) $(NAME) destructor
+
+destructor: 
+	$(CC) $(CFLAGS) -o destructor $(UTILS_PATH)destructor.cpp
 
 $(OBJ_PATH):
 	mkdir -p $(OBJ_PATH)
@@ -67,7 +70,7 @@ clean:
 	rm -rf $(OBJ_PATH)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(NAME) destructor
 
 re: fclean all
 
