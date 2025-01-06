@@ -49,9 +49,10 @@ static CGI get_cgi(std::ifstream& file, std::string line){
     std::string _compiler_path = "\0"; //path of the cgi
     std::string _extension = "\0"; //py || php || js || ...
     int _time_out = 0;
-    
+    _name = trim(line.substr(0, line.find("{") - 1));
     std::getline(file, line);
     line = trim(line);
+    
 
 
     while (line[0] != '}'){
@@ -87,7 +88,7 @@ static CGI get_cgi(std::ifstream& file, std::string line){
 
     i++;
     if (_compiler_path != "\0" && _extension != "\0" && _time_out > 0){
-        return (CGI(_extension, _compiler_path, _extension, _time_out));
+        return (CGI(_name, _compiler_path, _extension, _time_out));
     }
     else {
         std::cerr << "The cgi number " << i << " of your .config has something wrong:\n";
@@ -246,7 +247,7 @@ static Config_data parse_server(std::ifstream& file, std::string line)
         // Parse the location /cgi-bin directive
         else if (line.find("location ") != std::string::npos && line.find("{")) {
             std::string name = line.substr(9);
-            name = name.substr(0, name.size() - 1);
+            name = trim(name.substr(0, name.size() - 1));
             Route_config new_route = get_route(file, line);
             current_config.routes.insert(std::pair<std::string, Route_config>(name,new_route));
         }
@@ -328,13 +329,15 @@ std::vector<Config_data> parse_config(const char *filename) {
             if (line.find("server {") != std::string::npos) {
                 Config_data current_config;
                 current_config = parse_server(file, line); 
+                current_config.tab_cgi = cgi;
                 configs.push_back(current_config);
             }
             else if (line.find("cgi {") != std::string::npos) {
-                cgi = parse_cgis(file, line); 
+                cgi = parse_cgis(file, line);
+                 
             }
     }    
     file.close();
-    print(configs, cgi);
+   // print(configs, cgi);
     return (configs);
 }

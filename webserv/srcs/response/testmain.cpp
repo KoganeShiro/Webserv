@@ -6,7 +6,7 @@
 #include "Server.hpp"
 
 
-
+/*
 Config_data hard_code(Config_data *config, Route_config *route)
 {
     // Server configuration
@@ -67,6 +67,7 @@ void printconfig(Config_data& config)
     std::cout << "Server name: " << config.server_name << std::endl;
     std::cout << "Default server: " << config.is_default_server << std::endl;
     std::cout << "Error pages: " << config.error_pages << std::endl;
+    std::cout << "Directory page: " << config.directory_page << std::endl;
     std::cout << "Client body size limit: " << config.client_body_size_limit << std::endl;
     std::cout << "Route configuration:" << std::endl;
     std::cout << "Accepted methods: ";
@@ -81,6 +82,7 @@ void printconfig(Config_data& config)
     std::cout << "Redirection path: " << config.routes["/"].redirection_path << std::endl;
     std::cout << "Redirection number: " << config.routes["/"].redirection_nb << std::endl;
     std::cout << "CGI configuration:" << std::endl;
+    std::cout << "tabcgisize: " << config.tab_cgi.size() << std::endl;
     for (size_t i = 0; i < config.tab_cgi.size(); ++i) {
         std::cout << "Language: " << config.tab_cgi[i].get_name() << std::endl;
         std::cout << "Path: " << config.tab_cgi[i].get_path() << std::endl;
@@ -89,7 +91,7 @@ void printconfig(Config_data& config)
     }
  
 }
-
+*/
 
 
 int main(int argc, char **argv)
@@ -103,11 +105,6 @@ int main(int argc, char **argv)
    }
    
 
-    else{
-        // std::cout <<
-        //     EXPLAINATION 
-        // << std::endl;
-    }
     Config_data config;
     // 1. Parser le fichier de configuration
     try {
@@ -118,43 +115,32 @@ int main(int argc, char **argv)
         for (size_t i = 0; i < configs.size(); ++i) {
             servers.push_back(Server(configs[i]));
         }
-        std::cout << servers.size();
-        printconfig(configs[0]);
+     //   std::cout << servers.size();
+     //   printconfig(configs[0]);
         config = configs[0];
       
        // return (EXIT_SUCCESS);
     }
     catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
+        std::cout <<
+             EXPLAINATION 
+         << std::endl;
+
+
     }
 
-    
 
-    // 3. Creer les instances de Worker
-    // 4. Creer les instances de Request
-    // 5. Creer les instances de Response
-    // 6. Lancer les Workers
-    // 7. Afficher les reponses
-    // 8. Nettoyer les ressources
-    // 9. Retourner le code de sortie
-    // 10. Tester les
-
-
-
-
-//    (void)argc;
-//    (void)argv;
 
   // Config_data config = config_parser("test.config");
     Request *request = new Request();
 
-    request->set_path("/youpi.bla/123?name=123");
+    request->set_path("/youpi.bla/youpi?name=123");
     request->set_method("GET");
     request->set_body("Hello, World!");
     request->add_header("Host", "localhost");
     request->add_header("Content-Type", "text/html");
     request->add_header("Content-Length", "13");
-
     
     Worker worker(config, request);
     Response response = worker.run();
