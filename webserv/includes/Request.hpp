@@ -36,6 +36,8 @@ private:
     std::string _body;   // Request body (for POST/PUT requests)
     bool _good_request;
     int _is_ready;
+    size_t _pos;
+    bool _finish_header;
     Request request_parser(Request &request, std::string& buffer);
 
 public:
@@ -56,7 +58,9 @@ public:
     std::string get_request_buffer() const ;
     std::string get_http_version() const ;
     int get_content_length() const ;
+    size_t get_pos() const;
 
+    void set_pos(size_t pos);
     void set_method(const std::string& method);
     void set_path(const std::string& path);
     void add_header(const std::string& key, const std::string& value);
@@ -69,6 +73,8 @@ public:
     void set_to_null();
 
     /* IN REQUEST_PARSER */
+    void set_finish_header(bool finish);
+    bool get_finish_header();
     void add_to_request(std::string to_add);
     Request *parsed_request();
 };
