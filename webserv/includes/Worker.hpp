@@ -18,6 +18,8 @@ private:
     std::string _querystring;
     std::string _cgi_type;
     std::string _cgi_path;
+    int _cgi_timeout;
+    
     bool _use_cgi;
     int _status_code;
   //  bool _file_exists();

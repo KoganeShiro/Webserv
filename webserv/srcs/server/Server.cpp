@@ -15,10 +15,11 @@ void Server::add_to_epoll(int epoll_fd)
 {
     this->_socket.add_to_epoll(epoll_fd);
 }
-
+/*
 int  Server::get_socket_fd(){
     return (_socket.get_sockfd());
 }
+*/
 
 Config_data Server::get_data() const{
     return (_data);
@@ -27,6 +28,7 @@ Config_data Server::get_data() const{
 
 Request *init_request(Connection user_connect)
 {
+    (void) user_connect;
     // Request request;
     // Request *parsed_request;
     // std::string request_buffer; //add all the data red

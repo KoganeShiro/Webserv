@@ -16,14 +16,16 @@ void Worker::check_cgi()
         }
         std::string extension_path_query = _fullpath.substr(_fullpath.find_last_of('.') + 1);        
         if (extension_path_query.find('/') != std::string::npos) {
-            _cgi_path = extension_path_query.substr(extension_path_query.find('/'));
+            _cgi_path = extension_path_query.substr(extension_path_query.find('/'));            
             extension_path_query = extension_path_query.substr(0, extension_path_query.find('/'));
             _fullpath = _fullpath.substr(0, _fullpath.find_last_of('.') + 1) + extension_path_query;
         }                
-        for (std::vector<CGI>::iterator it = _config.tab_cgi.begin(); it != _config.tab_cgi.end(); ++it) {            
+        for (std::vector<CGI>::iterator it = _config.tab_cgi.begin(); it != _config.tab_cgi.end(); ++it) {   
+            std::cout << YELLOW "Checking CGI type: " RESET << it->get_name() << std::endl;         
             if (it->get_extension() == extension_path_query) {
                 _cgi_type = it->get_name();
                 _use_cgi = true;
+                _cgi_timeout = it->get_time_out();
                 std::cout << ORANGE "CGI type: " RESET << _cgi_type << std::endl;
                 std::cout << ORANGE "CGI Path_Info: " RESET << _cgi_path << std::endl;
                 std::cout << ORANGE "CGI Query_string: " RESET << _querystring << std::endl;
@@ -401,25 +403,50 @@ Response Worker::execute_cgi() {
         // Wait for child process to finish
         int status;
         int exit_code;
-        waitpid(pid, &status, 0);
+        time_t start_time = time(NULL);
+        while (1)
+        {
+            time_t elapsed_time = time(NULL) - start_time;
+            if (elapsed_time > _cgi_timeout) {
+                std::cout << ORANGE "Timeout of CGI script reached." RESET << std::endl;
+                exit_code = 417;
+                kill(pid, SIGKILL);                
+                break;
+            }
+    
+        waitpid(pid, &status, WNOHANG);
+        
+        
         // Check if the child exited normally
         if (WIFEXITED(status)) {
             exit_code = WEXITSTATUS(status);
             std::cout << ORANGE "Child process exited with code: " RESET << exit_code << std::endl;
+            break;
         }
         // Check if the child was terminated by a signal
         if (WIFSIGNALED(status)) {
             exit_code = WTERMSIG(status);
             std::cout << ORANGE "Child process was terminated with signal: " RESET << exit_code << std::endl;
+            break;
+        }
+        std::cout << ORANGE "Waiting for child process to finish." RESET << std::endl;
+        //  sleep(1);
         }
         if (exit_code == 418) {
             std::cout << ORANGE "Child process exited with error code: " RESET << exit_code << std::endl;
+            result = Response(500, "Internal Server Error", _config);            
+        }
+        else if (exit_code == 417) {
+            std::cout << ORANGE "Child process timed out." RESET << std::endl;
             result = Response(500, "Internal Server Error", _config);            
         }
         else {
             std::cout << ORANGE "CGI Script exited normally." RESET << std::endl;
             result = Response(resultstring);
         }
+        
+
+
     }
     return result;
 }

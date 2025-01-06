@@ -1,7 +1,7 @@
 
 
 CC = g++
-#CFLAGS = -g -Wall -Wextra -std=c++98 -Iincludes/
+#FLAGS = -g -Wall -Wextra -std=c++98 -Iincludes/
 CFLAGS = -g -Wall -Wextra -Werror -std=c++98 -Iincludes/
 
 
@@ -18,7 +18,7 @@ SRCS_RESPONSE =	GetMethod.cpp \
 				Worker.cpp \
 				testmain.cpp
 
-SRCS_SERVER =	#Connection.cpp \
+SRCS_SERVER =	Connection.cpp \
 				Server.cpp \
 				Socket.cpp
 

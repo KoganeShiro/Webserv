@@ -224,7 +224,7 @@ static Config_data parse_server(std::ifstream& file, std::string line)
         else if (line.find("directory_page ") != std::string::npos){
             line = trim(line.substr(15));
             line.erase(line.size() - 1);
-            current_config.error_pages = line;
+            current_config.directory_page = line;
         }
                 // Parse the client_max_body_size directive
         else if (line.find("client_max_body_size ") != std::string::npos) {
@@ -335,6 +335,6 @@ std::vector<Config_data> parse_config(const char *filename) {
             }
     }    
     file.close();
-    // print(configs, cgi);
+    print(configs, cgi);
     return (configs);
 }

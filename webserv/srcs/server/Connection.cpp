@@ -4,13 +4,14 @@
 // Constructor that initializes the connection with the client file descriptor
 Connection::Connection(int clientfd) : _clientfd(clientfd)
 {}
-
+/*
 // Method to receive data from the client
 std::string Connection::receive()
 {
     //A faire ?
     
 }
+*/
 
 // Method to close the connection
 void Connection::close()
