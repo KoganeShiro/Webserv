@@ -4,7 +4,6 @@ CC = g++
 CFLAGS = -g -Wall -Wextra -std=c++98 -Iincludes/
 #CFLAGS = -g -Wall -Wextra -Werror -std=c++98 -Iincludes/
 
-
 SRCS_CGI =		#Cgi.cpp \
 #cgi_handler.cpp
 
@@ -24,7 +23,7 @@ SRCS_SERVER =	#Connection.cpp \
 
 SRCS_UTILS =	#gen_webpage.cpp
 		
-SRCS =			request_parser_test.cpp
+SRCS =			#request_parser_test.cpp
 #parsing_test.cpp
 #main.cpp
 

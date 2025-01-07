@@ -105,7 +105,7 @@ Response::Response()
 	_statusMessage = "OK";
 	set_body("");
 	_header_and_body_in_one = false;
-	std::cout << ORANGE "Default Response created: " RESET << _statusCode << std::endl;
+	// std::cout << ORANGE "Default Response created: " RESET << _statusCode << std::endl;
 }
 
 

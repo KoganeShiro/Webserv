@@ -24,7 +24,7 @@ public:
     Socket(int port);
     ~Socket();
     void accept_connection();
-    int get_sockfd();
+  //  int get_sockfd();
     void add_to_epoll(int epoll_fd);
 
 };

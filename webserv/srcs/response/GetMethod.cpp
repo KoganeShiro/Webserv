@@ -128,7 +128,7 @@ Response GetMethod::handle(const Request& request, std::string& fullpath, Config
         return response;
     }
     else {
-        std::string content = readfile(_fullpath);                
+        std::string content = readfile(_fullpath);                        
         response.set_body(content);
         response.set_header("Content-Type", getMimeType(_fullpath));
     }    
