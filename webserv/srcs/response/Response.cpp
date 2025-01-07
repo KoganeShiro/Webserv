@@ -101,8 +101,8 @@ void Response::set_header(const std::string& key, const std::string& value)
 
 Response::Response()
 {
-	_statusCode = 0;
-	_statusMessage = "";
+	_statusCode = 200;
+	_statusMessage = "OK";
 	set_body("");
 	_header_and_body_in_one = false;
 	// std::cout << ORANGE "Default Response created: " RESET << _statusCode << std::endl;

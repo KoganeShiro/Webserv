@@ -135,7 +135,7 @@ int main(int argc, char **argv)
   // Config_data config = config_parser("test.config");
     Request *request = new Request();
 
-    request->set_path("/youpi.bla/youpi?name=123");
+    request->set_path("/uploads/youpi.bla/er?123");
     request->set_method("GET");
     request->set_body("Hello, World!");
     request->add_header("Host", "localhost");

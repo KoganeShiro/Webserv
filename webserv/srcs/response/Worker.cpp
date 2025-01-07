@@ -189,14 +189,18 @@ Worker::Worker(Config_data c, Request *request)
     _request = request;
     _route = checkRoute();
     if (! _route.empty())
-    {
-        _fullpath = (_config.routes[_route].root_dir + _request->get_path());
+    {   
+        if (_route == "/")
+            _fullpath = _config.routes[_route].root_dir + _request->get_path();
+        else
+            _fullpath = _config.routes[_route].root_dir + (_request->get_path().substr(_route.length()));
         if (_fullpath[_fullpath.length() - 1] == '/')
            _fullpath += _config.routes[_route].default_file;
         check_cgi();
     }
     else
-        _status_code = 404;    
+        _status_code = 404;
+    std::cout << ORANGE "Worker service finished verifications. Fullpath : " RESET << _fullpath <<  std::endl;
     check_for_errors();
 }
 
