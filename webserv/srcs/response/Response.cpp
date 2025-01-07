@@ -52,8 +52,8 @@ std::string Response::generate_error_page(int status_code, std::string status_me
 
 std::string Response::generate_directory_listing(std::string directory)
 {   
-	std::string filename(_config.directory_page); 
-    std::string html_template = readfile(filename); // Read the template file
+	std::string filename(_config.directory_page);	
+    std::string html_template = readfile(filename); 
 
 	std::string toInsert;
 	std::string path = directory;
@@ -74,8 +74,9 @@ std::string Response::generate_directory_listing(std::string directory)
     return (html_template);
 }
 
-Response::Response(int statusCode, const std::string& statusMessage, std::string directory, bool isDirectory)
+Response::Response(int statusCode, const std::string& statusMessage, std::string directory, bool isDirectory, Config_data c)
 {
+	_config = c;
 	_header_and_body_in_one = false;
 	if (isDirectory) {
 		_statusCode = statusCode;

@@ -269,6 +269,7 @@ void    print(std::vector<Config_data> data, std::vector<CGI> cgi){
             << "name, " << i << " : " << data[i].server_name << std::endl
             << "is a default server, " << i << " : " << data[i].is_default_server << std::endl
             << "error pages, " << i << " : " << data[i].error_pages << std::endl
+            << "directory page, " << i << " : " << data[i].directory_page << std::endl
             << "body_size, " << i << " : " << data[i].client_body_size_limit << std::endl;
         
         std::map<std::string, Route_config> routes = data[i].routes;
@@ -338,6 +339,6 @@ std::vector<Config_data> parse_config(const char *filename) {
             }
     }    
     file.close();
-   // print(configs, cgi);
+    print(configs, cgi);
     return (configs);
 }
