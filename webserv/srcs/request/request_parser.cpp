@@ -1,6 +1,16 @@
 
 #include "Request.hpp"
 
+void Request::set_finish_header(bool finish)
+{
+    this->_finish_header = finish;
+}
+
+bool Request::get_finish_header()
+{
+    return (this->_finish_header);
+}
+
 static bool parse_request_line(Request& request, std::string& buffer, size_t& pos)
 {
     size_t line_end = buffer.find("\n", pos);
@@ -24,11 +34,11 @@ static bool parse_headers(Request& request, std::string& buffer, size_t& pos)
     size_t line_end;
     size_t start_pos = pos;
 
-    std::cout << BLUE << buffer << RESET << std::endl;
-
     while ((line_end = buffer.find("\r\n", pos)) != std::string::npos) {
         if (pos == line_end) {
             pos += 2;
+            request.set_pos(pos);
+            request.set_finish_header(true);
             return (true);
         }
         if (line_end - start_pos > MAX_HEADER_SIZE) {
@@ -44,27 +54,9 @@ static bool parse_headers(Request& request, std::string& buffer, size_t& pos)
                 value.erase(0, 1);
             while (!value.empty() && (value[value.size() - 1] == ' ' || value[value.size() - 1] == '\t'))
                 value.erase(value.size() - 1);
-            std::cout << key << std::endl;
-            std::cout << value << std::endl;
             request.add_header(key, value);
         }
         pos = line_end + 2;
-    }
-    return (false);
-}
-
-static bool parse_body(Request& request, std::string& buffer, size_t& pos)
-{
-    if (request.get_header_element("Content-Length").empty() != false) {
-        if (buffer.length() >= pos + request.get_content_length()) {
-            request.set_body(buffer.substr(pos, request.get_content_length()));
-            pos += request.get_content_length();
-            request.set_is_ready(GOOD);
-            return (true);
-        }
-    }
-    else if (request.get_header_element("Transfer-Encoding") == "chunked") {
-        //handle chunked
     }
     return (false);
 }
@@ -75,11 +67,53 @@ static bool validate_headers(Request &request)
     std::string transfer_encoding = request.get_header_element("Transfer-Encoding");
     if (content_length.empty() && transfer_encoding != "chunked") {
         request.set_is_ready(BAD_HEADER);
-        std::cout << RED "header: no content-length or chunked" RESET << std::endl;
         return (false);
     }
     request.set_content_length(atoi(content_length.c_str()));
     return (true);
+}
+
+static bool parse_body(Request& request, std::string& buffer)
+{
+    size_t pos = request.get_pos();
+    if (request.get_header_element("Content-Length").empty() == false) {
+        if (buffer.length() >= pos + request.get_content_length()) {
+            request.set_body(buffer.substr(pos, request.get_content_length()));
+            pos += request.get_content_length();
+            request.set_is_ready(GOOD);
+            return (true);
+        }
+    }
+    else if (request.get_header_element("Transfer-Encoding") == "chunked") {
+         while (true) {
+            size_t chunk_size_end = buffer.find("\r\n", pos);
+            if (chunk_size_end == std::string::npos) {
+                return (false);
+            }
+            std::string chunk_size_str = buffer.substr(pos, chunk_size_end - pos);
+            pos = chunk_size_end + 2;
+            size_t chunk_size;
+            std::istringstream iss(chunk_size_str);
+            if (!(iss >> std::hex >> chunk_size)) {
+                request.set_is_ready(BAD_HEADER);
+                return (false);
+            }
+            if (chunk_size == 0) {
+                request.set_is_ready(GOOD);
+                pos = buffer.find("\r\n", pos) + 2;
+                request.set_pos(pos);
+                return (true);
+            }
+            if (buffer.length() < pos + chunk_size + 2) {
+                return (false);
+            }
+            request.set_body(request.get_body() + buffer.substr(pos, chunk_size));
+            pos += chunk_size + 2;
+            request.set_pos(pos);
+        }
+    }
+    request.set_pos(pos);
+    return (false);
 }
 
 Request Request::request_parser(Request &request, std::string& buffer)
@@ -88,14 +122,16 @@ Request Request::request_parser(Request &request, std::string& buffer)
 
     if (!parse_request_line(request, buffer, pos))
         return (request);
-    if (!parse_headers(request, buffer, pos))
-        return (request);
+    if (request.get_finish_header() == false) {
+        if (!parse_headers(request, buffer, pos))
+            return (request);
+    }
     if (!validate_headers(request))
         return (request);
-    if (!parse_body(request, buffer, pos))
+    if (!parse_body(request, buffer))
         return (request);
 
-    request.set_request_buffer(buffer.substr(pos));
+    request.set_request_buffer(buffer.substr(this->get_pos()));
 
     std::cout << "reminder: " BGREEN <<
         request.get_request_buffer()
@@ -111,7 +147,6 @@ void Request::add_to_request(std::string to_add)
 {
     this->set_good_request(false);
     this->set_is_ready(AGAIN);
-    this->set_content_length(0);
 
     this->set_request_buffer(this->_request_buffer.append(to_add));
     *this = request_parser(*this, this->_request_buffer);

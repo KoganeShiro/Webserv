@@ -40,7 +40,7 @@ void print_Request(Request *request)
 }
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 96
+#define BUFFER_SIZE 90
 #endif
 
 void read_request()
@@ -50,9 +50,27 @@ void read_request()
         "Host: www.example.com\r\n"
         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36\r\n"
         "Content-Type: application/x-www-form-urlencoded\r\n"
-        "Content-Length: 20\r\n"
+		//"Content-Length: 20\r\n"
+		"Transfer-Encoding: chunked\r\n"
         "\r\n"
-        "name=John+Doe&age=30&city=NY";
+        //"name=John+Doe&age=30&city=NY";
+		// "6\r\n"
+		// "Hello,\r\n"
+		// "6\r\n"
+		// "world!\r\n"
+		// "0\r\n"
+		// "\r\n"
+		"27\r\n"
+		"Voici les données du premier morceau\r\n\r\n"
+		"1C\r\n"
+		"et voici un second morceau\r\n\r\n"
+		"20\r\n"
+		"et voici deux derniers morceaux \r\n"
+		"12\r\n"
+		"sans saut de ligne\r\n"
+		"0\r\n"
+		"\r\n"
+		"GET / HTTP/1.1\r\n";
 
     std::istringstream stream(request);
     char buffer[BUFFER_SIZE];
