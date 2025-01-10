@@ -28,6 +28,11 @@ void Server::add_to_epoll(int epoll_fd)
         throw std::runtime_error("Failed to add socket to epoll");
     }
 }
+/*
+int  Server::get_socket_fd(){
+    return (_socket.get_sockfd());
+}
+*/
 
 int  Server::get_socket_fd(void){
     return (_socket.get_sockfd());

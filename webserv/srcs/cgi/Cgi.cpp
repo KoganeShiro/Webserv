@@ -47,10 +47,9 @@ static CGI get_cgi(std::ifstream& file, std::string line){
     std::string _compiler_path = "\0"; //path of the cgi
     std::string _extension = "\0"; //py || php || js || ...
     int _time_out = 0;
-    
+    _name = trim(line.substr(0, line.find("{") - 1));
     std::getline(file, line);
     line = trim(line);
-
 
     while (line[0] != '}'){
 
@@ -209,7 +208,7 @@ static Config_data parse_server(std::ifstream& file, std::string line)
         else if (line.find("directory_page ") != std::string::npos){
             line = trim(line.substr(15));
             line.erase(line.size() - 1);
-            current_config.error_pages = line;
+            current_config.directory_page = line;
         }
                 // Parse the client_max_body_size directive
         else if (line.find("client_max_body_size ") != std::string::npos) {
@@ -231,7 +230,7 @@ static Config_data parse_server(std::ifstream& file, std::string line)
         // Parse the location /cgi-bin directive
         else if (line.find("location ") != std::string::npos && line.find("{")) {
             std::string name = line.substr(9);
-            name = name.substr(0, name.size() - 1);
+            name = trim(name.substr(0, name.size() - 1));
             Route_config new_route = get_route(file, line);
             current_config.routes.insert(std::pair<std::string, Route_config>(name,new_route));
         }
@@ -251,6 +250,7 @@ void    print(std::vector<Config_data> data, std::vector<CGI> cgi){
             << "name, " << i << " : " << data[i].server_name << std::endl
             << "is a default server, " << i << " : " << data[i].is_default_server << std::endl
             << "error pages, " << i << " : " << data[i].error_pages << std::endl
+            << "directory page, " << i << " : " << data[i].directory_page << std::endl
             << "body_size, " << i << " : " << data[i].client_body_size_limit << std::endl;
         
         std::map<std::string, Route_config> routes = data[i].routes;
@@ -264,7 +264,6 @@ void    print(std::vector<Config_data> data, std::vector<CGI> cgi){
                 << "\n\t-dir_listing :" << it->second.dir_listing
                 << "\n\t-use of cgi :" << it->second.use_cgi
                 << "\n\t-default files :" << it->second.default_file
-                // << "\n\t-upload directory :" << it->second.upload_dir
                 << "\n\t-redirection_nb : " << it->second.redirection_nb
                 << " ; redirection_path : " << it->second.redirection_path 
                 << "\n\t-accepted methods : " ;
@@ -325,21 +324,23 @@ std::vector<Config_data> parse_config(const char *filename) {
     while (std::getline(file, line)) {
         
         // Process each line in the buffer
-        line = trim(line);
-        // Start of a new server block
-        if (line.find("server {") != std::string::npos) {
-            Config_data current_config;
-            current_config = parse_server(file, line);
-            ft_check_server(current_config);
-            configs.push_back(current_config);
-        }
-        else if (line.find("cgi {") != std::string::npos) {
-            cgi = parse_cgis(file, line); 
-        }
+            line = trim(line);
+        // std::cout << "LINE => " << line << std::endl;
+            // Start of a new server block
+            if (line.find("server {") != std::string::npos) {
+                Config_data current_config;
+                current_config = parse_server(file, line); 
+                current_config.tab_cgi = cgi;
+                configs.push_back(current_config);
+            }
+            else if (line.find("cgi {") != std::string::npos) {
+                cgi = parse_cgis(file, line);
+                 
+            }
+
     }    
     file.close();
     // while
     print(configs, cgi);
     return (configs);
 }
-

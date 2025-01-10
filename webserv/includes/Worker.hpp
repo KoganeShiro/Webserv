@@ -1,8 +1,8 @@
 #pragma once
 
 #include "GetMethod.hpp"
-//#include "PostMethod.hpp"
-//#include "DeleteMethod.hpp"
+#include "PostMethod.hpp"
+#include "DeleteMethod.hpp"
 
 class Worker {
 private:
@@ -13,22 +13,28 @@ private:
     Response _response;
     std::string _fullpath;
     std::string _req_location;
-    std::string _file;
+    // std::string _file;
     std::string _route;
     std::string _querystring;
     std::string _cgi_type;
+    std::string _cgi_path;
+    int _cgi_timeout;
+    
     bool _use_cgi;
     int _status_code;
-    bool _file_exists();
-    bool _file_readable();
-    bool _file_writable();
+  //  bool _file_exists();
+   // bool _file_readable();
+   // bool _file_writable();
     void check_cgi();
     std::string checkRoute() const;
-    bool _is_directory();
+  //  bool _is_directory();
     void check_for_errors();
     bool is_valid_method();
     bool method_is_available();
-    bool servername_is_valid();    
+    bool servername_is_valid();
+    std::vector<std::string> build_cgi_environment();
+    Response execute_cgi();
+    void clean_up();
 
 
 public:

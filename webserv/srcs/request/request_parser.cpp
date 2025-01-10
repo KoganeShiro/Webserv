@@ -143,6 +143,10 @@ Request Request::request_parser(Request &request, std::string& buffer, size_t MA
         if (!parse_body(request, buffer, MAX_BODY_LENGTH))
             return (request);
     }
+    if (!validate_headers(request))
+        return (request);
+    if (!parse_body(request, buffer))
+        return (request);
 
     request.set_request_buffer(buffer.substr(this->get_pos()));
 
@@ -155,7 +159,6 @@ Request Request::request_parser(Request &request, std::string& buffer, size_t MA
 
     return (request);
 }
-
 
 void print_Request(Request *request)
 {

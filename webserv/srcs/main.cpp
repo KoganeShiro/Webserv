@@ -11,6 +11,7 @@
 #include "Worker.hpp"
 // #include "Connection.hpp"
 
+
 // Response ft_worker_response(Config_data data, Request request)
 // {
 //     Worker worker(data, request);
@@ -167,6 +168,19 @@ int main(int argc, char **argv)
     // 1. Parser le fichier de configuration
     try {
         std::vector<Config_data> configs = parse_config(argv[1]);
+       
+        // 2. Creer les instances de serveurs
+        std::vector<Server> servers;
+        for (size_t i = 0; i < configs.size(); ++i) {
+            servers.push_back(Server(configs[i]));
+        }
+        std::cout << servers.size();
+        // // 3. Creer une instance epoll
+        // int epoll_fd = epoll_create(1);
+        // if (epoll_fd < 0) {
+        //     std::cerr << "epoll_create failed\n";
+        //     return EXIT_FAILURE;
+        // }
 
         // 2. Creer une instance epoll
         int epoll_fd = epoll_create(1);

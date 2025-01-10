@@ -41,6 +41,7 @@ private:
     bool _finish_header;
     Request request_parser(Request &request, std::string& buffer, size_t MAX_BODY_LENGTH);
 
+
 public:
 
     Request();
@@ -77,5 +78,6 @@ public:
     void set_finish_header(bool finish);
     bool get_finish_header();
     int add_to_request(std::string to_add, size_t MAX_BODY_LENGTH);
+
     Request *parsed_request();
 };

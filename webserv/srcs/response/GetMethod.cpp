@@ -35,7 +35,7 @@ bool GetMethod::_is_directory()
 
 int GetMethod::filesize(std::string filename) {
     struct stat fileStat;
-    std::cout << "Filesize check: " << filename << std::endl;
+    std::cout << "Get Method Filesize check: " << filename << std::endl;
     if (stat(filename.c_str(), &fileStat) == 0) {
         return fileStat.st_size;
     } else {
@@ -71,7 +71,7 @@ std::string GetMethod::readfile(std::string filename) {
     
     std::ifstream file(filename.c_str()); // Open the file in read mode
     if (!file) {
-        std::cerr << "Error: Could not open:" << filename << std::endl;        
+        std::cerr << "Get Method Error: Could not open:" << filename << std::endl;        
     }
 
     std::string content;
@@ -104,31 +104,31 @@ Response GetMethod::handle(const Request& request, std::string& fullpath, Config
     // Process the request
     if (filesize(_fullpath) == -1) {
         response = Response(404, "Not Found", _config);
-        std::cout << "File not found: " << _fullpath << std::endl;
+        std::cout << "Get Method File not found: " << _fullpath << std::endl;
         return response;
     }
     else if (filesize(_fullpath) > MAX_FILE_SIZE) {
         response = Response(413, "Request Entity Too Large", _config);
-        std::cout << "File too large: " << _fullpath << std::endl;
+        std::cout << "Get Method File too large: " << _fullpath << std::endl;
         return response;
     }
     else if (! _file_readable()) {
         response = Response(403, "Forbidden", _config);
-        std::cout << "File not readable: " << _fullpath << std::endl;
+        std::cout << "Get Method File not readable: " << _fullpath << std::endl;
         return response;
     }
     else if (_is_directory() && ! _config.routes[_route].dir_listing) {
         response = Response(403, "Forbidden", _config);
-        std::cout << "Directory listing not allowed: " << _fullpath << std::endl;
+        std::cout << "Get Method Directory listing not allowed: " << _fullpath << std::endl;
         return response;
     }
     else if (_is_directory() && _config.routes[_route].dir_listing) {
-        response = Response(200, "OK", _fullpath, true);
-        std::cout << "Directory listing OK:" << _fullpath << std::endl;
+        response = Response(200, "OK", _fullpath, true, _config);
+        std::cout << "Get Method Directory listing OK:" << _fullpath << std::endl;
         return response;
     }
     else {
-        std::string content = readfile(_fullpath);                
+        std::string content = readfile(_fullpath);                        
         response.set_body(content);
         response.set_header("Content-Type", getMimeType(_fullpath));
     }    
