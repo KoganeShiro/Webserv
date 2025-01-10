@@ -7,12 +7,12 @@ CFLAGS = -g -Wall -Wextra -std=c++98 -Iincludes/
 SRCS_CGI =		Cgi.cpp 
 
 SRCS_REQUEST =	Request.cpp	\
-				#request_parser.cpp
+				request_parser.cpp
 
-SRCS_RESPONSE =	#GetMethod.cpp \
-				#Response.cpp \
-				#Worker.cpp \
-				#testmain.cpp
+SRCS_RESPONSE =	GetMethod.cpp \
+				Response.cpp \
+				Worker.cpp
+#testmain.cpp
 
 
 SRCS_SERVER =	Connection.cpp \
@@ -21,9 +21,9 @@ SRCS_SERVER =	Connection.cpp \
 
 SRCS_UTILS =	#gen_webpage.cpp
 		
-SRCS =			#request_parser_test.cpp
+SRCS =			main.cpp
+#request_parser_test.cpp
 #parsing_test.cpp
-#main.cpp
 
 OBJ_PATH = obj/
 SRCS_PATH = srcs/

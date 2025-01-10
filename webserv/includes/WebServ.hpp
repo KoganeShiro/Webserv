@@ -45,15 +45,16 @@ std::string to_string(T value)
 #define MAX_EVENTS 10
 #define MAX_FILE_SIZE 1000000
 #define MAX_SERVERS 10
-
+#define STD_BODY_SIZE 5000
 //DEFINE for Cgi
 #define EXPLAINATION "A VALID config file should follow this format :\n\t\
--Each line with a declaration should fini with a '{', '}' or ';'\
+-Each line with a declaration should end with a ';'\
 -A server initialisation should start whith 'server {' and nothing else on the line\n\t\
 -'host' should be follow by a IP adress\n\t\
 -'listen' should be follow by a space and a number corresponding to a port and nothing else\n\t\
 -'server_name'(facultative) should be follow by a space and the name of the server in ONE word\n\t\
--'client_max_body_size' should be follow by a space and a value terminate by K, M or G all in one word\n\t\
+-'client_max_body_size' should be follow by a space and a value terminate by K, M or G all in one word,\
+if none is given, the default size is fixed at 5000\n\t\
 -'default_file' should be follow by an url\n\t\
 -'directory_page' should be follow by a space and the path of an html file\n\t\
 -'location' should be follow by a path and a '{'\n\t\t\
@@ -74,10 +75,12 @@ cgi {\n\
 \t\tcgi_timeout time in second > 0;\n\
 -And another '}' should be use alone on a newline to close a 'cgi'\n\
 \t}\n\
-}\n\n\n"
+}\n\n\
+If any of those rule is not apply, it might conduct to a bad configured server and continue the program\
+\n\n\n"
 
 //DEFINE for Request
-#define HEADER_SIZE 8000
+#define MAX_HEADER_SIZE 8000
 #define AGAIN 0
 #define BAD_HEADER 1
 #define GOOD 2

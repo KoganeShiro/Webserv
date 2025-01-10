@@ -1,9 +1,19 @@
 
 #include "Request.hpp"
 
+void Request::set_finish_header(bool finish)
+{
+    this->_finish_header = finish;
+}
+
+bool Request::get_finish_header()
+{
+    return (this->_finish_header);
+}
+
 static bool parse_request_line(Request& request, std::string& buffer, size_t& pos)
 {
-    size_t line_end = buffer.find("\r\n", pos);
+    size_t line_end = buffer.find("\n", pos);
     if (line_end != std::string::npos) {
         std::string first_line = buffer.substr(pos, line_end - pos);
         std::istringstream iss(first_line);
@@ -12,21 +22,29 @@ static bool parse_request_line(Request& request, std::string& buffer, size_t& po
             request.set_method(method);
             request.set_path(path);
             request.set_http_version(http_version);
-            pos = line_end + 2;
+            pos = line_end + 1;
             return (true);
         }
     }
     return (false);
 }
 
-static void parse_headers(Request& request, std::string& buffer, size_t& pos)
+static bool parse_headers(Request& request, std::string& buffer, size_t& pos)
 {
     size_t line_end;
+    size_t start_pos = pos;
+
     while ((line_end = buffer.find("\r\n", pos)) != std::string::npos) {
         if (pos == line_end) {
-            break;
+            pos += 2;
+            request.set_pos(pos);
+            request.set_finish_header(true);
+            return (true);
         }
-
+        if (line_end - start_pos > MAX_HEADER_SIZE) {
+            request.set_is_ready(BAD_HEADER);
+            return (false);
+        }
         std::string line = buffer.substr(pos, line_end - pos);
         size_t colon_pos = line.find(':');
         if (colon_pos != std::string::npos) {
@@ -40,65 +58,148 @@ static void parse_headers(Request& request, std::string& buffer, size_t& pos)
         }
         pos = line_end + 2;
     }
+    return (false);
 }
 
-static void parse_body(Request& request, std::string& buffer, size_t& pos)
+static bool validate_headers(Request &request, size_t MAX_BODY_LENGTH)
 {
-    if (buffer.length() >= pos + request.get_content_length()) {
-        request.set_body(buffer.substr(pos, request.get_content_length()));
-        pos += request.get_content_length();
-        request.set_is_ready(GOOD);
+    std::string content_length = request.get_header_element("Content-Length");
+    std::string transfer_encoding = request.get_header_element("Transfer-Encoding");
+    if (content_length.empty() && transfer_encoding != "chunked") {
+        if (request.get_method() == "GET" || request.get_method() == "DELETE") {
+            return (true);
+        }
+        request.set_is_ready(BAD_HEADER);
+        return (false);
     }
+    request.set_content_length(atoi(content_length.c_str()));
+    if (request.get_content_length() > MAX_BODY_LENGTH) {
+        request.set_is_ready(BAD_HEADER);
+        return (false);
+    }
+    return (true);
 }
 
-static Request request_parser(Request request, std::string& buffer)
+static bool parse_body(Request& request, std::string& buffer, size_t MAX_BODY_LENGTH)
+{
+    size_t pos = request.get_pos();
+    if (request.get_header_element("Content-Length").empty() == false) {
+        if (buffer.length() >= pos + request.get_content_length()) {
+            request.set_body(buffer.substr(pos, request.get_content_length()));
+            pos += request.get_content_length();
+            request.set_is_ready(GOOD);
+            return (true);
+        }
+    }
+    else if (request.get_header_element("Transfer-Encoding") == "chunked") {
+         while (true) {
+            size_t chunk_size_end = buffer.find("\r\n", pos);
+            if (chunk_size_end == std::string::npos) {
+                return (false);
+            }
+            std::string chunk_size_str = buffer.substr(pos, chunk_size_end - pos);
+            pos = chunk_size_end + 2;
+            size_t chunk_size;
+            std::istringstream iss(chunk_size_str);
+            if (!(iss >> std::hex >> chunk_size)) {
+                request.set_is_ready(BAD_HEADER);
+                return (false);
+            }
+            if (chunk_size == 0) {
+                request.set_is_ready(GOOD);
+                pos = buffer.find("\r\n", pos) + 2;
+                request.set_pos(pos);
+                return (true);
+            }
+            if (buffer.length() < pos + chunk_size + 2) {
+                return (false);
+            }
+            request.set_body(request.get_body() + buffer.substr(pos, chunk_size));
+            pos += chunk_size + 2;
+            request.set_pos(pos);
+            if (request.get_body().length() > MAX_BODY_LENGTH) {
+                request.set_is_ready(BAD_HEADER);
+                return (false);
+            }
+        }
+    }
+    request.set_pos(pos);
+    return (false);
+}
+
+Request Request::request_parser(Request &request, std::string& buffer, size_t MAX_BODY_LENGTH)
 {
     size_t pos = 0;
 
-    if (request.get_method().empty()) {
-        if (!parse_request_line(request, buffer, pos)) {
-            return (request);
-        }
-    }
-    size_t headers_end = buffer.find("\r\n\r\n", pos);
-    if (headers_end == std::string::npos) {
-        //check sizeof header
-        if (sizeof(buffer) > HEADER_SIZE) {
-            request.set_is_ready(BAD_HEADER);
-        }
+    if (!parse_request_line(request, buffer, pos))
         return (request);
-    }
-    parse_headers(request, buffer, pos);
-
-    //check if not Content-Length, chunked request ?...
-    //if neither of them return BAD_HEADER
-    request.set_content_length(atoi(request.get_header_element("Content-Length").c_str()));
-    if (request.get_content_length() > 0) {
-        if (buffer.length() < headers_end + 4 + request.get_content_length()) {
+    if (request.get_finish_header() == false) {
+        if (!parse_headers(request, buffer, pos))
             return (request);
-        }
-        parse_body(request, buffer, pos);
     }
-    else {
-        pos = headers_end + 4;
+    if (!validate_headers(request, MAX_BODY_LENGTH))
+        return (request);
+    if (this->get_method() == "POST") {
+        if (!parse_body(request, buffer, MAX_BODY_LENGTH))
+            return (request);
     }
 
-    buffer = buffer.substr(pos);
+    request.set_request_buffer(buffer.substr(this->get_pos()));
+
+    std::cout << "reminder: " BGREEN <<
+        request.get_request_buffer()
+    << RESET << std::endl;
 
     request.set_good_request(true);
     request.set_is_ready(GOOD);
+
     return (request);
 }
 
 
-void Request::add_to_request(std::string to_add)
+void print_Request(Request *request)
+{
+    if (request == NULL)
+    {
+        std::cout <<RED "Request is NULL" RESET << std::endl;
+        return;
+    }
+
+    std::cout << "Request Details:" << std::endl;
+    std::cout << "Request Buffer: `" << request->get_request_buffer() << "`" << std::endl;
+    std::cout << "----------------" << std::endl;
+    std::cout << "Method: `" << request->get_method() << "`" << std::endl;
+    std::cout << "Path: `" << request->get_path() << "`" << std::endl;
+    std::cout << "HTTP Version: `" << request->get_http_version() << "`" << std::endl;
+    std::cout << "Content Length: `" << request->get_content_length() << "`" << std::endl;
+    std::cout << "Good Request: `" << (request->get_good_request() ? "Yes" : "No") << "`" << std::endl;
+    std::cout << "Is Ready: `" << (request->get_is_ready() ? "Yes" : "No") << "`" << std::endl;
+
+    std::cout << "\nHeaders:" << std::endl;
+    std::cout << "--------" << std::endl;
+    // Assuming you have a method to get all headers
+    std::map<std::string, std::string> headers = request->get_header();
+    for (std::map<std::string, std::string>::const_iterator it = headers.begin(); it != headers.end(); ++it)
+    {
+        std::cout << "`" << it->first << "`" << ": "
+         << "`" << it->second << "`" << std::endl;
+    }
+
+    std::cout << "\nBody:" << std::endl;
+    std::cout << "-----" << std::endl;
+    std::cout << "`" << request->get_body() << "`" << std::endl;
+}
+
+
+int Request::add_to_request(std::string to_add, size_t MAX_BODY_LENGTH)
 {
     this->set_good_request(false);
     this->set_is_ready(AGAIN);
-    this->set_content_length(0);
 
-    this->_request_buffer = this->_request_buffer.append(to_add);
-    *this = request_parser(*this, this->_request_buffer);
+    this->set_request_buffer(this->_request_buffer.append(to_add));
+    *this = request_parser(*this, this->_request_buffer, MAX_BODY_LENGTH);
+    print_Request(this);
+    return (this->get_is_ready());
 }
 
 Request *Request::parsed_request()

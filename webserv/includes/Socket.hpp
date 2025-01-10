@@ -18,9 +18,9 @@ private:
     void    _bind_socket(int port);
     void    configure_epoll(void);
     void    _listen_for_connections(void);
+    // Socket();
 
 public:
-    Socket();
     Socket(int port);
     ~Socket();
     void accept_connection();

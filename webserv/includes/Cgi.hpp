@@ -43,7 +43,6 @@ typedef struct S_Config_data
 
     // Web pages
     std::string error_pages; //template page
-    // std::string method_pages;
     std::string directory_page;
 
     size_t client_body_size_limit; //Sets the maximum allowed size for client request bodies

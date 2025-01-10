@@ -25,19 +25,20 @@ void Socket::add_to_epoll(int epoll_fd) {
     }
 }
 
-Socket::Socket(){
-}
+// Socket::Socket(){
+// }
 
 Socket::Socket(int port)
 {
     this->_sockfd = this->_create_socket(); // Create a new socket
     this->_bind_socket(port); // Bind the socket to the specified port
     this->_listen_for_connections(); // Start listening for incoming connections
-    this->configure_epoll();//check the events happening in the socket
+    // this->configure_epoll();//check the events happening in the socket
 }
 
 //ajout Damien
 Socket::~Socket() {
+    std::cout << "Closing socket fd = " << _sockfd << std::endl;
     try {
         close(_sockfd);
     } catch (const std::exception& e) {
@@ -52,6 +53,7 @@ int Socket::_create_socket(void)
     if (fd < 0) {
         throw std::runtime_error("Failed to create socket");
     }
+    std::cout << "Socket created with fd = " << fd << std::endl;
     return (fd);
 }
 
@@ -63,10 +65,10 @@ void Socket::_bind_socket(int port)
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY); // Listen on all interfaces
     serverAddr.sin_port = htons(port); // Convert port number to network byte order
 
-    int opt = 1;
-	if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))){
-        throw std::runtime_error("Failed to set socket"); //For not having "Adress already in use"
-	}
+    // int opt = 1;
+	// if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0){
+    //     throw std::runtime_error("Failed to set socket"); //For not having "Adress already in use"
+	// }
 
     if (bind(this->_sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
         throw std::runtime_error("Failed to bind socket");
@@ -81,21 +83,21 @@ void Socket::_listen_for_connections(void)
     }
 }
 
-//Wait for event to appear in the socket
-void    Socket::configure_epoll(void)
-{
-    _epollFd = epoll_create(1);
+// //Wait for event to appear in the socket
+// void    Socket::configure_epoll(void)
+// {
+//     _epollFd = epoll_create(1);
+//     std::cout << _epollFd << "|||||||||\n"; 
+//     if (_epollFd < 0) {
+//         throw std::runtime_error("Epoll create failed");
+//     }
 
-    if (_epollFd < 0) {
-        throw std::runtime_error("Epoll create failed");
-    }
+//     epoll_event event;    
+//     event.data.fd = _sockfd;
+//     event.events = EPOLLIN;
+//     epoll_ctl(_epollFd, EPOLL_CTL_ADD, _sockfd, &event);
 
-    epoll_event event;    
-    event.data.fd = _sockfd;
-    event.events = EPOLLIN;
-    epoll_ctl(_epollFd, EPOLL_CTL_ADD, _sockfd, &event);
-
-}
+// }
 
 void Socket::accept_connection(void)
 {
@@ -104,4 +106,8 @@ void Socket::accept_connection(void)
         throw std::runtime_error("Failed to accept connection");
     }
     this->_connection.push_back(Connection(clientfd)); // Return a Connection object for the client
+}
+
+int Socket::get_sockfd(){
+    return (this->_sockfd);
 }

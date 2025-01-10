@@ -3,9 +3,9 @@
 Request::Request() :_request_buffer(""),
     _request(""), _headers(), _method(""),
     _path(""), _http_version(""),
-    _content_length(0), _body(""),
+    _content_length(-1), _body(""),
     _good_request(false),
-    _is_ready(AGAIN)
+    _is_ready(AGAIN), _pos(0), _finish_header(0)
 {}
 
 Request::Request(Request const &other) :
@@ -18,8 +18,25 @@ Request::Request(Request const &other) :
     _content_length(other._content_length),
     _body(other._body),
     _good_request(other._good_request),
-    _is_ready(other._is_ready)
+    _is_ready(other._is_ready),
+     _pos(other._pos), _finish_header(other._finish_header)
 {}
+
+Request &Request::operator=(Request const &other)
+{
+	if (this != &other) {
+		_request_buffer = other._request_buffer;
+        _request = other._request;
+        _headers = other._headers;
+        _path = other._path;
+        _http_version = other._http_version;
+        _content_length = other._content_length;
+        _body = other._body;
+        _good_request = other._good_request;
+        _is_ready = other._is_ready;
+	}
+	return (*this);
+}
 
 // Getter for HTTP method
 std::string Request::get_method() const
@@ -86,9 +103,19 @@ std::string  Request::get_http_version() const
     return (this->_http_version);
 }
 
-int Request::get_content_length() const
+size_t Request::get_content_length() const
 {
     return (this->_content_length);
+}
+
+size_t Request::get_pos() const
+{
+    return (this->_pos);
+}
+
+void Request::set_pos(size_t pos)
+{
+    this->_pos = pos;
 }
 
 // Method to set the HTTP method (used during request parsing)
@@ -135,9 +162,9 @@ void Request::set_http_version(const std::string http_version)
     this->_http_version = http_version;
 }
 
-void Request::set_content_length(int lenght)
+void Request::set_content_length(size_t length)
 {
-    this->_content_length = lenght;
+    this->_content_length = length;
 }
 
 void Request::set_to_null()
