@@ -43,8 +43,6 @@ static int parse_int(const char *str) {
 
 
 static CGI get_cgi(std::ifstream& file, std::string line){
-    static int  i = 0;
-
     std::string _name = "\0"; //Stores the CGI's name
     std::string _compiler_path = "\0"; //path of the cgi
     std::string _extension = "\0"; //py || php || js || ...
@@ -52,8 +50,6 @@ static CGI get_cgi(std::ifstream& file, std::string line){
     _name = trim(line.substr(0, line.find("{") - 1));
     std::getline(file, line);
     line = trim(line);
-    
-
 
     while (line[0] != '}'){
 
@@ -86,22 +82,11 @@ static CGI get_cgi(std::ifstream& file, std::string line){
         line = trim(line);
     }
 
-    i++;
     if (_compiler_path != "\0" && _extension != "\0" && _time_out > 0){
-        return (CGI(_name, _compiler_path, _extension, _time_out));
+        return (CGI(_extension, _compiler_path, _extension, _time_out));
     }
     else {
-        std::cerr << "The cgi number " << i << " of your .config has something wrong:\n";
-        if (_name != "\0")
-            std::cerr << "- It doesn't have a name\n";
-        if (_compiler_path != "\0")
-            std::cerr << "- It doesn't have a compiler path\n"; 
-        if (_extension != "\0")
-            std::cerr << "- It doesn't have an extension type\n";
-        if (_time_out <= 0)
-            std::cerr << "- It doesn't have a valid time_out\n";
-        std::cerr << std::endl;
-        return (CGI("\0", "\0", "\0", 0));
+        throw std::runtime_error(std::string("Something wrong with one of your CGI, check the explaination and fixe your file '.config'\n"));
     }
 }
 
@@ -195,8 +180,6 @@ static  Route_config get_route(std::ifstream& file, std::string line)
 static Config_data parse_server(std::ifstream& file, std::string line)
 {
     Config_data current_config;
-    // std::getline(file, line);
-    // line = trim(line);
 
     while (std::getline(file, line))
     {
@@ -254,8 +237,6 @@ static Config_data parse_server(std::ifstream& file, std::string line)
         else if (line.find("}") && line.size() == 1){
             break;
         }
-        // if(!std::getline(file, line))
-        //     break;
     }
     // check_config(current_config);
     return (current_config);
@@ -283,7 +264,6 @@ void    print(std::vector<Config_data> data, std::vector<CGI> cgi){
                 << "\n\t-dir_listing :" << it->second.dir_listing
                 << "\n\t-use of cgi :" << it->second.use_cgi
                 << "\n\t-default files :" << it->second.default_file
-//                << "\n\t-upload directory :" << it->second.upload_dir
                 << "\n\t-redirection_nb : " << it->second.redirection_nb
                 << " ; redirection_path : " << it->second.redirection_path 
                 << "\n\t-accepted methods : " ;
@@ -310,17 +290,37 @@ void    print(std::vector<Config_data> data, std::vector<CGI> cgi){
     }
 }
 
+void    ft_check_server(Config_data config){
+    // int error = 0;
+
+    if (config.client_body_size_limit == 0)
+        config.client_body_size_limit = STD_BODY_SIZE;
+    if (config.error_pages == ""){
+
+    }
+    if (config.host == ""){
+        
+    }
+    if (config.port < 0){
+
+    }
+    if (config.routes.size() == 0){
+
+    }
+    if (config.server_name == ""){
+
+    }
+}
+
 // Fonction principale pour parser le fichier de configuration
 std::vector<Config_data> parse_config(const char *filename) {
     std::vector<Config_data> configs;
     std::vector<CGI> cgi;
     std::ifstream file(filename);
     if (!file) {
-        throw std::runtime_error(std::string("Error opening file: ") + strerror(errno));        return (configs);
+        throw std::runtime_error(std::string("Error opening file: ") + strerror(errno));
     }
-
     std::string line;
-
     while (std::getline(file, line)) {
         
         // Process each line in the buffer
@@ -337,8 +337,10 @@ std::vector<Config_data> parse_config(const char *filename) {
                 cgi = parse_cgis(file, line);
                  
             }
+
     }    
     file.close();
+    // while
     print(configs, cgi);
     return (configs);
 }

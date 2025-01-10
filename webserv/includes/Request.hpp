@@ -26,19 +26,21 @@ check if right host ?
 class Request
 {
 private:
+    //MAX_BODY_LENGTH
     std::string _request_buffer;
     std::string _request; //final request
     std::map<std::string, std::string> _headers; // Request headers
     std::string _method; // HTTP method (GET, POST, DELETE, etc.)
     std::string _path;   // Request path (e.g., /api/resource)
     std::string _http_version;
-    int _content_length;
+    size_t _content_length;
     std::string _body;   // Request body (for POST/PUT requests)
     bool _good_request;
     int _is_ready;
     size_t _pos;
     bool _finish_header;
-    Request request_parser(Request &request, std::string& buffer);
+    Request request_parser(Request &request, std::string& buffer, size_t MAX_BODY_LENGTH);
+
 
 public:
 
@@ -57,7 +59,7 @@ public:
     int get_is_ready() const;
     std::string get_request_buffer() const ;
     std::string get_http_version() const ;
-    int get_content_length() const ;
+    size_t get_content_length() const ;
     size_t get_pos() const;
 
     void set_pos(size_t pos);
@@ -69,12 +71,13 @@ public:
     void set_is_ready(const int ready);
     void set_request_buffer(const std::string request_buffer);
     void set_http_version(const std::string http_version);
-    void set_content_length(int lenght);
+    void set_content_length(size_t length);
     void set_to_null();
 
     /* IN REQUEST_PARSER */
     void set_finish_header(bool finish);
     bool get_finish_header();
-    void add_to_request(std::string to_add);
+    int add_to_request(std::string to_add, size_t MAX_BODY_LENGTH);
+
     Request *parsed_request();
 };

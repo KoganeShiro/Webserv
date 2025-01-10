@@ -103,7 +103,7 @@ std::string  Request::get_http_version() const
     return (this->_http_version);
 }
 
-int Request::get_content_length() const
+size_t Request::get_content_length() const
 {
     return (this->_content_length);
 }
@@ -162,9 +162,9 @@ void Request::set_http_version(const std::string http_version)
     this->_http_version = http_version;
 }
 
-void Request::set_content_length(int lenght)
+void Request::set_content_length(size_t length)
 {
-    this->_content_length = lenght;
+    this->_content_length = length;
 }
 
 void Request::set_to_null()

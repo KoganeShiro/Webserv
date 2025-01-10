@@ -8,19 +8,22 @@
 
 class Server
 {
-private:
-    Config_data _data;
-    Socket _socket;
-    //Worker _worker;
-    std::vector <Connection> connection_tab;//ajout Damien
+    private:
+        Config_data _data;
+        Socket _socket;
+        //Worker _worker;
+        std::vector <Connection> _connection_tab;
 
-public:
-    Server(const Config_data config);
-    Config_data get_data() const;
-    int  get_socket_fd();
+    public:
+        // Server()
+        ~Server();
+        Server(const Config_data config);
+        Config_data get_data() const;
+        int  get_socket_fd();
 
-    void    add_connection(void);//ajout Damien
-    void add_to_epoll(int epoll_fd);//ajout Damien
+        Connection* add_connection(void);
+        void add_to_epoll(int epoll_fd);
+        Connection* get_connection_by_fd(int client_fd);
 
     //other getter ??
 };
