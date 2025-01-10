@@ -59,7 +59,7 @@ Config_data config_parser(const std::string config)
     // Return Config struct
     return (hard_code(&config_data, &route));
 }
-
+*/
 void printconfig(Config_data& config)
 {
     std::cout << "Host: " << config.host << std::endl;
@@ -91,7 +91,7 @@ void printconfig(Config_data& config)
     }
  
 }
-*/
+
 
 
 int main(int argc, char **argv)
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
             servers.push_back(Server(configs[i]));
         }
      //   std::cout << servers.size();
-     //   printconfig(configs[0]);
+        printconfig(configs[0]);
         config = configs[0];
       
        // return (EXIT_SUCCESS);
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
   // Config_data config = config_parser("test.config");
     Request *request = new Request();
 
-    request->set_path("/uploads/youpi.bla/er?123");
+    request->set_path("/uploads/");
     request->set_method("GET");
     request->set_body("Hello, World!");
     request->add_header("Host", "localhost");
