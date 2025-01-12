@@ -102,7 +102,21 @@ Response GetMethod::handle(const Request& request, std::string& fullpath, Config
     Response response;
     
     // Process the request
-    if (filesize(_fullpath) == -1) {
+    if (_is_directory() && ! _config.routes[_route].dir_listing) {
+        response = Response(403, "Forbidden", _config);
+        std::cout << "Get Method Directory listing not allowed: " << _fullpath << std::endl;
+        return response;
+    }
+    else if (_is_directory() && _config.routes[_route].dir_listing) {
+        response = Response(200, "OK", _fullpath, true, _config);
+        std::cout << "Get Method Directory listing OK:" << _fullpath << std::endl;
+        return response;
+    }
+
+
+
+
+    else if (filesize(_fullpath) == -1) {
         response = Response(404, "Not Found", _config);
         std::cout << "Get Method File not found: " << _fullpath << std::endl;
         return response;
@@ -117,16 +131,16 @@ Response GetMethod::handle(const Request& request, std::string& fullpath, Config
         std::cout << "Get Method File not readable: " << _fullpath << std::endl;
         return response;
     }
-    else if (_is_directory() && ! _config.routes[_route].dir_listing) {
-        response = Response(403, "Forbidden", _config);
-        std::cout << "Get Method Directory listing not allowed: " << _fullpath << std::endl;
-        return response;
-    }
-    else if (_is_directory() && _config.routes[_route].dir_listing) {
-        response = Response(200, "OK", _fullpath, true, _config);
-        std::cout << "Get Method Directory listing OK:" << _fullpath << std::endl;
-        return response;
-    }
+//    else if (_is_directory() && ! _config.routes[_route].dir_listing) {
+ //       response = Response(403, "Forbidden", _config);
+  //      std::cout << "Get Method Directory listing not allowed: " << _fullpath << std::endl;
+ //       return response;
+  //  }
+  //  else if (_is_directory() && _config.routes[_route].dir_listing) {
+  //      response = Response(200, "OK", _fullpath, true, _config);
+  //      std::cout << "Get Method Directory listing OK:" << _fullpath << std::endl;
+  //      return response;
+  //  }
     else {
         std::string content = readfile(_fullpath);                        
         response.set_body(content);

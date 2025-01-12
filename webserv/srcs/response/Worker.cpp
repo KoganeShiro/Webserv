@@ -6,6 +6,7 @@
 void Worker::check_cgi()
 {
     std::cout << YELLOW "Check if CGI is available and parse information from Path." RESET << std::endl;
+    std::string cgitype;
     if (_config.routes[_route].use_cgi)
     {
         size_t start_query_str = _fullpath.find('?');
@@ -14,23 +15,42 @@ void Worker::check_cgi()
             _querystring = _fullpath.substr(start_query_str + 1);
             _fullpath = _fullpath.substr(0,start_query_str);
         }
-        std::string extension_path_query = _fullpath.substr(_fullpath.find('.') + 1);        
-        if (extension_path_query.find('/') != std::string::npos) {
+        //std::string extension_path_query = _fullpath.substr(_fullpath.find('.') + 1);
+        //std::string extension_path;
+        std::string cgitype;
+        size_t extension_start_pos = _fullpath.find('.');
+        size_t extension_path_start_pos = _fullpath.find('/', extension_start_pos);
+        if (extension_path_start_pos == std::string::npos) {
+            extension_path_start_pos = _fullpath.length();
+        }
+        _fullpath = _fullpath.substr(0, extension_path_start_pos);
+        if (extension_start_pos != std::string::npos) {            
+            cgitype = _fullpath.substr(extension_start_pos + 1, extension_path_start_pos - extension_start_pos - 1);
+        }
+        _cgi_path = _fullpath.substr(extension_path_start_pos);
+
+//            std::string extension_path_query = _fullpath.substr(extension_path_pos + 1);
+//            _cgi_path = extension_path_query;
+            
+        //    extension_path_query = extension_path_query.substr(0, extension_path_query.find('?'));
+ //       }
+ //       if (extension_path_query.find('/') != std::string::npos) {
             // Check the meaning of the line in the subject: 
             // Because you won’t call the CGI directly, use the full path as PATH_INFO.
             // maybe it means that the Path_Info is the full path to the CGI script
             
-            _cgi_path = extension_path_query.substr(extension_path_query.find('/'));            
-            extension_path_query = extension_path_query.substr(0, extension_path_query.find('/'));        
-            _fullpath = _fullpath.substr(0, _fullpath.find('.') + 1) + extension_path_query;
+   //         _cgi_path = extension_path_query.substr(extension_path_query.find('/'));            
+     //       extension_path_query = extension_path_query.substr(0, extension_path_query.find('/'));        
+       //     _fullpath = _fullpath.substr(0, _fullpath.find('.') + 1) + extension_path_query;
             // alternative
             // _cgi_path = _fullpath;
             
 
-        }                
+   //     }                
         for (std::vector<CGI>::iterator it = _config.tab_cgi.begin(); it != _config.tab_cgi.end(); ++it) {   
             std::cout << YELLOW "Checking CGI type: " RESET << it->get_name() << std::endl;         
-            if (it->get_extension() == extension_path_query) {
+            if (it->get_extension() == cgitype) {
+           // if (it->get_extension() == extension_path_query) {
                 _cgi_type = it->get_name();
                 _use_cgi = true;
                 _cgi_timeout = it->get_time_out();
@@ -116,7 +136,7 @@ bool Worker::is_valid_method()
 
 bool Worker::servername_is_valid()
 {
-    if (_config.server_name == _request->get_header_element("Host")) {
+    if (_config.server_name == _request->get_header_element("Host").substr(0, _request->get_header_element("Host").find(':'))) {
         std::cout << GREEN "Server name in Header corresponds to this server." RESET << std::endl;
         return true;
     }
@@ -194,9 +214,12 @@ Worker::Worker(Config_data c, Request *request)
             _fullpath = _config.routes[_route].root_dir + _request->get_path();
         else
             _fullpath = _config.routes[_route].root_dir + (_request->get_path().substr(_route.length()));
-        if (_fullpath[_fullpath.length() - 1] == '/')
+        std::cout << ORANGE "Fullpath check: " RESET << _fullpath << std::endl;
+        
+        if (_fullpath[_fullpath.length() - 1] == '/')            
            _fullpath += _config.routes[_route].default_file;
         check_cgi();
+        std::cout << ORANGE "Fullpath check: " RESET << _fullpath << std::endl;
     }
     else
         _status_code = 404;
