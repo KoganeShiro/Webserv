@@ -24,6 +24,19 @@ class Server
         Connection* add_connection(void);
         void add_to_epoll(int epoll_fd);
         Connection* get_connection_by_fd(int client_fd);
+};
 
-    //other getter ??
+class ServerManager {
+public:
+    static std::vector<Server*> servers;
+
+    static void cleanup() {
+        for (size_t i = 0; i < servers.size(); ++i) {
+            delete servers[i];
+            std::cout << "server " << i << "deleted\n"; 
+        }
+        std::cout << "server cleaned\n"; 
+
+        servers.clear();
+    }
 };
