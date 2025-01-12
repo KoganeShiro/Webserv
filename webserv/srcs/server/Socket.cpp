@@ -53,7 +53,6 @@ int Socket::_create_socket(void)
     if (fd < 0) {
         throw std::runtime_error("Failed to create socket");
     }
-    std::cout << "Socket created with fd = " << fd << std::endl;
     return (fd);
 }
 
