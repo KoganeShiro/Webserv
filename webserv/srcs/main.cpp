@@ -89,7 +89,15 @@ void    ft_manage_answer(Request* request, ConnectionInfo connection){
     int answ = request->get_is_ready();
     std::cout << "answer :" << answ << std::endl;
     if (answ == BAD_HEADER){
+        Response response(400, "Bad Request", connection.data);
+        std::string str = response.http_response(); //call generate_error_page
+        std::cout << RED << str << RESET << std::endl;
+        ssize_t bytes_sent = send(connection.connection->get_clientfd(), str.c_str(), str.length(),0);
+        if (bytes_sent == -1) {
+            perror("write");
+        }
         //send(error 400) VOIR JORG
+        delete request;
     }
     else if (answ == AGAIN){
         connection.connection->set_request_is_done(0);
