@@ -341,6 +341,6 @@ std::vector<Config_data> parse_config(const char *filename) {
     }    
     file.close();
     // while
-    print(configs, cgi);
+    // print(configs, cgi);
     return (configs);
 }

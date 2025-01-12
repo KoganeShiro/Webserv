@@ -7,9 +7,7 @@ Connection::Connection(int clientfd) : _clientfd(clientfd)
     this->_request_is_done = 1;
     Request req;
     this->request = req;
-
 }
-*/
 
 // Method to receive data from the client
 // std::string Connection::receive()
