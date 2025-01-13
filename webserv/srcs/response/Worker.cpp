@@ -162,21 +162,25 @@ void Worker::check_for_errors()
 {
     if (! is_valid_method() || ! method_is_available()) {
         _status_code = 405;
+        _error_message = "Method Not Allowed";
         std::cout << "Method not allowed" << std::endl;
         return;
     }
     if (! servername_is_valid()) {
         _status_code = 404;
+        _error_message = "Server Not Found";
         std::cout << "Server name not found" << std::endl;
         return;
     }
     if (_route.empty()) {
         _status_code = 404;
+        _error_message = "Route Not Found";
         std::cout << "Route not found" << std::endl;
         return;
     }
     if (_config.routes[_route].redirection_nb > 299 && _config.routes[_route].redirection_path != "") {
         _status_code = _config.routes[_route].redirection_nb;
+        _error_message = "Redirect";
         std::cout << "Redirection" << std::endl;
         return;
     }
@@ -221,8 +225,10 @@ Worker::Worker(Config_data c, Request *request)
         check_cgi();
         std::cout << ORANGE "Fullpath check: " RESET << _fullpath << std::endl;
     }
-    else
+    else {
         _status_code = 404;
+        _error_message = "Route Not Found";
+    }
     std::cout << ORANGE "Worker service finished verifications. Fullpath : " RESET << _fullpath <<  std::endl;
     check_for_errors();
 }
@@ -249,7 +255,7 @@ Response Worker::run()
     Response response;
 
     if (_status_code > 399) {
-        response = Response(_status_code, "Error", _config);
+        response = Response(_status_code, _error_message, _config);
         std::cout << RED "Error reponse generated from Worker: " << _status_code << RESET << std::endl;
         return response;
     }

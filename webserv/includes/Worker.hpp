@@ -22,6 +22,7 @@ private:
     
     bool _use_cgi;
     int _status_code;
+    std::string _error_message;
   //  bool _file_exists();
    // bool _file_readable();
    // bool _file_writable();

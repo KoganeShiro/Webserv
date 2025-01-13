@@ -60,7 +60,7 @@ void    ft_manage_answer(Request* request, ConnectionInfo connection){
     int answ = request->get_is_ready();
     std::cout << "answer :" << answ << std::endl;
     if (answ == BAD_HEADER){
-
+        //send(error 400) 
         Response response(400, "Bad Request", connection.data);
         std::string str = response.http_response(); //call generate_error_page
         std::cout << RED << str << RESET << std::endl;
@@ -68,11 +68,6 @@ void    ft_manage_answer(Request* request, ConnectionInfo connection){
         if (bytes_sent == -1) {
             perror("write");
         }
-
-
-
-
-
         //send(error 400) VOIR JORG
     }
     else if (answ == AGAIN){
