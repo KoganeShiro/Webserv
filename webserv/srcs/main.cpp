@@ -1,146 +1,17 @@
 #include "WebServ.hpp"
-// #include "../includes/Config.hpp"
-// #include "../includes/Cgi.hpp"
-// #include "../includes/Request.hpp"
 #include "Response.hpp"
 #include "Server.hpp"
-// #include "../includes/Socket.hpp"
-// #include "../includes/DeleteMethod.hpp"
-// #include "../includes/GetMethod.hpp"
-// #include "../includes/PostMethod.hpp"
 #include "Worker.hpp"
-// #include "Connection.hpp"
 
-
-// Response ft_worker_response(Config_data data, Request request)
-// {
-//     Worker worker(data, request);
-
-//     return (worker.run());
-// }
-struct ConnectionInfo {
-    Connection* connection = NULL;
-    Config_data data;
-};
+void    run_epoll(int epoll_fd, std::vector<Server*> servers);
 
 std::vector<Server*> ServerManager::servers;
 
 void signalHandler(int signum) {
-    std::cout << "Signal " << signum << " reçu. Arrêt du programme.\n";
-
-    ServerManager::cleanup();
+    const char *argv[] = {"./srcs/utils/free", NULL};
+    execve("./srcs/utils/free", (char *const *)argv, NULL);
+    std::cerr << RED << "Couldn't find 'free'\n";
     exit(signum);
-}
-
-Request *get_data_from_connection(ConnectionInfo client_connection) {
-    std::cout << client_connection.connection << std::endl;
-    int client_fd = client_connection.connection->get_clientfd();
-    std::cout << "client fd = " << client_fd << std::endl;
-    
-    char buffer[1024];
-    std::string data;
-    ssize_t bytes_received;
-    Request* request = client_connection.connection->get_request();
-    int answer;
-
-    while (1) {
-        bytes_received = read(client_fd, buffer, sizeof(buffer) - 1);
-        if (bytes_received <= 0){
-            break;
-        }
-        // std::cout << "Octets reçus : " << bytes_received << std::endl;
-        buffer[bytes_received] = '\0';
-        data.append(buffer);
-        std::cout << "data : " << data << std::endl;
-        answer = request->add_to_request(data,client_connection.data.client_body_size_limit);
-        std::cout << "ANSWER = " << answer << std::endl;
-        if (answer == BAD_HEADER || answer == GOOD)
-            break;
-    }
-    if (bytes_received < 0) {
-        std::cerr << "Erreur de lecture socket du client : " << client_fd << std::endl;
-        return (NULL);
-    }
-    std::cout << "End of read\n";
-    return (request);
-}
-
-
-ConnectionInfo find_connection(int client_fd, std::vector<Server*> servers){
-    ConnectionInfo ci;
-    for (size_t i = 0 ; i < servers.size() ; ++i){
-        if (servers[i]->get_socket_fd() == client_fd){
-            ci.connection = servers[i]->add_connection();
-            Config_data data = servers[i]->get_data();
-            ci.data = data;
-            std::cout << "End of find_connection\n";
-            return (ci);
-        }
-        ci.connection = servers[i]->get_connection_by_fd(client_fd);
-        if (ci.connection != NULL) {
-            ci.data= servers[i]->get_data();
-            return (ci);
-        }
-    }
-    return (ci);
-}
-
-void    ft_manage_answer(Request* request, ConnectionInfo connection){
-    int answ = request->get_is_ready();
-    std::cout << "answer :" << answ << std::endl;
-    if (answ == BAD_HEADER){
-        Response response(400, "Bad Request", connection.data);
-        std::string str = response.http_response(); //call generate_error_page
-        std::cout << RED << str << RESET << std::endl;
-        ssize_t bytes_sent = send(connection.connection->get_clientfd(), str.c_str(), str.length(),0);
-        if (bytes_sent == -1) {
-            perror("write");
-        }
-        //send(error 400) VOIR JORG
-        delete request;
-    }
-    else if (answ == AGAIN){
-        connection.connection->set_request_is_done(0);
-    }
-    else if (answ == GOOD){
-        connection.connection->set_request_is_done(1);
-        Request* new_request = request->parsed_request();
-        Worker  bob(connection.data, new_request);
-        Response response = bob.run();
-        std::string str = response.http_response(); //call generate_error_page
-        std::cout << GREEN << str << RESET << std::endl;
-        ssize_t bytes_sent = send(connection.connection->get_clientfd(), str.c_str(), str.length(),0);
-        if (bytes_sent == -1) {
-            perror("write");
-        }
-    }
-}
-
-void    run_epoll(int epoll_fd, std::vector<Server*> servers)
-{
-    epoll_event events[MAX_EVENTS];
-
-    while (true) {
-        int event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
-        if (event_count < 0) {
-            perror("epoll_wait failed");
-            break;
-        }
-
-        for (int i = 0; i < event_count; ++i) {
-            if (events[i].events & EPOLLIN) {
-                int client_fd = events[i].data.fd;
-                ConnectionInfo client_connection = find_connection(client_fd, servers);
-                // Request* request = client_connection.connection->get_request();
-                Request* request = get_data_from_connection(client_connection);
-                std::cout << "ICI\n";
-                // request->add_to_request(str_buff, client_connection.data.client_body_size_limit);
-                ft_manage_answer(request, client_connection);
-                // delete request;
-                delete client_connection.connection;
-            }
-        }
-    }
 }
 
 void add_to_epoll(int epoll_fd, Server *server)
@@ -156,9 +27,6 @@ void add_to_epoll(int epoll_fd, Server *server)
         std::cerr << "Socket fd is closed or invalid. Error: " << strerror(errno) << std::endl;
         throw std::runtime_error("Socket fd is closed or invalid.");
     }
-
-    std::cerr << "epoll_fd: " << epoll_fd << ", socket_fd: " << event.data.fd << std::endl;
-
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, event.data.fd, &event) < 0) {
         std::cerr << "Failed to add socket to epoll: " << strerror(errno) << std::endl;
         perror("Error details");
@@ -166,7 +34,6 @@ void add_to_epoll(int epoll_fd, Server *server)
         close(epoll_fd);
         throw std::runtime_error("Failed to add socket to epoll");
     }
-    std::cout << "Debug worked\n";
 }
 
 int main(int argc, char **argv)
@@ -200,15 +67,13 @@ int main(int argc, char **argv)
         for (size_t i = 0; i < configs.size(); ++i) {
             ServerManager::servers.push_back(new Server(configs[i]));
         }
-        std::cout << ServerManager::servers.size() << std::endl;
         if (ServerManager::servers.size() <= 0)
             throw std::runtime_error(std::string("Your file '.config' doesn't configure a server as requested\n"));
 
-        // 4. Ajouter les sockets des serveurs à epoll
+        // 4. Ajouter les sockets des serveurs a epoll
         for (size_t i = 0; i < ServerManager::servers.size(); ++i) {
             add_to_epoll(epoll_fd, ServerManager::servers[i]);
         }
-        sleep(5);
         // 5. Demarrer la boucle pour gerer les events
         run_epoll(epoll_fd, ServerManager::servers);
 

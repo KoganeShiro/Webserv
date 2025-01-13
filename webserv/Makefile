@@ -22,7 +22,8 @@ SRCS_SERVER =	Connection.cpp \
 				Server.cpp \
 				Socket.cpp
 
-SRCS_UTILS =	#gen_webpage.cpp
+SRCS_UTILS =	run.cpp\
+#gen_webpage.cpp
 		
 SRCS =			main.cpp
 #request_parser_test.cpp
