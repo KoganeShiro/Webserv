@@ -1,3 +1,17 @@
+## tests to do still:
+
+check cgi with php
+
+## potentielles problemes:
+- perror not allowed
+- errno not in context of read / write
+- server sockets correctly closed
+- for ctrl c: clean close of programme
+- for failed execve: clean close of programm
+
+
+
+
 ## github commit rules
 
 Use a structured format:

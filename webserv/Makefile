@@ -22,7 +22,7 @@ SRCS_SERVER =	Connection.cpp \
 				Server.cpp \
 				Socket.cpp
 
-SRCS_UTILS =	run.cpp\
+SRCS_UTILS =	run.cpp 				
 #gen_webpage.cpp
 		
 SRCS =			main.cpp
@@ -49,10 +49,13 @@ OBJS = $(ALL_SRCS:srcs/%.cpp=$(OBJ_PATH)srcs/%.o)
 
 NAME = webServ
 
-all: $(OBJ_PATH) $(NAME) destructor
+all: $(OBJ_PATH) $(NAME) destructor free
 
 destructor: 
 	$(CC) $(CFLAGS) -o destructor $(UTILS_PATH)destructor.cpp
+
+free: 
+	$(CC) $(CFLAGS) -o free $(UTILS_PATH)free.cpp
 
 $(OBJ_PATH):
 	mkdir -p $(OBJ_PATH)

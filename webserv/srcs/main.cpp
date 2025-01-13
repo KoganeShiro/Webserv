@@ -8,8 +8,8 @@ void    run_epoll(int epoll_fd, std::vector<Server*> servers);
 std::vector<Server*> ServerManager::servers;
 
 void signalHandler(int signum) {
-    const char *argv[] = {"./srcs/utils/free", NULL};
-    execve("./srcs/utils/free", (char *const *)argv, NULL);
+    const char *argv[] = {"./free", NULL};
+    execve("./free", (char *const *)argv, NULL);
     std::cerr << RED << "Couldn't find 'free'\n";
     exit(signum);
 }
