@@ -68,7 +68,7 @@
     <div class="container">
         <h1>Upload a File</h1>
         <p>Select a file to upload to the uploads directory.</p>
-        <form action="./../../../cgi-bin/upload.py" method="post" enctype="multipart/form-data">
+        <form action="/uploadfile" method="post" enctype="multipart/form-data">
             <input type="file" name="fileToUpload" id="fileToUpload" required>
             <input type="submit" value="Upload File" name="submit">
         </form>
