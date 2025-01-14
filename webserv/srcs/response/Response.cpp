@@ -82,13 +82,14 @@ Response::Response(int statusCode, const std::string& statusMessage, std::string
 		_statusCode = statusCode;
 		_statusMessage = statusMessage;
 		_config.error_pages = directory;
-		set_body(generate_directory_listing(directory));
+		set_body(generate_directory_listing(directory));		
 	}
 	else {
 		_statusCode = statusCode;
 		_statusMessage = statusMessage;
-		set_body(generate_error_page(_statusCode, _statusMessage));
+		set_body(generate_error_page(_statusCode, _statusMessage));		
 	}	
+	set_header("Content-Type", "text/html");
 }
 
 
@@ -106,6 +107,7 @@ Response::Response()
 	_statusMessage = "OK";
 	set_body("");
 	_header_and_body_in_one = false;
+	//set_header("Content-Type", "text/html");
 	// std::cout << ORANGE "Default Response created: " RESET << _statusCode << std::endl;
 }
 
@@ -162,6 +164,7 @@ Response::Response(int statusCode, const std::string& statusMessage, Config_data
 	else {
 		set_body("");
 	}
+	// set_header("Content-Type", "text/html");
 	std::cout << ORANGE "Response created with status code: " RESET << _statusCode << std::endl;
 }
 
@@ -243,6 +246,7 @@ std::string Response::http_response() const
 	}
 //	oss << "\r\n";
 	oss << _body;
+	//oss << "\r\n";
 	
 //	generate_error_page(this->_statusCode, this->_statusMessage);	
 	return (oss.str());

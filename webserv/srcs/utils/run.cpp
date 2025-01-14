@@ -71,8 +71,8 @@ void    ft_manage_answer(Request* request, ConnectionInfo connection){
         }
         //send(error 400) VOIR JORG
     }
-    else if (answ == AGAIN){
-        connection.connection->set_request_is_done(0);
+    else if (answ == AGAIN){ // je ne comprends pas Georg
+        connection.connection->set_request_is_done(0); 
     }
     else if (answ == GOOD){
         connection.connection->set_request_is_done(1);
@@ -94,6 +94,7 @@ void    run_epoll(int epoll_fd, std::vector<Server*> servers)
 
     std::cout << GREEN << "WAITING FOR THE FIRST REQUEST...\n" << RESET;
     while (true) {
+        std::cout << GREEN << "WAITING FOR THE NEXT REQUEST...\n" << RESET;
         int event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
         if (event_count < 0) {
             perror("epoll_wait failed");
@@ -106,6 +107,7 @@ void    run_epoll(int epoll_fd, std::vector<Server*> servers)
                 ConnectionInfo client_connection = find_connection(client_fd, servers);
                 Request* request = get_data_from_connection(client_connection);
                 ft_manage_answer(request, client_connection);
+                client_connection.connection->close(); // ajout Georg: sinon le Client est toujours ouvert et il continue a envoyer ou attendre des donnees
                 delete client_connection.connection;
             }
         }

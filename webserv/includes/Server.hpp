@@ -32,7 +32,10 @@ public:
 
     static void cleanup() {
         for (size_t i = 0; i < servers.size(); ++i) {
+
+          //  servers[i]->get_socket_fd().close();
             delete servers[i];
+            
             std::cout << "server " << i << "deleted\n"; 
         }
         std::cout << "server cleaned\n"; 

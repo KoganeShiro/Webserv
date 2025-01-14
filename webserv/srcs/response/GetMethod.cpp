@@ -104,6 +104,7 @@ Response GetMethod::handle(const Request& request, std::string& fullpath, Config
     // Process the request
     if (_is_directory() && ! _config.routes[_route].dir_listing) {
         response = Response(403, "Forbidden", _config);
+        response.set_header("Content-Type", "text/html");
         std::cout << "Get Method Directory listing not allowed: " << _fullpath << std::endl;
         return response;
     }
@@ -118,16 +119,19 @@ Response GetMethod::handle(const Request& request, std::string& fullpath, Config
 
     else if (filesize(_fullpath) == -1) {
         response = Response(404, "Not Found", _config);
+        response.set_header("Content-Type", "text/html");
         std::cout << "Get Method File not found: " << _fullpath << std::endl;
         return response;
     }
     else if (filesize(_fullpath) > MAX_FILE_SIZE) {
         response = Response(413, "Request Entity Too Large", _config);
+        response.set_header("Content-Type", "text/html");
         std::cout << "Get Method File too large: " << _fullpath << std::endl;
         return response;
     }
     else if (! _file_readable()) {
         response = Response(403, "Forbidden", _config);
+        response.set_header("Content-Type", "text/html");
         std::cout << "Get Method File not readable: " << _fullpath << std::endl;
         return response;
     }
