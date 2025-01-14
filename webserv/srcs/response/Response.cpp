@@ -1,5 +1,5 @@
 
-// #include "WebServ.hpp"
+#include "WebServ.hpp"
 
 
 #include "Response.hpp"
@@ -131,7 +131,19 @@ Response::Response(int statusCode, const std::string& statusMessage, const std::
 
 Response::Response(const std::string& header_and_body)
 {	
-	set_body(header_and_body);
+	std::string header = header_and_body.substr(0, header_and_body.find("\r\n\r\n"));
+	std::string body = header_and_body.substr(header_and_body.find("\r\n\r\n") + 4);
+	std::string status_code = header.substr(header.find("Status: ") + 8, 3);
+	std::string status_message = header.substr(header.find("Status: ") + 12, header.find("\r\n") - header.find("Status: ") - 12);
+	_statusCode = std::atoi(status_code.c_str());
+	_statusMessage = status_message;
+	set_body(body);
+	set_header("Content-Length", to_string(body.size()));
+	_body = header_and_body;
+	//set_body(header_and_body.substr(header_and_body.find("\r\n\r\n") + 4));
+
+
+
 	_header_and_body_in_one = true;	
 	std::cout << ORANGE "Response created with header and body." RESET << std::endl;
 }
@@ -204,26 +216,32 @@ std::string Response::http_response() const
 	std::ostringstream oss;
 	std::map<std::string, std::string>::const_iterator it;
 
-	if (_header_and_body_in_one)
-	{
-		oss << _body;
-		return (oss.str());		
-	}
+//	if (_header_and_body_in_one)
+//	{
+//		oss << _body;
+//		return (oss.str());		
+//	}
 	oss <<
 		"HTTP/1.1 " << this->_statusCode
 		<< " " << this->_statusMessage
 
 	<< "\r\n";
-	if (_header_and_body_in_one)
-	{
-		oss << _body;
-		return (oss.str());		
-	}
+
+
+
+//	if (_header_and_body_in_one)
+//	{
+//		oss << _body;
+//		return (oss.str());		
+//	}
 	for (it = _headers.begin(); it != _headers.end(); ++it) {
 		oss << it->first << ": " << it->second << "\r\n";
 	}
-	
-	oss << "\r\n";
+	if ( ! _header_and_body_in_one)
+	{
+		oss << "\r\n";
+	}
+//	oss << "\r\n";
 	oss << _body;
 	
 //	generate_error_page(this->_statusCode, this->_statusMessage);	

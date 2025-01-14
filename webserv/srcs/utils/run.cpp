@@ -3,7 +3,7 @@
 #include "Worker.hpp"
 
 struct ConnectionInfo {
-    Connection* connection = NULL;
+    Connection* connection;
     Config_data data;
 };
 
@@ -18,7 +18,7 @@ Request *get_data_from_connection(ConnectionInfo client_connection) {
     while (1) {
         bytes_received = read(client_fd, buffer, sizeof(buffer) - 1);
         if (bytes_received <= 0){
-            break;
+           break;
         }
         buffer[bytes_received] = '\0';
         data.append(buffer);
@@ -39,6 +39,7 @@ Request *get_data_from_connection(ConnectionInfo client_connection) {
 
 ConnectionInfo find_connection(int client_fd, std::vector<Server*> servers){
     ConnectionInfo ci;
+    ci.connection = NULL;
     for (size_t i = 0 ; i < servers.size() ; ++i){
         if (servers[i]->get_socket_fd() == client_fd){
             ci.connection = servers[i]->add_connection();

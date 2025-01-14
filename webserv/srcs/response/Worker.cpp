@@ -368,7 +368,9 @@ std::vector<std::string> Worker::build_cgi_environment()
 Response Worker::execute_cgi() {    
     // Create pipe for communication between parent and child process
     int pipefd[2];
+    int reqpipe[2];
     pipe(pipefd);
+    pipe(reqpipe);
 
     // Create a response to store the result of the CGI script
     Response result;
@@ -413,6 +415,9 @@ Response Worker::execute_cgi() {
         dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to pipe
         close(pipefd[0]);               // Close unused read end
 
+        dup2(reqpipe[0], STDIN_FILENO); // Redirect stdin to pipe
+        close(reqpipe[1]);               // Close unused write end
+
         // Change working directory to the directory of the CGI script
         chdir(_fullpath.substr(0, _fullpath.find_last_of('/')).c_str());
 
@@ -455,9 +460,21 @@ Response Worker::execute_cgi() {
 
         // Close unused write end of pipe
         close(pipefd[1]);
+        close(reqpipe[0]);
+
+        // Write request body to requestpipe
+        std::string body = _request->get_body();
+        write(reqpipe[1], body.c_str(), body.length());
+        close(reqpipe[1]);
+
+        
+
+        
         // Set up timeout for CGI script
         time_t start_time = time(NULL);        
-        int exit_code;        
+        int exit_code;
+
+
 
         // Read from pipe and append to result string
         char buffer[1024];
@@ -503,6 +520,9 @@ Response Worker::execute_cgi() {
 
         // Close read end of pipe
         close(pipefd[0]);
+        close(reqpipe[1]);
+
+
 
         // Wait for child process to finish
         int status;
