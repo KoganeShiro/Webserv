@@ -8,6 +8,9 @@ void    run_epoll(int epoll_fd, std::vector<Server*> servers);
 std::vector<Server*> ServerManager::servers;
 
 void signalHandler(int signum) {
+    for (size_t i = 0; i < ServerManager::servers.size(); ++i) // test
+        close(ServerManager::servers[i]->get_socket_fd());
+
     const char *argv[] = {"./free", NULL};
     execve("./free", (char *const *)argv, NULL);
     std::cerr << RED << "Couldn't find 'free'\n";
