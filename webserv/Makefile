@@ -73,7 +73,7 @@ clean:
 	rm -rf $(OBJ_PATH)
 
 fclean: clean
-	rm -f $(NAME) destructor
+	rm -f $(NAME) destructor free $(NAME)	
 
 re: fclean all
 
