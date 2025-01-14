@@ -20,7 +20,6 @@ public:
     Connection(int clientfd);
     bool    is_request_done(void);
     int get_clientfd(void);
-    // std::string receive();
     Request*    get_request(void);
     void    set_request_is_done(bool is_done);
 

@@ -163,7 +163,7 @@ void print_Request(Request *request)
         std::cout <<RED "Request is NULL" RESET << std::endl;
         return;
     }
-
+    std::cout << CYAN "-----------------------" << std::endl;
     std::cout << "Request Details:" << std::endl;
     std::cout << "Request Buffer: `" << request->get_request_buffer() << "`" << std::endl;
     std::cout << "----------------" << std::endl;
@@ -184,9 +184,10 @@ void print_Request(Request *request)
          << "`" << it->second << "`" << std::endl;
     }
 
-    std::cout << "\nBody:" << std::endl;
-    std::cout << "-----" << std::endl;
-    std::cout << "`" << request->get_body() << "`" << std::endl;
+    // std::cout << "\nBody:" << std::endl;
+    // std::cout << "-----" << std::endl;
+    // std::cout << "`" << request->get_body() << "`" << std::endl;
+    std::cout << "-----------------------" RESET << std::endl;
 }
 
 

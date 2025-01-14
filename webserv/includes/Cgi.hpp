@@ -62,6 +62,8 @@ typedef struct S_Config_data
 
 } Config_data;
 
-// Déclaration des fonctions de parsing
+/*
+IN CGI.CPP
+*/
 // std::vector<CGI> parse_cgis(std::ifstream& file, std::string line);
-std::vector<Config_data> parse_config(const char *filename);  // Déclaration dans l'en-tête principal
+std::vector<Config_data> parse_config(const char *filename);

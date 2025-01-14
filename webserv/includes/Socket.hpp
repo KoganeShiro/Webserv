@@ -8,7 +8,8 @@
 Socket represents the server-side listening socket.
 */
 
-class Socket {
+class Socket
+{
 private:
     std::vector<Connection>  _connection;
     epoll_event events_tab[42];
@@ -18,7 +19,6 @@ private:
     void    _bind_socket(int port);
     void    configure_epoll(void);
     void    _listen_for_connections(void);
-    // Socket();
 
 public:
     Socket(int port);

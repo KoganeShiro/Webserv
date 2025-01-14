@@ -9,10 +9,11 @@ array of status_code and its corresponding
 status_message
 */
 
-class Response {
+class Response
+{
 private:
     int _statusCode;
-    std::string _statusMessage; //
+    std::string _statusMessage;
     std::map<std::string, std::string> _headers;
     std::string _body;
     bool _header_and_body_in_one;

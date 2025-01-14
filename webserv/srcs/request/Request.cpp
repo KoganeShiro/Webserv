@@ -1,7 +1,7 @@
 #include "Request.hpp"
 
 Request::Request() :_request_buffer(""),
-    _request(""), _headers(), _method(""),
+    _headers(), _method(""),
     _path(""), _http_version(""),
     _content_length(-1), _body(""),
     _good_request(false),
@@ -10,7 +10,6 @@ Request::Request() :_request_buffer(""),
 
 Request::Request(Request const &other) :
     _request_buffer(other._request_buffer),
-    _request(other._request),
     _headers(other._headers),
     _method(other._method),
     _path(other._path),
@@ -26,7 +25,6 @@ Request &Request::operator=(Request const &other)
 {
 	if (this != &other) {
 		_request_buffer = other._request_buffer;
-        _request = other._request;
         _headers = other._headers;
         _path = other._path;
         _http_version = other._http_version;
@@ -38,19 +36,16 @@ Request &Request::operator=(Request const &other)
 	return (*this);
 }
 
-// Getter for HTTP method
 std::string Request::get_method() const
 {
     return (this->_method);
 }
 
-// Getter for request path
 std::string Request::get_path() const
 {
     return (this->_path);
 }
 
-// Getter for specific header value by key
 std::string Request::get_header_element(const std::string& key) const
 {
     std::map<std::string, std::string>::const_iterator it = _headers.find(key);
@@ -60,7 +55,6 @@ std::string Request::get_header_element(const std::string& key) const
     return (""); // Return empty string if header not found
 }
 
-// Getter for all the request header
 /*
 std::string Request::get_all_header() const
 {
@@ -78,7 +72,6 @@ std::map<std::string, std::string> Request::get_header() const
 }
 
 
-// Getter for request body
 std::string Request::get_body() const
 {
     return (this->_body);
@@ -118,25 +111,21 @@ void Request::set_pos(size_t pos)
     this->_pos = pos;
 }
 
-// Method to set the HTTP method (used during request parsing)
 void Request::set_method(const std::string& method)
 {
     this->_method = method;
 }
 
-// Method to set the request path (used during request parsing)
 void Request::set_path(const std::string& path)
 {
     this->_path = path;
 }
 
-// Method to add a header (used during request parsing)
 void Request::add_header(const std::string& key, const std::string& value)
 {
     this->_headers[key] = value;
 }
 
-// Method to set the body (used during request parsing)
 void Request::set_body(const std::string& body)
 {
     this->_body = body;
@@ -170,7 +159,6 @@ void Request::set_content_length(size_t length)
 void Request::set_to_null()
 {
     this->_request_buffer = "";
-    this->_request = "";
     this->_method = "";
     this->_path = "";
     this->_http_version = "";

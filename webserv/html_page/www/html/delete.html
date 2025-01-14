@@ -64,7 +64,6 @@
             margin-top: 20px;
             font-weight: bold;
         }
-
         .back-link {
             display: inline-block;
             margin-top: 40px;
@@ -73,6 +72,15 @@
         }
 
         .back-link:hover {
+            text-decoration: underline;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
             text-decoration: underline;
         }
     </style>
@@ -114,7 +122,7 @@
     <script>
         async function deleteResource(fileName) {
             try {
-                const response = await fetch('./../../cgi-bin/delete.py?file=' + encodeURIComponent(fileName), {
+                const response = await fetch('/cgi-bin/delete.py?file=' + encodeURIComponent(fileName), {
                     method: 'DELETE'
                 });
                 const data = await response.json();

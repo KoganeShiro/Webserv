@@ -9,6 +9,5 @@ int main ()
         sleep(1);
         std::cout << "Slept for " << i << " seconds" << std::endl;
     }
-    
-    return 0;
+    return (0);
 }

@@ -1,9 +1,6 @@
 
 #include "PostMethod.hpp"
 
-
-
-
 bool PostMethod::_file_exists()
 {
     struct stat buffer;
@@ -13,39 +10,41 @@ bool PostMethod::_file_exists()
 bool PostMethod::_file_readable()
 {
     if (access(_fullpath.c_str(), R_OK) == 0) {
-        return true;
+        return (true);
     }
-    return false;
+    return (false);
 }
 
 bool PostMethod::_file_writable()
 {
         if (access(_fullpath.c_str(), W_OK) == 0) {
-            return true;
+            return (true);
         }
-        return false;
+        return (false);
 }
 
 bool PostMethod::_is_directory()
 {
     struct stat buffer;
     if (stat (_fullpath.c_str(), &buffer) == 0) {
-        return S_ISDIR(buffer.st_mode);
+        return (S_ISDIR(buffer.st_mode));
     }
-    return false;
+    return (false);
 }
 
-int PostMethod::filesize(std::string filename) {
+int PostMethod::filesize(std::string filename)
+{
     struct stat fileStat;
     std::cout << "PostMethod Filesize check: " << filename << std::endl;
     if (stat(filename.c_str(), &fileStat) == 0) {
-        return fileStat.st_size;
+        return (fileStat.st_size);
     } else {
-        return -1;
+        return (-1);
     }
 }
 
-std::string PostMethod::getMimeType(const std::string& fileName) {
+std::string PostMethod::getMimeType(const std::string& fileName)
+{
     // Map of file extensions to MIME types
     std::map<std::string, std::string> mime;
     mime.insert(std::make_pair(".html", "text/html"));
@@ -62,12 +61,13 @@ std::string PostMethod::getMimeType(const std::string& fileName) {
     if (dotPos != std::string::npos) {
         std::string extension = fileName.substr(dotPos);
         if (mime.count(extension)) {
-            return mime[extension];
+            return (mime[extension]);
         }
     }
 
-    return "application/octet-stream"; // Default binary type
+    return ("application/octet-stream"); // Default binary type
 }
+
 /*
 std::string PostMethod::readfile(std::string filename) {
     
@@ -88,19 +88,19 @@ std::string PostMethod::readfile(std::string filename) {
     return content;    
 }
 */
-int PostMethod::writefile(std::string filename, std::string content) {
 
+int PostMethod::writefile(std::string filename, std::string content)
+{
     if (_file_exists() && ! _file_writable()) {
         std::cerr << "PostMethod Error: File exists and is not writable:" << filename << std::endl;
-        return -1;
+        return (-1);
     }
-    
 
     std::ofstream file(filename.c_str()); // Open the file in write mode
 
     if (!file) {
         std::cerr << "PostMethod Error: Could not create the file to write in!" << std::endl;
-        return -1;
+        return (-1);
     }
 
     // Write the string to the file
@@ -109,7 +109,7 @@ int PostMethod::writefile(std::string filename, std::string content) {
     // Close the file
     file.close();
 
-    return 0;
+    return (0);
 }
 
 
@@ -131,21 +131,19 @@ Response PostMethod::handle(const Request& request, std::string& fullpath, Confi
     if (_request.get_header_element("Content-Length") == "") {
         response = Response(411, "Length Required", _config);
         std::cout << "PostMethod: Content-Length header missing" << std::endl;
-        return response;
+        return (response);
     }
     else if (_request.get_header_element("Content-Type") == "") {
         response = Response(400, "Bad Request", _config);
         std::cout << "PostMethod: Content-Type header missing" << std::endl;
-        return response;
+        return (response);
     }
     else if (std::atoi((_request.get_header_element("Content-Length")).c_str()) > MAX_FILE_SIZE) {
         response = Response(413, "Payload Too Large", _config);
         std::cout << "PostMethod: Payload Too Large" << std::endl;
-        return response;
+        return (response);
     }
-
     /*
-
     if (filesize(_fullpath) == -1) {
         response = Response(404, "Not Found", _config);
         std::cout << "File not found: " << _fullpath << std::endl;
@@ -181,8 +179,6 @@ Response PostMethod::handle(const Request& request, std::string& fullpath, Confi
         response = Response(201, "Created", _config);    
         response.set_header("Location", _request.get_path());
    //     response.set_header("Content-Type", getMimeType(_fullpath));
-    }    
-
-    
+    }
     return (response);
 }

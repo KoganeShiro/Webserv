@@ -1,11 +1,10 @@
 
 #include "WebServ.hpp"
-
-
 #include "Response.hpp"
 
 
-void replace_string(std::string& str, const std::string& from, const std::string& to) {
+void replace_string(std::string& str, const std::string& from, const std::string& to)
+{
     size_t startPos = 0;
     while ((startPos = str.find(from, startPos)) != std::string::npos) {
         str.replace(startPos, from.length(), to);
@@ -13,9 +12,8 @@ void replace_string(std::string& str, const std::string& from, const std::string
     }
 }
 
-
-std::string readfile(std::string filename) {
-    
+std::string readfile(std::string filename)
+{
     std::ifstream file(filename.c_str()); // Open the file in read mode
     if (!file) {
         std::cerr << "Error: Could not open:" << filename << std::endl;        
@@ -30,7 +28,7 @@ std::string readfile(std::string filename) {
     }
 
     file.close(); // Close the file
-    return content;    
+    return (content);    
 }
 
 std::string Response::generate_error_page(int status_code, std::string status_message)
@@ -143,13 +141,9 @@ Response::Response(const std::string& header_and_body)
 	set_header("Content-Length", to_string(body.size()));
 	_body = header_and_body;
 	//set_body(header_and_body.substr(header_and_body.find("\r\n\r\n") + 4));
-
-
-
 	_header_and_body_in_one = true;	
 	std::cout << ORANGE "Response created with header and body." RESET << std::endl;
 }
-
 
 Response::Response(int statusCode, const std::string& statusMessage, Config_data c)
 {
@@ -179,8 +173,6 @@ Response &Response::operator=(const Response &response)
 
 	return (*this);
 }
-
-
 
 
 /*
@@ -229,8 +221,6 @@ std::string Response::http_response() const
 		<< " " << this->_statusMessage
 
 	<< "\r\n";
-
-
 
 //	if (_header_and_body_in_one)
 //	{

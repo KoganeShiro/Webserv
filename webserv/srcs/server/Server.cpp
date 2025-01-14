@@ -34,26 +34,30 @@ int  Server::get_socket_fd(){
 }
 */
 
-int  Server::get_socket_fd(void){
+int  Server::get_socket_fd(void)
+{
     return (_socket.get_sockfd());
 }
 
-Config_data Server::get_data(void) const{
+Config_data Server::get_data(void) const
+{
     return (_data);
 }
 
 // std::vector <Connection> connection_tab;
-Connection*    Server::add_connection(){
+Connection*    Server::add_connection()
+{
     int client_fd = accept(get_socket_fd(), NULL, NULL);
+
     if (client_fd == -1) {
         //Close le server ?
-        std::cerr << "Erreur at the connexion." << std::endl;
+        std::cerr << "Error at the connexion." << std::endl;
         return (NULL);
     }
-
+    
     Connection new_connection(client_fd);
-        _connection_tab.push_back(new_connection);
-    std::cout << "Nouvelle connexion ajoutée : fd = " << client_fd << std::endl;
+    _connection_tab.push_back(new_connection);
+    std::cout << "New Connection at : fd = " << client_fd << std::endl;
     return (new Connection(new_connection));
 }
 
@@ -67,7 +71,8 @@ Connection*    Server::add_connection(){
 //     return (NULL);
 // }
 
-Connection* Server::get_connection_by_fd(int client_fd) {
+Connection* Server::get_connection_by_fd(int client_fd)
+{
     for (size_t i = 0; i < _connection_tab.size(); ++i) {
         if (_connection_tab[i].get_clientfd() == client_fd) {
             return (&_connection_tab[i]);  
