@@ -174,7 +174,6 @@ Response &Response::operator=(const Response &response)
 	return (*this);
 }
 
-
 /*
 * response body that we will send
 */

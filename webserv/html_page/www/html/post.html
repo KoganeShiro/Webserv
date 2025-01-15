@@ -81,7 +81,7 @@
         <h1>File Management</h1>
         <p>Create a new file or modify existing files in the uploads directory.</p>
         <h2>Create a New File</h2>
-        <form id="create-form" action="/cgi-bin/file_management.py/create" method="POST">
+        <form id="create-form" action="/cgi-bin/post.py" method="POST">
             <input type="text" name="filename" placeholder="Enter file name (e.g., example.txt)" required>
             <br><br>
             <textarea name="content" rows="4" cols="50" placeholder="Enter file content" required></textarea>

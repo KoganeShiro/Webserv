@@ -27,6 +27,7 @@ class Request
 {
 private:
     std::string _request_buffer;
+    std::string _request; //final request
     std::map<std::string, std::string> _headers; // Request headers
     std::string _method; // HTTP method (GET, POST, DELETE, etc.)
     std::string _path;   // Request path (e.g., /api/resource)
@@ -47,7 +48,7 @@ public:
 
     std::string get_method() const;
     std::string get_path() const;
-    std::string get_all_header() const;
+    //std::string get_all_header() const;
     std::string get_header_element(const std::string& key) const;
     std::map<std::string, std::string> get_header() const;
     std::string get_body() const;

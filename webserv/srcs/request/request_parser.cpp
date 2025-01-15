@@ -1,6 +1,5 @@
 
 #include "Request.hpp"
-
 void Request::set_finish_header(bool finish)
 {
     this->_finish_header = finish;
@@ -127,28 +126,95 @@ static bool parse_body(Request& request, std::string& buffer, size_t MAX_BODY_LE
     return (false);
 }
 
+static std::string extract_boundary(const std::string& content_type)
+{
+    std::string boundary_prefix = "boundary=";
+    size_t boundary_pos = content_type.find(boundary_prefix);
+    if (boundary_pos != std::string::npos) {
+        return ("--" + content_type.substr(boundary_pos + boundary_prefix.length()));
+    }
+    return ("");
+}
+
+static bool handle_multipart_form_data(Request& request)
+{
+    std::string content_type = request.get_header_element("Content-Type");
+    std::string boundary = extract_boundary(content_type);
+    std::string buffer = request.get_body();
+    if (boundary.empty()) {
+        request.set_is_ready(BAD_HEADER);
+        return (false);
+    }
+    std::string body;
+    size_t start = 0, next_boundary;
+    while (true) {
+        next_boundary = buffer.find(boundary, start);
+        if (next_boundary == std::string::npos) {
+            break;
+        }
+        if (next_boundary > start) {
+            size_t colon_start = buffer.find(":", start);
+            size_t end = buffer.find("\r\n", colon_start);
+            request.add_header("Content-Disposition", buffer.substr(colon_start + 2, end - colon_start - 2));
+            //next line
+            start = buffer.find(":", end);
+            end = buffer.find("\r\n", start);
+            request.add_header("Content-Type", buffer.substr(start + 2, end - start - 2));
+            //next line
+            start = buffer.find("\r\n", end);
+            end = buffer.find("\r\n\r\n", start);
+            body += buffer.substr(start + 2, next_boundary - start - 2);
+        }
+        start = next_boundary + boundary.length();
+        size_t end = buffer.find("\r\n", start);
+        if (end == std::string::npos) {
+            break;
+        }
+        start = end + 2;
+    }
+    request.set_body(body);
+    request.set_is_ready(GOOD);
+    return (true);
+}
+
 Request Request::request_parser(Request &request, std::string& buffer, size_t MAX_BODY_LENGTH)
 {
     size_t pos = 0;
 
     if (!parse_request_line(request, buffer, pos))
         return (request);
-    if (request.get_finish_header() == false) {
+    if (!request.get_finish_header()) {
         if (!parse_headers(request, buffer, pos))
             return (request);
     }
     if (!validate_headers(request, MAX_BODY_LENGTH))
         return (request);
-    if (this->get_method() == "POST") {
-        if (!parse_body(request, buffer, MAX_BODY_LENGTH))
-            return (request);
+    if (request.get_method() == "POST") {
+        // std::string content_type = request.get_header_element("Content-Type");
+        // if (content_type.find("multipart/form-data;") != std::string::npos) {
+        //     if (!handle_multipart_form_data(request, buffer, pos)) {
+        //         std::cout << MAGENTA "multipart/form-data; / false" RESET << std::endl;
+        //         return (request);
+        //     }
+        // } else {
+            if (!parse_body(request, buffer, MAX_BODY_LENGTH))
+                return (request);
+        //}
     }
 
-    request.set_request_buffer(buffer.substr(this->get_pos()));
+    std::string content_type = request.get_header_element("Content-Type");
+    if (content_type.find("multipart/form-data;") != std::string::npos) {
+        if (!handle_multipart_form_data(request)) {
+            std::cout << MAGENTA "multipart/form-data; / false" RESET << std::endl;
+            return (request);
+        }
+    }
 
-    std::cout << "reminder: " BGREEN <<
-        request.get_request_buffer()
+    request.set_request_buffer(buffer.substr(request.get_pos()));
+    std::cout << MAGENTA "request_buffer: " << request.get_request_buffer()
     << RESET << std::endl;
+
+    std::cout << "reminder: " << request.get_request_buffer() << std::endl;
 
     request.set_good_request(true);
     request.set_is_ready(GOOD);
@@ -184,12 +250,11 @@ void print_Request(Request *request)
          << "`" << it->second << "`" << std::endl;
     }
 
-    // std::cout << "\nBody:" << std::endl;
-    // std::cout << "-----" << std::endl;
-    // std::cout << "`" << request->get_body() << "`" << std::endl;
+    std::cout << "\nBody:" << std::endl;
+    std::cout << "-----" << std::endl;
+    std::cout << "`" << request->get_body() << "`" << std::endl;
     std::cout << "-----------------------" RESET << std::endl;
 }
-
 
 int Request::add_to_request(std::string to_add, size_t MAX_BODY_LENGTH)
 {

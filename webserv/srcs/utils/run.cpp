@@ -68,16 +68,16 @@ void    ft_manage_answer(Request* request, ConnectionInfo connection)
         //send(error 400) 
         Response response(400, "Bad Request", connection.data);
         std::string str = response.http_response(); //call generate_error_page
-        // std::cout << RED << str << RESET << std::endl;
+        std::cout << RED << str << RESET << std::endl;
         ssize_t bytes_sent = send(connection.connection->get_clientfd(), str.c_str(), str.length(),0);
         if (bytes_sent == -1) {
             perror("write");
         }
     }
-    else if (answ == AGAIN){ // Don't understand why Georg
+    else if (answ == AGAIN) { // Don't understand why Georg
         connection.connection->set_request_is_done(0); 
     }
-    else if (answ == GOOD){
+    else if (answ == GOOD) {
         connection.connection->set_request_is_done(1);
         Request* new_request = request->parsed_request();
         Worker  bob(connection.data, new_request);
@@ -98,8 +98,14 @@ void    run_epoll(int epoll_fd, std::vector<Server*> servers)
     std::cout << GREEN << "WAITING FOR THE FIRST REQUEST...\n" << RESET;
     while (true) {
         for (size_t i = 0; i < servers.size(); i++) {
-            std::cout << "Listening to " BLUE << 
-                servers[i]->get_data().host << ":" << servers[i]->get_data().port << RESET
+            std::cout << "Listening to " BLUE;
+            if (servers[i]->get_data().server_name.empty()) {
+                std::cout << servers[i]->get_data().host;
+            }
+            else {
+                std::cout << servers[i]->get_data().server_name;
+            }
+            std::cout << ":" << servers[i]->get_data().port << RESET
             << std::endl;
         }
         int event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);

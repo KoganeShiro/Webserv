@@ -1,7 +1,7 @@
 import os
 import urllib.parse
 
-upload_dir = './../html_page/www/uploads/'
+upload_dir = '/uploads'
 
 if os.environ['REQUEST_METHOD'] == 'DELETE':
     query_string = os.environ.get('QUERY_STRING', '')
