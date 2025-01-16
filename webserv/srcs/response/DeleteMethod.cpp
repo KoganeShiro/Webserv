@@ -113,6 +113,7 @@ int DeleteMethod::deletefile(std::string filename)
         std::cerr << "DeleteMethod Error: Could not delete file:" << filename << std::endl;
         return (-1);
     }
+    std::cout << GREEN "FILE :" << filename << " HAS BEEN REMOVED" << std::endl;
     return (0);
 }
 
@@ -155,13 +156,11 @@ Response DeleteMethod::handle(const Request& request, std::string& fullpath, Con
     _route = route;
 
     Response response;
-    if (_request.get_header_element("Content-Type") == "") {
-        response = Response(400, "Bad Request", _config);
-        std::cout << "DeleteMethod: Content-Type header missing" << std::endl;
-        return (response);
-    }
-
-
+    // if (_request.get_header_element("Content-Type") == "") {
+    //     response = Response(400, "Bad Request", _config);
+    //     std::cout << "DeleteMethod: Content-Type header missing" << std::endl;
+    //     return (response);
+    // }
     // Process the request
     /*
     if (_request.get_header_element("Content-Length") == "") {
@@ -208,15 +207,14 @@ Response DeleteMethod::handle(const Request& request, std::string& fullpath, Con
         return response;
     }
     */
-    else {
+    //else {
+        std::cout << "fullpath" << _fullpath << std::endl;
         if (deletefile(_fullpath) == -1) {
             response = Response(500, "Internal Server Error. Could not delete file", _config);
             std::cout << "DeleteMethod Error writing file: " << _fullpath << std::endl;
             return (response);
         }
         response = Response(204, "No Content", _config);
-    }    
-
-    
+    //}    
     return (response);
 }
