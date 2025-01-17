@@ -38,6 +38,7 @@ private:
     int _is_ready;
     size_t _pos;
     bool _finish_header;
+    std::string _header_last_line; //
     Request request_parser(Request &request, std::string& buffer, size_t MAX_BODY_LENGTH);
 
 public:
@@ -58,7 +59,9 @@ public:
     std::string get_http_version() const ;
     size_t get_content_length() const ;
     size_t get_pos() const;
+    std::string get_header_last_line() const;
 
+    void set_header_last_line(const std::string header_last_line);
     void set_pos(size_t pos);
     void set_method(const std::string& method);
     void set_path(const std::string& path);

@@ -45,7 +45,8 @@ int GetMethod::filesize(std::string filename)
     }
 }
 
-std::string GetMethod::getMimeType(const std::string& fileName) {
+std::string GetMethod::getMimeType(const std::string& fileName)
+{
     // Map of file extensions to MIME types
     std::map<std::string, std::string> mime;
     mime.insert(std::make_pair(".html", "text/html"));
@@ -69,8 +70,10 @@ std::string GetMethod::getMimeType(const std::string& fileName) {
     return ("application/octet-stream"); // Default binary type
 }
 
-std::string GetMethod::readfile(std::string filename) {
-    
+std::string GetMethod::readfile(std::string filename)
+{
+    //call CGI script
+        //execve
     std::ifstream file(filename.c_str()); // Open the file in read mode
     if (!file) {
         std::cerr << "Get Method Error: Could not open:" << filename << std::endl;        

@@ -67,7 +67,7 @@ free:
 
 # Create object directory and touch test files
 $(OBJ_PATH):
-	@mkdir -p $(OBJ_PATH)
+	mkdir -p $(OBJ_PATH)
 	@echo "This is a test file." > $(UPLOADS_PATH)test.txt
 	@echo "This is a test copy file." > $(UPLOADS_PATH)test-copy.txt
 	@echo "This is a youpi.bla file." > $(UPLOADS_PATH)youpi.bla
@@ -92,7 +92,7 @@ $(NAME): $(OBJS)
 
 # Compile object files
 $(OBJ_PATH)srcs/%.o: srcs/%.cpp
-	@mkdir -p $(dir $@)
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Clean object files and directories

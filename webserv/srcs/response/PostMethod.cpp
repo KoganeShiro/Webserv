@@ -89,26 +89,81 @@ std::string PostMethod::readfile(std::string filename) {
 }
 */
 
+/*
+filename=create_new_file&content=hello+world+%21
+*/
+
+static std::string _urlDecode(const std::string &encoded)
+{
+    std::ostringstream decoded;
+
+    for (size_t i = 0; i < encoded.length(); ++i) {
+        if (encoded[i] == '%') {
+            if (i + 2 < encoded.length()) {
+                std::istringstream hex(encoded.substr(i + 1, 2));
+                int value;
+                hex >> std::hex >> value;
+                decoded << static_cast<char>(value);
+                i += 2;
+            }
+        } else if (encoded[i] == '+') {
+            decoded << ' ';
+        } else {
+            decoded << encoded[i];
+        }
+    }
+    return (decoded.str());
+}
+
+void PostMethod::_parse_body(std::string &content, std::string &filename)
+{
+    if (content.find("filename=") != std::string::npos 
+            && content.find("&content=") != std::string::npos) {
+        filename += "/";
+        filename += content.substr(content.find("filename=") + 9, content.find("&content=") - (content.find("filename=") + 9));
+        content = content.substr(content.find("&content=") + 9);
+        content = _urlDecode(content);
+    }
+    std::cout << "PostMethod Parse filename: " << filename << std::endl;
+    std::cout << "PostMethod Parse content: " << content << std::endl;
+}
+
+void PostMethod::_upload_file(std::string &content, std::string &filename)
+{
+    std::string content_dispo = this->_request.get_header_element("Content-Disposition");
+    filename += "/";
+    filename += content_dispo.substr(content_dispo.find("filename=\"") + 10, content_dispo.find('"', content_dispo.find("filename=\"") + 10) - (content_dispo.find("filename=\"") + 10));
+    std::cout << "PostMethod Upload filename: " << filename << std::endl;
+    std::cout << "PostMethod Upload content: " << content << std::endl;
+}
+
 int PostMethod::writefile(std::string filename, std::string content)
 {
+    //call CGI script
+        //execve
     if (_file_exists() && ! _file_writable()) {
         std::cerr << "PostMethod Error: File exists and is not writable:" << filename << std::endl;
         return (-1);
     }
-
-    std::ofstream file(filename.c_str()); // Open the file in write mode
-
-    if (!file) {
+    if (content.empty()) {
+        std::cerr << "PostMethod Error: Empty body" << std::endl;
+        return (-1);
+    }
+    std::cout << MAGENTA "PostMethod Writefile: [" << filename << "]" << std::endl;
+    std::cout << "Content: [" << content << "]" RESET << std::endl;
+    if (this->_request.get_header_element("Content-Type") == "application/x-www-form-urlencoded") {
+        _parse_body(content, filename);
+    } else {
+        _upload_file(content, filename);
+    }
+    // Create file
+    std::ofstream file(filename.c_str());
+    if (!file.is_open()) {
         std::cerr << "PostMethod Error: Could not create the file to write in!" << std::endl;
         return (-1);
     }
-
-    // Write the string to the file
     file << content;
-
-    // Close the file
-    file.close();
-
+    file.close(); // Close the file
     return (0);
 }
 
@@ -170,6 +225,11 @@ Response PostMethod::handle(const Request& request, std::string& fullpath, Confi
         return response;
     }
     */
+    // else if (checkRoute() == "cgi") {
+    //     response = Response(501, "Not Implemented", _config);
+    //     std::cout << "CGI not implemented: " << _fullpath << std::endl;
+    //     return response;
+    // }
     else {
         if (writefile(_fullpath, _request.get_body()) == -1) {
             response = Response(500, "Internal Server Error. Could not create file", _config);

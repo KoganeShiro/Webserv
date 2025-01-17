@@ -23,7 +23,7 @@ Request *get_data_from_connection(ConnectionInfo client_connection)
         }
         buffer[bytes_received] = '\0';
         data.append(buffer);
-        std::cout << "data : " << data << std::endl;
+        //std::cout << "data : " << data << std::endl;
         answer = request->add_to_request(data,client_connection.data.client_body_size_limit);
         std::cout << "ANSWER = " << answer << std::endl;
         if (answer == BAD_HEADER || answer == GOOD)

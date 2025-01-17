@@ -8,32 +8,28 @@ upload_dir = '/uploads'
 
 form = cgi.FieldStorage()
 
-file_item = form['file']
+# Check if the file field is present in the form
+if 'file' in form:
+    file_item = form['file']
 
-print("Content-Type: text/html; charset=utf-8")
-print()
-
-if file_item.filename:
-    filename = os.path.basename(file_item.filename)
-    file_extension = os.path.splitext(filename)[1].lower()
-
-    allowed_extensions = ['.png', '.pdf', '.txt', '.md', '.html', '.c', '.cpp']
-
-    if file_extension in allowed_extensions:
+    # Check if the file item is actually a file
+    if file_item.filename:
+        # Strip leading path from file name to avoid directory traversal attacks
+        filename = os.path.basename(file_item.filename)
         filepath = os.path.join(upload_dir, filename)
 
-        try:
-            with open(filepath, 'wb') as output_file:
-                while True:
-                    chunk = file_item.file.read(1024)
-                    if not chunk:
-                        break
-                    output_file.write(chunk)
+        # Write the file to the specified directory
+        with open(filepath, 'wb') as f:
+            f.write(file_item.file.read())
 
-            value = f"'{filename}' is uploaded to '{upload_dir}'"
-        except Exception as e:
-            value = f"ERROR when uploading: {e}"
+        message = f'The file "{filename}" was uploaded successfully.'
     else:
-        value = "Invalid file extension. Allowed extensions: " + ', '.join(allowed_extensions)
+        message = 'No file was uploaded.'
 else:
-    value = "No file"
+    message = 'No file field was found in the form.'
+
+# Print the HTTP headers and the response message
+print("Content-Type: text/html")
+print()
+print(f"<html><body><h1>{message}</h1>")
+print(f'<a href="/index.html">Go back to homepage</a></body></html>')

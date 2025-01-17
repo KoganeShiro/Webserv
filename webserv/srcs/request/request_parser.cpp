@@ -54,6 +54,7 @@ static bool parse_headers(Request& request, std::string& buffer, size_t& pos)
             while (!value.empty() && (value[value.size() - 1] == ' ' || value[value.size() - 1] == '\t'))
                 value.erase(value.size() - 1);
             request.add_header(key, value);
+            request.set_header_last_line(key + ": " + value);
         }
         pos = line_end + 2;
     }
@@ -122,7 +123,6 @@ static bool parse_body(Request& request, std::string& buffer, size_t MAX_BODY_LE
             }
         }
     }
-    request.set_pos(pos);
     return (false);
 }
 
@@ -146,13 +146,15 @@ static bool handle_multipart_form_data(Request& request)
         return (false);
     }
     std::string body;
-    size_t start = 0, next_boundary;
+    size_t start = 0, boundary_pos; //, next_boundary_pos;
     while (true) {
-        next_boundary = buffer.find(boundary, start);
-        if (next_boundary == std::string::npos) {
+        boundary_pos = buffer.find(boundary, start);
+        // next_boundary_pos = buffer.find(boundary, boundary_pos + boundary.length());
+        // start = boundary_pos + boundary.length();
+        if (boundary_pos == std::string::npos) {
             break;
         }
-        if (next_boundary > start) {
+        //if (boundary_pos >= start) {
             size_t colon_start = buffer.find(":", start);
             size_t end = buffer.find("\r\n", colon_start);
             request.add_header("Content-Disposition", buffer.substr(colon_start + 2, end - colon_start - 2));
@@ -161,12 +163,12 @@ static bool handle_multipart_form_data(Request& request)
             end = buffer.find("\r\n", start);
             request.add_header("Content-Type", buffer.substr(start + 2, end - start - 2));
             //next line
-            start = buffer.find("\r\n", end);
-            end = buffer.find("\r\n\r\n", start);
-            body += buffer.substr(start + 2, next_boundary - start - 2);
-        }
-        start = next_boundary + boundary.length();
-        size_t end = buffer.find("\r\n", start);
+            start = buffer.find("\r\n", end) + 2;
+            //body += buffer.substr(start + 2, next_boundary_pos - start - 4);
+            body += buffer.substr(start + 2, boundary_pos - start - 4);
+        //}
+        start = boundary_pos + boundary.length();
+        end = buffer.find("\r\n", start);
         if (end == std::string::npos) {
             break;
         }
@@ -190,30 +192,18 @@ Request Request::request_parser(Request &request, std::string& buffer, size_t MA
     if (!validate_headers(request, MAX_BODY_LENGTH))
         return (request);
     if (request.get_method() == "POST") {
-        // std::string content_type = request.get_header_element("Content-Type");
-        // if (content_type.find("multipart/form-data;") != std::string::npos) {
-        //     if (!handle_multipart_form_data(request, buffer, pos)) {
-        //         std::cout << MAGENTA "multipart/form-data; / false" RESET << std::endl;
-        //         return (request);
-        //     }
-        // } else {
-            if (!parse_body(request, buffer, MAX_BODY_LENGTH))
-                return (request);
-        //}
-    }
-
-    std::string content_type = request.get_header_element("Content-Type");
-    if (content_type.find("multipart/form-data;") != std::string::npos) {
-        if (!handle_multipart_form_data(request)) {
-            std::cout << MAGENTA "multipart/form-data; / false" RESET << std::endl;
+        std::string content_type = request.get_header_element("Content-Type");
+        if (!parse_body(request, buffer, MAX_BODY_LENGTH))
             return (request);
+        else if (content_type.find("multipart/form-data;") != std::string::npos) {
+            request.set_request_buffer(buffer.substr(request.get_pos()));
+            if (!handle_multipart_form_data(request)) {
+                return (request);
+            }
         }
     }
 
     request.set_request_buffer(buffer.substr(request.get_pos()));
-    std::cout << MAGENTA "request_buffer: " << request.get_request_buffer()
-    << RESET << std::endl;
-
     std::cout << "reminder: " << request.get_request_buffer() << std::endl;
 
     request.set_good_request(true);

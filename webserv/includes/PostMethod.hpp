@@ -45,6 +45,8 @@ private:
   int writefile(std::string filename, std::string content);
   int filesize(std::string filename);
   std::string getMimeType(const std::string& fileName);
+  void _upload_file(std::string &content, std::string &filename);
+  void _parse_body(std::string &content, std::string &filename);
 
 public:
     Response handle(const Request& request, std::string& fullpath, Config_data c, std::string route);
