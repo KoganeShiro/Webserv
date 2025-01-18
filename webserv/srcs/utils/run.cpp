@@ -18,22 +18,23 @@ Request *get_data_from_connection(ConnectionInfo client_connection)
 
     while (1) {
         bytes_received = read(client_fd, buffer, sizeof(buffer) - 1);
-        if (bytes_received <= 0){
-           break;
+        if (bytes_received <= 0) {
+            break;
         }
         buffer[bytes_received] = '\0';
-        data.append(buffer);
-        //std::cout << "data : " << data << std::endl;
-        answer = request->add_to_request(data,client_connection.data.client_body_size_limit);
-        std::cout << "ANSWER = " << answer << std::endl;
+        data.append(buffer, bytes_received);
+        answer = request->add_to_request(data, client_connection.data.client_body_size_limit);
         if (answer == BAD_HEADER || answer == GOOD)
             break;
+        else if (answer == MULTIPART_FORM_DATA) {
+            data.erase();
+        }
     }
+
     if (bytes_received < 0) {
         std::cerr << "Error when reading client's socket : " << client_fd << std::endl;
         return (NULL);
     }
-    std::cout << "End of read\n";
     return (request);
 }
 

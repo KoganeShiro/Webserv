@@ -8,7 +8,7 @@ Request::Request() :_request_buffer(""),
     _body(""),
     _good_request(false),
     _is_ready(AGAIN),
-    _pos(0), _finish_header(false), _header_last_line("")
+    _pos(0), _finish_header(false)
 {}
 
 Request::Request(Request const &other) :
@@ -21,7 +21,7 @@ Request::Request(Request const &other) :
     _body(other._body),
     _good_request(other._good_request),
     _is_ready(other._is_ready),
-     _pos(other._pos), _finish_header(other._finish_header), _header_last_line(other._header_last_line)
+     _pos(other._pos), _finish_header(other._finish_header)
 {}
 
 Request &Request::operator=(Request const &other)
@@ -107,16 +107,6 @@ size_t Request::get_content_length() const
 size_t Request::get_pos() const
 {
     return (this->_pos);
-}
-
-std::string Request::get_header_last_line() const
-{
-    return (this->_header_last_line);
-}
-
-void Request::set_header_last_line(const std::string header_last_line)
-{
-    this->_header_last_line = header_last_line;
 }
 
 void Request::set_pos(size_t pos)

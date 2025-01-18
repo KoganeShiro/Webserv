@@ -68,9 +68,9 @@ free:
 # Create object directory and touch test files
 $(OBJ_PATH):
 	mkdir -p $(OBJ_PATH)
-	@echo "This is a test file." > $(UPLOADS_PATH)test.txt
-	@echo "This is a test copy file." > $(UPLOADS_PATH)test-copy.txt
-	@echo "This is a youpi.bla file." > $(UPLOADS_PATH)youpi.bla
+	echo "This is a test file." > $(UPLOADS_PATH)test.txt
+	echo "This is a test copy file." > $(UPLOADS_PATH)test-copy.txt
+	echo "This is a youpi.bla file." > $(UPLOADS_PATH)youpi.bla
 
 # Ensure the uploads directory exists
 $(UPLOADS_PATH):

@@ -88,3 +88,4 @@ If any of those rule is not apply, it might conduct to a bad configured server a
 #define AGAIN 0
 #define BAD_HEADER 1
 #define GOOD 2
+#define MULTIPART_FORM_DATA 3

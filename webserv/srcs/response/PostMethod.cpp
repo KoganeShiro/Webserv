@@ -130,11 +130,12 @@ void PostMethod::_parse_body(std::string &content, std::string &filename)
 
 void PostMethod::_upload_file(std::string &content, std::string &filename)
 {
+    (void)content;
     std::string content_dispo = this->_request.get_header_element("Content-Disposition");
     filename += "/";
     filename += content_dispo.substr(content_dispo.find("filename=\"") + 10, content_dispo.find('"', content_dispo.find("filename=\"") + 10) - (content_dispo.find("filename=\"") + 10));
-    std::cout << "PostMethod Upload filename: " << filename << std::endl;
-    std::cout << "PostMethod Upload content: " << content << std::endl;
+    // std::cout << "PostMethod Upload filename: " << filename << std::endl;
+    // std::cout << "PostMethod Upload content: " << content << std::endl;
 }
 
 int PostMethod::writefile(std::string filename, std::string content)
@@ -149,8 +150,8 @@ int PostMethod::writefile(std::string filename, std::string content)
         std::cerr << "PostMethod Error: Empty body" << std::endl;
         return (-1);
     }
-    std::cout << MAGENTA "PostMethod Writefile: [" << filename << "]" << std::endl;
-    std::cout << "Content: [" << content << "]" RESET << std::endl;
+    // std::cout << MAGENTA "PostMethod Writefile: [" << filename << "]" << std::endl;
+    // std::cout << "Content: [" << content << "]" RESET << std::endl;
     if (this->_request.get_header_element("Content-Type") == "application/x-www-form-urlencoded") {
         _parse_body(content, filename);
     } else {

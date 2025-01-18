@@ -54,7 +54,6 @@ static bool parse_headers(Request& request, std::string& buffer, size_t& pos)
             while (!value.empty() && (value[value.size() - 1] == ' ' || value[value.size() - 1] == '\t'))
                 value.erase(value.size() - 1);
             request.add_header(key, value);
-            request.set_header_last_line(key + ": " + value);
         }
         pos = line_end + 2;
     }
@@ -136,46 +135,91 @@ static std::string extract_boundary(const std::string& content_type)
     return ("");
 }
 
+bool ends_with_boundary(Request& request, const std::string& buffer, const std::string& boundary)
+{
+    std::string boundary_with_end = boundary + "--\r\n";
+    size_t pos = buffer.rfind(boundary_with_end);
+    
+    // Check if the boundary_with_end is at the end of the buffer
+    if (pos != std::string::npos && pos == buffer.length() - boundary_with_end.length()) {
+        request.set_pos(pos + boundary_with_end.length());
+        return (true);
+    }
+    return (false);
+}
+
+std::string extract_content(const std::string& buffer, const std::string& boundary)
+{
+    std::string start_marker = "Content-Disposition: form-data;";
+    std::string end_marker = "\r\n" + boundary;
+
+    // Find the last occurrence
+    std::string::size_type lastPos = buffer.rfind(start_marker);
+    if (lastPos == std::string::npos) return "";
+
+    // Find the second-to-last occurrence
+    std::string::size_type startPos = buffer.rfind(start_marker, lastPos - 1);
+    if (startPos == std::string::npos) return "";
+
+    std::string::size_type endPos = buffer.find(end_marker, startPos);
+    if (endPos == std::string::npos) return "";
+
+    // Include the start_marker in the result
+    return buffer.substr(startPos, endPos - startPos);
+}
+
+std::string cleanBuffer(const std::string& buffer)
+{
+    std::string body = buffer;
+    std::string::size_type pos;
+
+    // Remove Content-Disposition line
+    pos = body.find("Content-Disposition");
+    if (pos != std::string::npos) {
+        body = body.substr(0, pos) + body.substr(body.find("\r\n", pos) + 2);
+    }
+    // Remove Content-Type line
+    pos = body.find("Content-Type: ");
+    if (pos != std::string::npos) {
+        body = body.substr(0, pos) + body.substr(body.find("\r\n", pos) + 2);
+    }
+    // Remove line break
+    pos = body.find("\r\n");
+    if (pos != std::string::npos) {
+        body = body.substr(0, pos) + body.substr(pos + 2);
+    }
+    return (body);
+}
+
 static bool handle_multipart_form_data(Request& request)
 {
     std::string content_type = request.get_header_element("Content-Type");
+    std::cout << "content_type: " << content_type << std::endl;
     std::string boundary = extract_boundary(content_type);
-    std::string buffer = request.get_body();
+    std::string buffer = request.get_request_buffer();
+    static int i = 0;
+    std::cout << RED "i: " RESET << i++ << std::endl;
     if (boundary.empty()) {
         request.set_is_ready(BAD_HEADER);
         return (false);
     }
-    std::string body;
-    size_t start = 0, boundary_pos; //, next_boundary_pos;
-    while (true) {
-        boundary_pos = buffer.find(boundary, start);
-        // next_boundary_pos = buffer.find(boundary, boundary_pos + boundary.length());
-        // start = boundary_pos + boundary.length();
-        if (boundary_pos == std::string::npos) {
-            break;
-        }
-        //if (boundary_pos >= start) {
-            size_t colon_start = buffer.find(":", start);
-            size_t end = buffer.find("\r\n", colon_start);
-            request.add_header("Content-Disposition", buffer.substr(colon_start + 2, end - colon_start - 2));
-            //next line
-            start = buffer.find(":", end);
-            end = buffer.find("\r\n", start);
-            request.add_header("Content-Type", buffer.substr(start + 2, end - start - 2));
-            //next line
-            start = buffer.find("\r\n", end) + 2;
-            //body += buffer.substr(start + 2, next_boundary_pos - start - 4);
-            body += buffer.substr(start + 2, boundary_pos - start - 4);
-        //}
-        start = boundary_pos + boundary.length();
-        end = buffer.find("\r\n", start);
-        if (end == std::string::npos) {
-            break;
-        }
-        start = end + 2;
+    if (ends_with_boundary(request, buffer, boundary) == false) {
+        request.set_body("");
+        request.set_is_ready(MULTIPART_FORM_DATA);
+        std::cout << "AGAIN" << std::endl;
+        return (false);
     }
+    
+    std::string body;
+    body = extract_content(buffer, boundary);
+    buffer = body;
+
+    request.add_header("Content-Disposition", body.substr(0, body.find("\r\n")));
+    request.add_header("Content-Type", buffer.substr(body.find("Content-Type: "), body.find("\r\n", body.find("Content-Type: ")) - body.find("Content-Type: ")));
+
+    body = cleanBuffer(buffer);
+    
     request.set_body(body);
-    request.set_is_ready(GOOD);
     return (true);
 }
 
@@ -183,9 +227,9 @@ Request Request::request_parser(Request &request, std::string& buffer, size_t MA
 {
     size_t pos = 0;
 
-    if (!parse_request_line(request, buffer, pos))
-        return (request);
     if (!request.get_finish_header()) {
+        if (!parse_request_line(request, buffer, pos))
+            return (request);
         if (!parse_headers(request, buffer, pos))
             return (request);
     }
@@ -198,6 +242,7 @@ Request Request::request_parser(Request &request, std::string& buffer, size_t MA
         else if (content_type.find("multipart/form-data;") != std::string::npos) {
             request.set_request_buffer(buffer.substr(request.get_pos()));
             if (!handle_multipart_form_data(request)) {
+                std::cout << "should be AGAIN or BAD_HEADER" << std::endl;
                 return (request);
             }
         }
@@ -211,6 +256,7 @@ Request Request::request_parser(Request &request, std::string& buffer, size_t MA
 
     return (request);
 }
+
 
 void print_Request(Request *request)
 {
@@ -253,7 +299,7 @@ int Request::add_to_request(std::string to_add, size_t MAX_BODY_LENGTH)
 
     this->set_request_buffer(this->_request_buffer.append(to_add));
     *this = request_parser(*this, this->_request_buffer, MAX_BODY_LENGTH);
-    print_Request(this);
+    //print_Request(this);
     return (this->get_is_ready());
 }
 
