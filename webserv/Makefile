@@ -68,9 +68,6 @@ free:
 # Create object directory and touch test files
 $(OBJ_PATH):
 	mkdir -p $(OBJ_PATH)
-	echo "This is a test file." > $(UPLOADS_PATH)test.txt
-	echo "This is a test copy file." > $(UPLOADS_PATH)test-copy.txt
-	echo "This is a youpi.bla file." > $(UPLOADS_PATH)youpi.bla
 
 # Ensure the uploads directory exists
 $(UPLOADS_PATH):
@@ -81,6 +78,9 @@ download_images: $(UPLOADS_PATH) $(IMAGE_DEST) $(IMAGE_DEST2)
 
 $(IMAGE_DEST): $(UPLOADS_PATH)
 	@wget -q $(IMAGE_URL) -O $(IMAGE_DEST)
+	@echo "This is a test file." > $(UPLOADS_PATH)test.txt
+	@echo "This is a test copy file." > $(UPLOADS_PATH)test-copy.txt
+	@echo "This is a youpi.bla file." > $(UPLOADS_PATH)youpi.bla
 
 $(IMAGE_DEST2): $(UPLOADS_PATH)
 	@wget -q $(IMAGE_URL2) -O $(IMAGE_DEST2)
