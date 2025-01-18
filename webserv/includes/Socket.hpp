@@ -16,12 +16,12 @@ private:
     int     _epollFd;
     int     _sockfd;
     int     _create_socket(void);
-    void    _bind_socket(int port);
-    void    configure_epoll(void);
+    void    _bind_socket(int port, std::string host, std::string server_name);
+    //void    configure_epoll(void);
     void    _listen_for_connections(void);
 
 public:
-    Socket(int port);
+    Socket(int port, std::string host, std::string server_name);
     ~Socket();
     void accept_connection();
    int get_sockfd();

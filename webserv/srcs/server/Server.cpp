@@ -1,7 +1,7 @@
 
 #include "Server.hpp"
 
-Server::Server(const Config_data config): _data(config), _socket(config.port)
+Server::Server(const Config_data config): _data(config), _socket(config.port, config.host, config.server_name)
 {
     // std::cout << GREEN
 	// 	"Server constructor is called"
