@@ -191,7 +191,7 @@ std::string cleanBuffer(const std::string& buffer)
     return (body);
 }
 
-static bool handle_multipart_form_data(Request& request)
+static bool handle_multipart_form_data(Request& request, size_t MAX_BODY_LENGTH)
 {
     std::string content_type = request.get_header_element("Content-Type");
     std::cout << "content_type: " << content_type << std::endl;
@@ -218,7 +218,10 @@ static bool handle_multipart_form_data(Request& request)
     request.add_header("Content-Type", buffer.substr(body.find("Content-Type: "), body.find("\r\n", body.find("Content-Type: ")) - body.find("Content-Type: ")));
 
     body = cleanBuffer(buffer);
-    
+    if (body.length() > MAX_BODY_LENGTH) {
+        request.set_is_ready(BAD_HEADER);
+        return (false);
+    }
     request.set_body(body);
     return (true);
 }
@@ -241,7 +244,7 @@ Request Request::request_parser(Request &request, std::string& buffer, size_t MA
             return (request);
         else if (content_type.find("multipart/form-data;") != std::string::npos) {
             request.set_request_buffer(buffer.substr(request.get_pos()));
-            if (!handle_multipart_form_data(request)) {
+            if (!handle_multipart_form_data(request, MAX_BODY_LENGTH)) {
                 std::cout << "should be AGAIN or BAD_HEADER" << std::endl;
                 return (request);
             }

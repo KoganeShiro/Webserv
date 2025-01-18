@@ -33,4 +33,4 @@
 *.out
 *.app
 */webServ
-webServ/html_page/www/uploads/*
+./webServ/html_page/www/uploads/*
