@@ -1,3 +1,6 @@
+
+//#include "WebServ.hpp"
+
 #include "Worker.hpp"
 
 void Worker::check_cgi()
@@ -15,16 +18,26 @@ void Worker::check_cgi()
         //std::string extension_path_query = _fullpath.substr(_fullpath.find('.') + 1);
         //std::string extension_path;
         std::string cgitype;
+     
         size_t extension_start_pos = _fullpath.find('.');
+        std::cout << BLUE "Extension start pos: " RESET << extension_start_pos << std::endl;
         size_t extension_path_start_pos = _fullpath.find('/', extension_start_pos);
+        std::cout << BLUE "Extension path start pos: " RESET << extension_path_start_pos << std::endl;
         if (extension_path_start_pos == std::string::npos) {
             extension_path_start_pos = _fullpath.length();
         }
+        std::cout << BLUE "Extension path start pos: " RESET << extension_path_start_pos << std::endl;
+        _cgi_path = _fullpath.substr(extension_path_start_pos);
+        std::cout << BLUE "CGI Path: " RESET << _cgi_path << std::endl;
+        
         _fullpath = _fullpath.substr(0, extension_path_start_pos);
+        std::cout << BLUE "Fullpath: " RESET << _fullpath << std::endl;
         if (extension_start_pos != std::string::npos) {            
             cgitype = _fullpath.substr(extension_start_pos + 1, extension_path_start_pos - extension_start_pos - 1);
         }
-        _cgi_path = _fullpath.substr(extension_path_start_pos);
+        std::cout << BLUE "CGI Type: " RESET << cgitype << std::endl;
+        
+        
 
 //            std::string extension_path_query = _fullpath.substr(extension_path_pos + 1);
 //            _cgi_path = extension_path_query;
@@ -62,7 +75,6 @@ void Worker::check_cgi()
     if (! _use_cgi)
         std::cout << ORANGE "CGI not available or non CGI file extension." RESET << std::endl;
 }
-
 /*
 bool Worker::_file_exists()
 {
@@ -89,10 +101,10 @@ bool Worker::_file_writable()
 
 std::string Worker::checkRoute() const
 {
+    
     std::string route = "";
     long unsigned int length = 0;
-    for (std::map< std::string, Route_config >::const_iterator it = _config.routes.begin();
-            it != _config.routes.end(); ++it) {
+    for (std::map< std::string, Route_config >::const_iterator it = _config.routes.begin(); it != _config.routes.end(); ++it) {
         if ((_request->get_path()).rfind(it->first, 0) == 0)
         {
             if ((it->first).length() > length) {
@@ -110,8 +122,7 @@ std::string Worker::checkRoute() const
 
 bool Worker::method_is_available()
 {
-    for (std::map<std::string, IHttpMethod*>::iterator it = _method_handlers.begin();
-            it != _method_handlers.end(); ++it) {
+    for (std::map<std::string, IHttpMethod*>::iterator it = _method_handlers.begin(); it != _method_handlers.end(); ++it) {
         if (it->first == _request->get_method()) {
             std::cout << GREEN "Method " << _request->get_method() << " is available in this Worker service." RESET << std::endl;
             return true;
@@ -123,8 +134,7 @@ bool Worker::method_is_available()
 
 bool Worker::is_valid_method()
 {
-    for (std::vector<std::string>::iterator it = _config.routes[_route].accepted_methods.begin();
-            it != _config.routes[_route].accepted_methods.end(); ++it) {
+    for (std::vector<std::string>::iterator it = _config.routes[_route].accepted_methods.begin(); it != _config.routes[_route].accepted_methods.end(); ++it) {
         if (*it == _request->get_method()) {
             std::cout << GREEN "Method " << _request->get_method() << " is valid for this route." RESET << std::endl;
             return true;
@@ -136,8 +146,7 @@ bool Worker::is_valid_method()
 
 bool Worker::servername_is_valid()
 {
-    if (_config.server_name ==
-            _request->get_header_element("Host").substr(0, _request->get_header_element("Host").find(':'))) {
+    if (_config.server_name == _request->get_header_element("Host").substr(0, _request->get_header_element("Host").find(':'))) {
         std::cout << GREEN "Server name in Header corresponds to this server." RESET << std::endl;
         return true;
     }
@@ -179,8 +188,7 @@ void Worker::check_for_errors()
         std::cout << "Route not found" << std::endl;
         return;
     }
-    if (_config.routes[_route].redirection_nb > 299
-            && _config.routes[_route].redirection_path != "") {
+    if (_config.routes[_route].redirection_nb > 299 && _config.routes[_route].redirection_path != "") {
         _status_code = _config.routes[_route].redirection_nb;
         _error_message = "Redirect";
         std::cout << "Redirection" << std::endl;
@@ -220,8 +228,6 @@ Worker::Worker(Config_data c, Request *request)
             _fullpath = _config.routes[_route].root_dir + _request->get_path();
         else
             _fullpath = _config.routes[_route].root_dir + (_request->get_path().substr(_route.length()));
-        std::cout << CYAN << _config.routes[_route].root_dir << std::endl;
-        std::cout << (_request->get_path().substr(_route.length())) << RESET << std::endl;
         std::cout << ORANGE "Fullpath check: " RESET << _fullpath << std::endl;
         
         if (_fullpath[_fullpath.length() - 1] == '/')            
@@ -239,8 +245,7 @@ Worker::Worker(Config_data c, Request *request)
 
 void Worker::clean_up()
 {
-    for (std::map<std::string, IHttpMethod*>::iterator it = _method_handlers.begin();
-            it != _method_handlers.end(); ++it) {
+    for (std::map<std::string, IHttpMethod*>::iterator it = _method_handlers.begin(); it != _method_handlers.end(); ++it) {
         delete it->second;
     }
     delete _request;
@@ -253,6 +258,7 @@ Worker::~Worker()
     std::cout << GREEN "Worker service ended cleanly." RESET << std::endl;
 }
 
+
 Response Worker::run()
 {
     std::cout << GREEN "Worker service started working." RESET << std::endl;
@@ -261,57 +267,28 @@ Response Worker::run()
     if (_status_code > 399) {
         response = Response(_status_code, _error_message, _config);
         std::cout << RED "Error reponse generated from Worker: " << _status_code << RESET << std::endl;
-        return (response);
+        return response;
     }
     if (_status_code > 299) {
         response = Response(_status_code, "Redirect", _config);
         response.set_header("Location", _config.routes[_route].redirection_path);
         std::cout << GREEN "Redirect reponse generated from Worker: " << _status_code << RESET << std::endl;
-        return (response);
+        return response;
     }    
     if (_use_cgi) {        
         std::cout << ORANGE "Worker will execute CGI." RESET << std::endl;
         response = execute_cgi();
         std::cout << GREEN "Response generated by CGI and returned." RESET << std::endl;
-        return (response);        
+        std::cout << response.http_response() << std::endl;
+        return response;        
     }
     std::cout << ORANGE "Worker will call Handler for Method: " << _request->get_method() << " with " << _fullpath << RESET << std::endl;
     response = _method_handlers[_request->get_method()]->handle(*_request, _fullpath, _config, _route);
-    std::cout << GREEN "Response generated by Method and returned." RESET << std::endl;
-    return (response);    
+    std::cout << GREEN "Response generated by Method and returned:" RESET << std::endl;
+    std::cout << response.http_response() << std::endl;
+    return response;    
 }
 
-/*
-
-void Worker::process_request(const Request& request)
-{
-    Response response;
-    std::string method = request.get_method(); 
-    
-    if (_method_handlers.find(method) != _method_handlers.end()) {
-        IHttpMethod* handler = _method_handlers[method];
-        response = handler->handle(request);
-    }
-    else {
-        response = Response(405, "Method Not Allowed");
-    }
-    
-    send_response(response);
-}
-*/
-/*
-void Worker::send_response(const Response& response)
-{
-    response.set_body(gen_htmlbody());
-    std::string fullResponse = response.http_response();
-    ssize_t bytesSent = send(this._socket->_sockfd, fullResponse.c_str(),
-            fullResponse.length(), 0);
-    if (bytesSent < 0) {
-        perror("Failed to send response");
-        close(); // Close connection on error
-    }
-}
-*/
 
 std::vector<std::string> Worker::build_cgi_environment()
 {
@@ -345,7 +322,6 @@ std::vector<std::string> Worker::build_cgi_environment()
     if (_request->get_header_element("Host") != "") {
         envp.push_back("HTTP_HOST=" + _request->get_header_element("Host"));
     }
-
     // Transform the port number to a string
     std::ostringstream oss;
     oss << _config.port;
@@ -361,16 +337,16 @@ std::vector<std::string> Worker::build_cgi_environment()
     envp.push_back("SERVER_NAME=" + _config.server_name);
     envp.push_back("SERVER_PORT=" + port);
     
+    
     std::cout << YELLOW "Environment variables for CGI-Script: " RESET << std::endl;
     for (std::vector<std::string>::iterator it = envp.begin(); it != envp.end(); ++it) {
         std::cout << YELLOW << *it << RESET << std::endl;
          }
 
-    return (envp);
+    return envp;
 }
 
-Response Worker::execute_cgi()
-{    
+Response Worker::execute_cgi() {    
     // Create pipe for communication between parent and child process
     int pipefd[2];
     int reqpipe[2];
@@ -421,8 +397,8 @@ Response Worker::execute_cgi()
         close(pipefd[0]);               // Close unused read end
 
         dup2(reqpipe[0], STDIN_FILENO); // Redirect stdin to pipe
-        close(reqpipe[1]);               // Close unused write end
-
+        close(reqpipe[1]);                       // Close unused write end
+        close(reqpipe[0]);
         // Change working directory to the directory of the CGI script
         chdir(_fullpath.substr(0, _fullpath.find_last_of('/')).c_str());
 
@@ -450,6 +426,8 @@ Response Worker::execute_cgi()
            // _config.routes.clear();
            // _config.tab_cgi.clear();
             //std::cout << "Starting of CGI script failed. Clean up." << std::endl;
+            // 
+                  
 
             clean_up();
             exit(1);
@@ -463,16 +441,25 @@ Response Worker::execute_cgi()
 
         // Close unused write end of pipe
         close(pipefd[1]);
+
+        // Close unused read end of pipe
         close(reqpipe[0]);
 
         // Write request body to requestpipe
         std::string body = _request->get_body();
         write(reqpipe[1], body.c_str(), body.length());
+     //   std::cout << ORANGE "Request body sent to CGI script." RESET << body << std::endl;
+      //  write(2, body.c_str(), body.length());
         close(reqpipe[1]);
 
+        
+
+        
         // Set up timeout for CGI script
         time_t start_time = time(NULL);        
         int exit_code;
+
+
 
         // Read from pipe and append to result string
         char buffer[1024];
@@ -514,10 +501,12 @@ Response Worker::execute_cgi()
                 }
                 }
             }
-        }
+        }       
         // Close read end of pipe
         close(pipefd[0]);
         close(reqpipe[1]);
+
+
 
         // Wait for child process to finish
         int status;
@@ -533,19 +522,23 @@ Response Worker::execute_cgi()
             exit_code = WTERMSIG(status);
             std::cout << ORANGE "Child process was terminated with signal: " RESET << exit_code << std::endl;            
         }        
-        std::cout << ORANGE "Result of CGI script: " RESET << std::endl << resultstring << std::endl;        
-        if (exit_code == 418) {
-            std::cout << ORANGE "Child process exited with error code: " RESET << exit_code << std::endl;
-            result = Response(500, "Internal Server Error", _config);            
-        }
-        else if (exit_code == 9) {
+        std::cout << ORANGE "Result of CGI script: " RESET << std::endl << resultstring << std::endl;                
+        if (exit_code == 9) {
             std::cout << ORANGE "Child process timed out." RESET << std::endl;
             result = Response(500, "Internal Server Error", _config);            
         }
-        else {
+        else if (exit_code == 0) {
             std::cout << ORANGE "CGI Script exited normally." RESET << std::endl;
             result = Response(resultstring);
         }
+        else if (exit_code == 418) {
+            std::cout << ORANGE "Child process exited with error code: " RESET << exit_code << std::endl;
+            result = Response(500, "Internal Server Error", _config);            
+        }
+        else {
+            std::cout << ORANGE "Child process exited with error code: " RESET << exit_code << std::endl;
+            result = Response(500, "Internal Server Error", _config);            
+        }
     }
-    return (result);
+    return result;
 }

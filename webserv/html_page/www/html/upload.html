@@ -53,7 +53,6 @@
             margin-top: 20px;
             font-weight: bold;
         }
-
         a {
             color: #3498db;
             text-decoration: none;
@@ -67,14 +66,78 @@
 </head>
 <body>
     <div class="container">
-        <h1>Upload a File</h1>
+        <h1>Upload a File using php script and multipart/form-data</h1>
         <p>Select a file to upload to the uploads directory.</p>
-        <form action="/uploads" method="post" enctype="multipart/form-data">
-            <input type="file" name="fileToUpload" id="fileToUpload" required>
+        <form action="/test/php.php" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" id="file" required>
+        
             <input type="submit" value="Upload File" name="submit">
         </form>
+
+        <h1>Upload a File using py script and multipart/form-data</h1>
+        <p>Select a file to upload to the uploads directory.</p>
+        <form action="/test/python_post_script.py" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" id="file" required>
+        
+            <input type="submit" value="Upload File" name="submit">
+        </form>
+
+        <h1>Upload a File using pure post request and multipart/form-data</h1>
+        <p>Select a file to upload to the uploads directory.</p>
+        <form action="/" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" id="file" required>
+        
+            <input type="submit" value="Upload File" name="submit">
+        </form>
+
+        <h1>Upload a File using php script and application/x-www-form-urlencoded</h1>
+        <p>Select a file to upload to the uploads directory.</p>
+        <form action="/test/php.php" method="post" enctype="application/x-www-form-urlencoded">
+            <input type="file" name="file" id="file" required>
+        
+            <input type="submit" value="Upload File" name="submit">
+        </form>
+
+        <h1>Upload a File using py script and application/x-www-form-urlencoded</h1>
+        <p>Select a file to upload to the uploads directory.</p>
+        <form action="/test/python_post_script.py" method="post" enctype="application/x-www-form-urlencoded">
+            <input type="file" name="file" id="file" required>
+        
+            <input type="submit" value="Upload File" name="submit">
+        </form>
+
+        <h1>Upload File Content using POST Request (application/x-www-form-urlencoded)</h1>
+        <p>Enter the filename and content to upload.</p>
+        <form action="/" method="post" enctype="application/x-www-form-urlencoded">
+            <label for="filename">Filename:</label>
+            <input type="text" name="filename" id="filename" required>
+            
+            <label for="content">Content:</label>
+            <textarea name="content" id="content" rows="4" required></textarea>
+            
+            <input type="submit" value="Upload File" name="submit">
+        </form>
+
+        <h2>Upload a File with Get request qn python script</h2>
+        <!-- Form for file upload with GET request -->
+        <form action="/test/python_post_script.py" method="GET" enctype="multipart/form-data">
+            <label for="fileUpload">Choose a file to upload:</label>
+            <input type="file" id="fileUpload" name="file" required>
+            <br><br>
+            <input type="submit" value="Upload">
+        </form>
+
+
         <p></p>
         <a href="./index.html">Go back to homepage</a>
+        <div class="message">
+            <!-- Display success or error message here -->
+            <?php
+            if (isset($_GET['message'])) {
+                echo htmlspecialchars($_GET['message']);
+            }
+            ?>
+        </div>
     </div>
 </body>
 </html>

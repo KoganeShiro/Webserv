@@ -4,8 +4,7 @@
 #include "PostMethod.hpp"
 #include "DeleteMethod.hpp"
 
-class Worker
-{
+class Worker {
 private:
     std::map<std::string, IHttpMethod*> _method_handlers;
    // Socket& _socket;
@@ -38,6 +37,7 @@ private:
     Response execute_cgi();
     void clean_up();
 
+
 public:
    // Worker(Socket& socket);
 
@@ -50,5 +50,4 @@ public:
 //    void register_method(const std::string& methodName, IHttpMethod* handler);
 //    void process_request(const Request& request);
  //   void send_response(const Response& response);
-
 };
