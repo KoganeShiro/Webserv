@@ -5,9 +5,6 @@
 #include "Response.hpp"
 #include "Request.hpp"
 
-//#include "WebServ.hpp"
-
-
 /*
 Interface to know which HTTP Method
 */

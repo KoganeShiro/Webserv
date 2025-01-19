@@ -123,38 +123,133 @@ static bool parse_body(Request& request, std::string& buffer, size_t MAX_BODY_LE
             }
         }
     }
-    request.set_pos(pos);
     return (false);
+}
+
+bool ends_with_boundary(Request& request, const std::string& buffer, const std::string& boundary)
+{
+    std::string boundary_with_end = boundary + "--\r\n";
+    size_t pos = buffer.rfind(boundary_with_end);
+    
+    // Check if the boundary_with_end is at the end of the buffer
+    if (pos != std::string::npos && pos == buffer.length() - boundary_with_end.length()) {
+        request.set_pos(pos + boundary_with_end.length());
+        return (true);
+    }
+    return (false);
+}
+
+std::string extract_content(const std::string& buffer, const std::string& boundary)
+{
+    std::string start_marker = "Content-Disposition: form-data;";
+    std::string end_marker = "\r\n" + boundary;
+
+    // Find the last occurrence
+    std::string::size_type lastPos = buffer.rfind(start_marker);
+    if (lastPos == std::string::npos) return "";
+
+    // Find the second-to-last occurrence
+    std::string::size_type startPos = buffer.rfind(start_marker, lastPos - 1);
+    if (startPos == std::string::npos) return "";
+
+    std::string::size_type endPos = buffer.find(end_marker, startPos);
+    if (endPos == std::string::npos) return "";
+
+    // Include the start_marker in the result
+    return buffer.substr(startPos, endPos - startPos);
+}
+
+// std::string extract_content(const std::string& buffer)
+// {
+//     std::string start_marker = "Content-Disposition: form-data;";
+//     std::string filename_marker = "filename=";
+
+//     std::string::size_type startPos = buffer.rfind(start_marker);
+//     while (startPos != std::string::npos)
+//     {
+//         std::string::size_type endOfLine = buffer.find("\r\n", startPos);
+//         if (endOfLine != std::string::npos && 
+//             buffer.find(filename_marker, startPos) <= endOfLine)
+//         {
+//             return (buffer.substr(startPos));
+//         }
+
+//         if (startPos == 0) {
+//             break;
+//         }
+//         startPos = buffer.rfind(start_marker, startPos - 1);
+//     }
+//     return ("");
+// }
+
+static bool handle_multipart_form_data(Request& request, size_t MAX_BODY_LENGTH)
+{
+    //(void)MAX_BODY_LENGTH;
+    std::string content_type = request.get_header_element("Content-Type");
+    std::string boundary = extract_boundary(content_type);
+    std::string buffer = request.get_request_buffer();
+    static int i = 0; //
+    std::cout << RED "i: " RESET << i++ << std::endl; //
+    if (boundary.empty()) {
+        request.set_is_ready(BAD_HEADER);
+        return (false);
+    }
+    if (ends_with_boundary(request, buffer, boundary) == false) {
+        request.set_body("");
+        request.set_is_ready(MULTIPART_FORM_DATA);
+        return (false);
+    }
+    
+    std::string body;
+    //body = extract_content(buffer, boundary);
+    body = buffer;
+
+    std::cout << "body: " << body << std::endl;
+
+    //request.add_header("Content-Disposition", body.substr(0, body.find("\r\n")));
+    //request.add_header("Content-Type", buffer.substr(body.find("Content-Type: "), body.find("\r\n", body.find("Content-Type: ")) - body.find("Content-Type: ")));
+
+    if (body.length() > MAX_BODY_LENGTH) {
+        request.set_is_ready(BAD_HEADER);
+        return (false);
+    }
+    request.set_body(body);
+    return (true);
 }
 
 Request Request::request_parser(Request &request, std::string& buffer, size_t MAX_BODY_LENGTH)
 {
     size_t pos = 0;
 
-    if (!parse_request_line(request, buffer, pos))
-        return (request);
-    if (request.get_finish_header() == false) {
+    if (!request.get_finish_header()) {
+        if (!parse_request_line(request, buffer, pos))
+            return (request);
         if (!parse_headers(request, buffer, pos))
             return (request);
     }
     if (!validate_headers(request, MAX_BODY_LENGTH))
         return (request);
-    if (this->get_method() == "POST") {
+    if (request.get_method() == "POST") {
+        std::string content_type = request.get_header_element("Content-Type");
         if (!parse_body(request, buffer, MAX_BODY_LENGTH))
             return (request);
+        else if (content_type.find("multipart/form-data;") != std::string::npos) {
+            request.set_request_buffer(buffer.substr(request.get_pos()));
+            if (!handle_multipart_form_data(request, MAX_BODY_LENGTH)) {
+                return (request);
+            }
+        }
     }
 
-    request.set_request_buffer(buffer.substr(this->get_pos()));
-
-    std::cout << "reminder: " BGREEN <<
-        request.get_request_buffer()
-    << RESET << std::endl;
+    request.set_request_buffer(buffer.substr(request.get_pos()));
+    std::cout << "reminder: " << request.get_request_buffer() << std::endl;
 
     request.set_good_request(true);
     request.set_is_ready(GOOD);
 
     return (request);
 }
+
 
 void print_Request(Request *request)
 {
@@ -163,7 +258,7 @@ void print_Request(Request *request)
         std::cout <<RED "Request is NULL" RESET << std::endl;
         return;
     }
-
+    std::cout << CYAN "-----------------------" << std::endl;
     std::cout << "Request Details:" << std::endl;
     std::cout << "Request Buffer: `" << request->get_request_buffer() << "`" << std::endl;
     std::cout << "----------------" << std::endl;
@@ -187,8 +282,8 @@ void print_Request(Request *request)
     std::cout << "\nBody:" << std::endl;
     std::cout << "-----" << std::endl;
     std::cout << "`" << request->get_body() << "`" << std::endl;
+    std::cout << "-----------------------" RESET << std::endl;
 }
-
 
 int Request::add_to_request(std::string to_add, size_t MAX_BODY_LENGTH)
 {
@@ -197,7 +292,7 @@ int Request::add_to_request(std::string to_add, size_t MAX_BODY_LENGTH)
 
     this->set_request_buffer(this->_request_buffer.append(to_add));
     *this = request_parser(*this, this->_request_buffer, MAX_BODY_LENGTH);
-    print_Request(this);
+    //print_Request(this);
     return (this->get_is_ready());
 }
 

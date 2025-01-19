@@ -4,11 +4,11 @@
 #include "Worker.hpp"
 
 void    run_epoll(int epoll_fd, std::vector<Server*> servers);
-
 std::vector<Server*> ServerManager::servers;
 
-void signalHandler(int signum) {
-    for (size_t i = 0; i < ServerManager::servers.size(); ++i) // test
+void signalHandler(int signum)
+{
+    for (size_t i = 0; i < ServerManager::servers.size(); ++i)
         close(ServerManager::servers[i]->get_socket_fd());
 
     const char *argv[] = {"./free", NULL};
@@ -20,7 +20,7 @@ void signalHandler(int signum) {
 void add_to_epoll(int epoll_fd, Server *server)
 {
     epoll_event event;
-    event.data.fd = server->get_socket_fd(); // Associer le fd du socket
+    event.data.fd = server->get_socket_fd(); // Associate the socket file descriptor
     if (event.data.fd < 0) {
         std::cerr << "Invalid socket file descriptor: " << event.data.fd << std::endl;
         throw std::runtime_error("Invalid socket file descriptor");
@@ -43,9 +43,9 @@ int main(int argc, char **argv)
 {
     if (argc != 2) {
         std::cout <<
-            "Usage: ./WebServ <configuration file>"
+            RED "Usage: ./WebServ <configuration file>" RESET
         << std::endl;
-        return(EXIT_FAILURE) ;
+        return(EXIT_FAILURE);
     }
     else {
         std::cout <<
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
             ServerManager::servers.push_back(new Server(configs[i]));
         }
         if (ServerManager::servers.size() <= 0)
-            throw std::runtime_error(std::string("Your file '.config' doesn't configure a server as requested\n"));
+            throw std::runtime_error(std::string(BAD_CONFIG));
 
         // 4. Ajouter les sockets des serveurs a epoll
         for (size_t i = 0; i < ServerManager::servers.size(); ++i) {
@@ -85,5 +85,4 @@ int main(int argc, char **argv)
     catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
     }
-
 }

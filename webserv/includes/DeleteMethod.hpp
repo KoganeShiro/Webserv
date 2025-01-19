@@ -17,7 +17,8 @@ public:
 };
 */
 
-class DeleteMethod : public IHttpMethod {
+class DeleteMethod : public IHttpMethod
+{
 private:   
     Config_data _config;
     Request _request;
@@ -44,7 +45,7 @@ private:
   int filesize(std::string filename);
   std::string getMimeType(const std::string& fileName);
 
-
 public:
     Response handle(const Request& request, std::string& fullpath, Config_data c, std::string route);
+
 };

@@ -64,7 +64,6 @@
             margin-top: 20px;
             font-weight: bold;
         }
-
         .back-link {
             display: inline-block;
             margin-top: 40px;
@@ -74,6 +73,18 @@
 
         .back-link:hover {
             text-decoration: underline;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+        .strikethrough {
+            text-decoration: line-through;
         }
     </style>
 </head>
@@ -88,48 +99,48 @@
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="file-list-body">
                 <tr>
                     <td class="file-name">test-copy.txt</td>
-                    <td><a onclick="deleteResource('test-copy.txt')" class="delete-btn">Delete</a></td>
+                    <td><a onclick="deleteResource('/uploads/test-copy.txt', this)" class="delete-btn">Delete</a></td>
                 </tr>
                 <tr>
                     <td class="file-name">test.txt</td>
-                    <td><a onclick="deleteResource('test.txt')" class="delete-btn">Delete</a></td>
+                    <td><a onclick="deleteResource('/uploads/test.txt', this)" class="delete-btn">Delete</a></td>
                 </tr>
                 <tr>
                     <td class="file-name">pokeball.png</td>
-                    <td><a onclick="deleteResource('pokeball.png')" class="delete-btn">Delete</a></td>
+                    <td><a onclick="deleteResource('/uploads/pokeball.png', this)" class="delete-btn">Delete</a></td>
                 </tr>
                 <tr>
                     <td class="file-name">inception.png</td>
-                    <td><a onclick="deleteResource('inception.png')" class="delete-btn">Delete</a></td>
+                    <td><a onclick="deleteResource('/uploads/inception.png', this)" class="delete-btn">Delete</a></td>
+                </tr>
+                <tr>
+                    <td class="file-name">youpi.bla</td>
+                    <td><a onclick="deleteResource('/uploads/youpi.bla', this)" class="delete-btn">Delete</a></td>
                 </tr>
             </tbody>
         </table>
         <div id="responseMessage" class="response-message"></div>
-        <a href="./index.html" class="back-link">Go back to homepage</a>
+        <a href="/index.html" class="back-link">Go back to homepage</a>
     </div>
-
     <script>
-        async function deleteResource(fileName) {
-            try {
-                const response = await fetch('./../../cgi-bin/delete.py?file=' + encodeURIComponent(fileName), {
-                    method: 'DELETE'
-                });
-                const data = await response.json();
-                const responseMessage = document.getElementById('responseMessage');
-
-                if (response.status !== 200) {
-                    responseMessage.innerText = data.error;
+        function deleteResource(filePath) {
+            fetch(filePath, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "File deleted successfully") {
+                    alert("File deleted successfully");
                 } else {
-                    responseMessage.innerText = data.message;
-                    document.querySelector(`a[onclick="deleteResource('${fileName}')"]`).parentElement.parentElement.remove();
+                    alert("Error: " + data.message);
                 }
-            } catch (error) {
-                console.error('Error:', error);
-            }
+            })
         }
+        element.parentElement.previousElementSibling.classList.add('strikethrough');
+        document.addEventListener('DOMContentLoaded', fetchFiles);
     </script>
 </body>
 </html>

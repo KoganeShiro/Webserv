@@ -46,6 +46,10 @@ std::string to_string(T value)
 #define MAX_FILE_SIZE 1000000
 #define MAX_SERVERS 10
 #define STD_BODY_SIZE 5000
+
+//DEFINE for Server
+#define BAD_CONFIG RED "Your file '.config' doesn't configure a server as requested\n" RESET
+
 //DEFINE for Cgi
 #define EXPLAINATION "A VALID config file should follow this format :\n\t\
 -Each line with a declaration should end with a ';'\
@@ -84,15 +88,10 @@ If any of those rule is not apply, it might conduct to a bad configured server a
 #define AGAIN 0
 #define BAD_HEADER 1
 #define GOOD 2
-
-
+#define MULTIPART_FORM_DATA 3
 
 /*
-Config_data config_parser(const std::string config);
-
-Request *init_request(Connection user_connect);
+** utils/request_parsing.cpp
 */
-// std::string replace_string(std::string res, std::string to_replace, std::string replace_with);
-//     //could use the same logic as sed
-
-// const std::string &gen_htmlbody();
+std::string extract_boundary(const std::string& content_type);
+std::string clean_request_body(const std::string& buffer);

@@ -1,5 +1,5 @@
 
-#include "../../includes/Socket.hpp"
+#include "Socket.hpp"
 
 /*
 void    listen_on_socket()
@@ -16,23 +16,22 @@ void    listen_on_socket()
 */
 
 //ajout Damien
-void Socket::add_to_epoll(int epoll_fd) {
+void Socket::add_to_epoll(int epoll_fd)
+{
     epoll_event event;
-    event.data.fd = this->_sockfd; // Associer le fd du socket
-    event.events = EPOLLIN;       // Événement pour écouter les connexions
+    event.data.fd = this->_sockfd; // Associate the socket file descriptor
+    event.events = EPOLLIN;       // Event in order to listen to connections
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, this->_sockfd, &event) < 0) {
         throw std::runtime_error("Failed to add socket to epoll");
     }
 }
 
-// Socket::Socket(){
-// }
-
-Socket::Socket(int port)
+Socket::Socket(int port, std::string host, std::string server_name)
 {
     this->_sockfd = this->_create_socket(); // Create a new socket
-    this->_bind_socket(port); // Bind the socket to the specified port
+    this->_bind_socket(port, host, server_name); // Bind the socket to the specified port
     this->_listen_for_connections(); // Start listening for incoming connections
+
     // this->configure_epoll();//check the events happening in the socket
 }
 
@@ -57,22 +56,43 @@ int Socket::_create_socket(void)
 }
 
 // Helper method to bind the socket to an address and port
-void Socket::_bind_socket(int port)
+void Socket::_bind_socket(int port, std::string host, std::string server_name)
 {
-    struct sockaddr_in serverAddr;
-    serverAddr.sin_family = AF_INET; // IPv4
-    serverAddr.sin_addr.s_addr = htonl(INADDR_ANY); // Listen on all interfaces
-    serverAddr.sin_port = htons(port); // Convert port number to network byte order
+    (void)server_name;
 
-    // int opt = 1;
-	// if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0){
-    //     throw std::runtime_error("Failed to set socket"); //For not having "Adress already in use"
-	// }
+    struct sockaddr_in server_addr;
+    server_addr.sin_family = AF_INET; // IPv4
+    server_addr.sin_port = htons(port); // Convert port number to network byte order
 
-    if (bind(this->_sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
-        throw std::runtime_error("Failed to bind socket");
+    std::cout << "Trying to bind to " << host << ":" << port << std::endl;
+
+    // Resolve hostname to IP address
+    struct hostent* he = gethostbyname(host.c_str());
+    if (he == NULL) {
+        close(_sockfd);
+        throw std::runtime_error("Failed to resolve hostname: " + host);
     }
+
+    // Copy the resolved IP address into server_addr
+    memcpy(&server_addr.sin_addr, he->h_addr, he->h_length);
+
+    // Set SO_REUSEADDR option
+    int opt = 1;
+    if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        close(_sockfd);
+        throw std::runtime_error("Failed to set socket options: " + std::string(strerror(errno)));
+    }
+
+    // Bind the socket
+    if (bind(_sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+        int err = errno; // Capture errno before any other function call
+        close(_sockfd);
+        throw std::runtime_error("Failed to bind socket: " + std::string(strerror(err)));
+    }
+    
+    std::cout << "Socket bound successfully on " << host << ":" << port << std::endl;
 }
+
 
 // Helper method to start listening for incoming connections
 void Socket::_listen_for_connections(void)
@@ -107,6 +127,7 @@ void Socket::accept_connection(void)
     this->_connection.push_back(Connection(clientfd)); // Return a Connection object for the client
 }
 
-int Socket::get_sockfd(){
+int Socket::get_sockfd()
+{
     return (this->_sockfd);
 }

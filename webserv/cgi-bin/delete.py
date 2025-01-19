@@ -1,24 +1,30 @@
+from flask import Flask, request, jsonify
 import os
-import urllib.parse
 
-upload_dir = './../html_page/www/uploads/'
+app = Flask(__name__)
 
-if os.environ['REQUEST_METHOD'] == 'DELETE':
-    query_string = os.environ.get('QUERY_STRING', '')
-    params = urllib.parse.parse_qs(query_string)
-    resource = params.get('resource', [''])[0]
+UPLOAD_DIRECTORY = "/uploads"
 
-    file_path = os.path.join(upload_dir, resource)
-    print(f"file_path: {file_path}")
-    print(f"resource: {resource}")
+@app.route('/uploads', methods=['GET'])
+def list_files():
+    try:
+        files = os.listdir(UPLOAD_DIRECTORY)
+        return jsonify(files), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    if resource and os.path.exists(file_path):
-        try:
-            os.remove(file_path)
-            print(f"Resource '{resource}' has been deleted successfully.")
-        except Exception as e:
-            print(f"Failed to delete the resource '{resource}': {e}")
-    else:
-        print(f"Resource '{resource}' does not exist.")
-else:
-    print("Invalid request method. Use DELETE.")
+@app.route('/uploads', methods=['DELETE'])
+def delete_file():
+    requested_path = request.args.get('file')
+    full_path = os.path.join(UPLOAD_DIRECTORY, requested_path.lstrip('/'))
+    try:
+        if os.path.exists(full_path):
+            os.remove(full_path)
+            return jsonify({'message': 'File deleted successfully'}), 200
+        else:
+            return jsonify({'message': 'File not found'}), 404
+    except Exception as e:
+        return jsonify({'message': f'Error deleting file: {str(e)}')}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)

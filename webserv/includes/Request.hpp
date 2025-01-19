@@ -26,7 +26,6 @@ check if right host ?
 class Request
 {
 private:
-    //MAX_BODY_LENGTH
     std::string _request_buffer;
     std::string _request; //final request
     std::map<std::string, std::string> _headers; // Request headers
@@ -41,9 +40,7 @@ private:
     bool _finish_header;
     Request request_parser(Request &request, std::string& buffer, size_t MAX_BODY_LENGTH);
 
-
 public:
-
     Request();
     Request(Request const &other);
     Request &operator=(Request const &other);
@@ -51,7 +48,7 @@ public:
 
     std::string get_method() const;
     std::string get_path() const;
-    std::string get_all_header() const;
+    //std::string get_all_header() const;
     std::string get_header_element(const std::string& key) const;
     std::map<std::string, std::string> get_header() const;
     std::string get_body() const;

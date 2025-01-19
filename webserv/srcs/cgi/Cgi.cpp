@@ -1,48 +1,55 @@
+#include "Cgi.hpp"
 
-#include "../../includes/Cgi.hpp"
-
-
-CGI::CGI(std::string name, std::string compiler_path, std::string extension, int time_out){
+CGI::CGI(std::string name, std::string compiler_path,
+            std::string extension, int time_out)
+{
     this->_name = name;
     this->_compiler_path = compiler_path;
     this->_extension = extension;
     this->_time_out = time_out;
 }
         
-std::string CGI::get_name(void){
+std::string CGI::get_name(void)
+{
     return (this->_name);
 }
 
-std::string CGI::get_path(void){
+std::string CGI::get_path(void)
+{
     return (this->_compiler_path);
 }
         
-std::string CGI::get_extension(void){
+std::string CGI::get_extension(void)
+{
     return (this->_extension);
 }
 
-int CGI::get_time_out(void){
+int CGI::get_time_out(void)
+{
     return (this->_time_out);
 }
 
 // Fonction de nettoyage isspace
-static std::string trim(const std::string& str) {
+static std::string trim(const std::string& str)
+{
     size_t first = str.find_first_not_of(" \t\n\r");
     if (first == std::string::npos) {
-        return "";  // La chaîne est vide ou ne contient que des espaces blancs
+        return ("");  // La chaîne est vide ou ne contient que des espaces blancs
     }
 
     size_t last = str.find_last_not_of(" \t\n\r");
-    return str.substr(first, last - first + 1);  // Extrait la sous-chaîne entre first et last
+    return (str.substr(first, last - first + 1));  // Extrait la sous-chaîne entre first et last
 }
 
 // atoi a string
-static int parse_int(const char *str) {
-    return atoi(str);
+static int parse_int(const char *str)
+{
+    return (atoi(str));
 }
 
 
-static CGI get_cgi(std::ifstream& file, std::string line){
+static CGI get_cgi(std::ifstream& file, std::string line)
+{
     std::string _name = "\0"; //Stores the CGI's name
     std::string _compiler_path = "\0"; //path of the cgi
     std::string _extension = "\0"; //py || php || js || ...
@@ -51,7 +58,7 @@ static CGI get_cgi(std::ifstream& file, std::string line){
     std::getline(file, line);
     line = trim(line);
 
-    while (line[0] != '}'){
+    while (line[0] != '}') {
 
         if (line.find("cgi_compiler ") != std::string::npos && line.size() > 13) {
             line = line.substr(13);
@@ -90,7 +97,8 @@ static CGI get_cgi(std::ifstream& file, std::string line){
     }
 }
 
-std::vector<CGI > parse_cgis(std::ifstream& file, std::string line){
+std::vector<CGI > parse_cgis(std::ifstream& file, std::string line)
+{
     std::vector<CGI> current_config;
     std::getline(file, line);
     line = trim(line);
@@ -242,7 +250,8 @@ static Config_data parse_server(std::ifstream& file, std::string line)
     return (current_config);
 }
 
-void    print(std::vector<Config_data> data, std::vector<CGI> cgi){
+void    print(std::vector<Config_data> data, std::vector<CGI> cgi)
+{
     for (size_t i = 0; i < data.size(); i++){
         std::cout
             << "host, " << i << " : " << data[i].host << std::endl
@@ -290,30 +299,32 @@ void    print(std::vector<Config_data> data, std::vector<CGI> cgi){
     }
 }
 
-void    ft_check_server(Config_data config){
-    // int error = 0;
+// void    ft_check_server(Config_data config)
+// {
+//     // int error = 0;
 
-    if (config.client_body_size_limit == 0)
-        config.client_body_size_limit = STD_BODY_SIZE;
-    if (config.error_pages == ""){
+//     if (config.client_body_size_limit == 0)
+//         config.client_body_size_limit = STD_BODY_SIZE;
+//     if (config.error_pages == ""){
 
-    }
-    if (config.host == ""){
+//     }
+//     if (config.host == ""){
         
-    }
-    if (config.port < 0){
+//     }
+//     if (config.port < 0){
 
-    }
-    if (config.routes.size() == 0){
+//     }
+//     if (config.routes.size() == 0){
 
-    }
-    if (config.server_name == ""){
+//     }
+//     if (config.server_name == ""){
 
-    }
-}
+//     }
+// }
 
 // Fonction principale pour parser le fichier de configuration
-std::vector<Config_data> parse_config(const char *filename) {
+std::vector<Config_data> parse_config(const char *filename)
+{
     std::vector<Config_data> configs;
     std::vector<CGI> cgi;
     std::ifstream file(filename);
