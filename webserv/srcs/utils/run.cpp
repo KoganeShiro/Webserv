@@ -23,12 +23,13 @@ Request *get_data_from_connection(ConnectionInfo client_connection)
         }
         buffer[bytes_received] = '\0';
         data.append(buffer, bytes_received);
+        //std::cout << MAGENTA << data << RESET << std::endl;
         answer = request->add_to_request(data, client_connection.data.client_body_size_limit);
         if (answer == BAD_HEADER || answer == GOOD)
             break;
-        else if (answer == MULTIPART_FORM_DATA) {
-            data.erase();
-        }
+        // else if (answer == MULTIPART_FORM_DATA) {
+        // }
+        data.erase();
     }
 
     if (bytes_received < 0) {
@@ -84,7 +85,7 @@ void    ft_manage_answer(Request* request, ConnectionInfo connection)
         Worker  bob(connection.data, new_request);
         Response response = bob.run();
         std::string str = response.http_response(); //call generate_error_page
-        // std::cout << GREEN << str << RESET << std::endl;
+        //std::cout << GREEN << str << RESET << std::endl;
         ssize_t bytes_sent = send(connection.connection->get_clientfd(), str.c_str(), str.length(),0);
         if (bytes_sent == -1) {
             perror("write");

@@ -19,7 +19,8 @@ SRCS_SERVER =	Connection.cpp \
 				Server.cpp \
 				Socket.cpp
 
-SRCS_UTILS =	run.cpp
+SRCS_UTILS =	run.cpp \
+				request_parsing.cpp
 
 SRCS =			main.cpp
 

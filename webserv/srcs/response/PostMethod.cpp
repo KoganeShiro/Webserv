@@ -126,16 +126,89 @@ void PostMethod::_parse_body(std::string &content, std::string &filename)
     }
     std::cout << "PostMethod Parse filename: " << filename << std::endl;
     std::cout << "PostMethod Parse content: " << content << std::endl;
+}   
+
+void PostMethod::_extract_next_part()
+{
+    next_part = "";
+    size_t start_pos = _request.get_body().find(_multipath_boundary);
+    if (start_pos != std::string::npos) {
+        start_pos += _multipath_boundary.length() + 2; // Move past boundary and CRLF
+        std::cout << MAGENTA "PostMethod Start pos: " << start_pos << std::endl;
+        size_t end_pos = _request.get_body().find(_multipath_boundary, start_pos);
+        std::cout << "PostMethod End pos: " << end_pos << std::endl;
+        if (end_pos != std::string::npos) {
+            next_part = _request.get_body().substr(start_pos, end_pos - start_pos - 2); // Exclude trailing CRLF
+            std::cout << "PostMethod Next part: " << next_part << RESET << std::endl;
+            _request.set_body(_request.get_body().substr(end_pos));
+        }
+    }
 }
+
+void PostMethod::_extract_content()
+{
+    size_t pos = next_part.find("filename=\"");
+    if (pos != std::string::npos) {
+        pos += 10;
+        size_t end_pos = next_part.find("\"", pos);        
+        if (end_pos != std::string::npos) {
+            _filename = next_part.substr(pos, end_pos - pos);
+            pos = next_part.find("\r\n\r\n") + 4;
+            _content = next_part.substr(pos);
+        }
+    }
+}
+
+void PostMethod::_set_filename_and_content()    
+{
+    _filename = "";
+    _content = "";        
+    _extract_next_part();
+    while (next_part != "" && _filename == "")
+    {
+        _extract_content();
+        if (_filename != "")
+        {  
+            _full_filename = _fullpath + _filename;
+        }
+        _extract_next_part();
+    }
+}
+
+void PostMethod::_set_multipath_boundary()
+{
+    // Extract the boundary from the content type OK
+    this->_content_type = this->_request.get_header_element("Content-Type");
+    std::string boundary_prefix = "boundary=";
+    size_t pos = this->_content_type.find(boundary_prefix);
+    if (pos != std::string::npos) {
+        _multipath_boundary = _content_type.substr(pos + boundary_prefix.length());
+    }
+    std::cout << BLUE "PostMethod Multipath boundary: {" << _multipath_boundary << "}" << std::endl;
+}
+
+
+// void PostMethod::_set_multipath_boundary()
+// {
+//     // Extract the boundary from the content type OK
+//     size_t pos = _content_type.find("boundary=");
+//     if (pos != std::string::npos) {
+//         _multipath_boundary = _content_type.substr(pos + 9);
+//     }
+//     std::cout << BLUE "PostMethod Multipath boundary: " << _multipath_boundary << std::endl;
+// }
 
 void PostMethod::_upload_file(std::string &content, std::string &filename)
 {
-    (void)content;
-    std::string content_dispo = this->_request.get_header_element("Content-Disposition");
-    filename += "/";
-    filename += content_dispo.substr(content_dispo.find("filename=\"") + 10, content_dispo.find('"', content_dispo.find("filename=\"") + 10) - (content_dispo.find("filename=\"") + 10));
-    // std::cout << "PostMethod Upload filename: " << filename << std::endl;
-    // std::cout << "PostMethod Upload content: " << content << std::endl;
+    //std::string boundary = extract_boundary(_request.get_header_element("Content-Type"));
+    _set_multipath_boundary();
+    _fullpath = _config.routes[_route].root_dir + "/";
+    _set_filename_and_content();
+    std::cout << "PostMethod Upload filename: " << _filename << std::endl;
+    
+    //content = clean_request_body(content);
+    content = this->_content;
+    filename = this->_full_filename;
 }
 
 int PostMethod::writefile(std::string filename, std::string content)
@@ -154,20 +227,23 @@ int PostMethod::writefile(std::string filename, std::string content)
     // std::cout << "Content: [" << content << "]" RESET << std::endl;
     if (this->_request.get_header_element("Content-Type") == "application/x-www-form-urlencoded") {
         _parse_body(content, filename);
-    } else {
+    } 
+    else {
         _upload_file(content, filename);
     }
     // Create file
+    if (filename.empty()) {
+        return (NO_FILENAME);
+    }
     std::ofstream file(filename.c_str());
     if (!file.is_open()) {
         std::cerr << "PostMethod Error: Could not create the file to write in!" << std::endl;
-        return (-1);
+        return (ERROR);
     }
     file << content;
-    file.close(); // Close the file
+    file.close();
     return (0);
 }
-
 
 Response PostMethod::handle(const Request& request, std::string& fullpath, Config_data c, std::string route)
 {
@@ -231,11 +307,18 @@ Response PostMethod::handle(const Request& request, std::string& fullpath, Confi
     //     std::cout << "CGI not implemented: " << _fullpath << std::endl;
     //     return response;
     // }
+
     else {
-        if (writefile(_fullpath, _request.get_body()) == -1) {
+        int res = writefile(_fullpath, _request.get_body());
+        if (res == ERROR) {
             response = Response(500, "Internal Server Error. Could not create file", _config);
             std::cout << "Error writing file: " << _fullpath << std::endl;
-            return response;
+            return (response);
+        }
+        else if (res == NO_FILENAME) {
+            response = Response(400, "Bad Request", _config);
+            std::cout << "PostMethod: Filename not found" << std::endl;
+            return (response);
         }
         response = Response(201, "Created", _config);    
         response.set_header("Location", _request.get_path());

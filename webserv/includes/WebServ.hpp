@@ -89,3 +89,9 @@ If any of those rule is not apply, it might conduct to a bad configured server a
 #define BAD_HEADER 1
 #define GOOD 2
 #define MULTIPART_FORM_DATA 3
+
+/*
+** utils/request_parsing.cpp
+*/
+std::string extract_boundary(const std::string& content_type);
+std::string clean_request_body(const std::string& buffer);

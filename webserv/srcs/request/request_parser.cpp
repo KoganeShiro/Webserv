@@ -1,5 +1,6 @@
 
 #include "Request.hpp"
+
 void Request::set_finish_header(bool finish)
 {
     this->_finish_header = finish;
@@ -125,16 +126,6 @@ static bool parse_body(Request& request, std::string& buffer, size_t MAX_BODY_LE
     return (false);
 }
 
-static std::string extract_boundary(const std::string& content_type)
-{
-    std::string boundary_prefix = "boundary=";
-    size_t boundary_pos = content_type.find(boundary_prefix);
-    if (boundary_pos != std::string::npos) {
-        return ("--" + content_type.substr(boundary_pos + boundary_prefix.length()));
-    }
-    return ("");
-}
-
 bool ends_with_boundary(Request& request, const std::string& buffer, const std::string& boundary)
 {
     std::string boundary_with_end = boundary + "--\r\n";
@@ -168,37 +159,37 @@ std::string extract_content(const std::string& buffer, const std::string& bounda
     return buffer.substr(startPos, endPos - startPos);
 }
 
-std::string cleanBuffer(const std::string& buffer)
-{
-    std::string body = buffer;
-    std::string::size_type pos;
+// std::string extract_content(const std::string& buffer)
+// {
+//     std::string start_marker = "Content-Disposition: form-data;";
+//     std::string filename_marker = "filename=";
 
-    // Remove Content-Disposition line
-    pos = body.find("Content-Disposition");
-    if (pos != std::string::npos) {
-        body = body.substr(0, pos) + body.substr(body.find("\r\n", pos) + 2);
-    }
-    // Remove Content-Type line
-    pos = body.find("Content-Type: ");
-    if (pos != std::string::npos) {
-        body = body.substr(0, pos) + body.substr(body.find("\r\n", pos) + 2);
-    }
-    // Remove line break
-    pos = body.find("\r\n");
-    if (pos != std::string::npos) {
-        body = body.substr(0, pos) + body.substr(pos + 2);
-    }
-    return (body);
-}
+//     std::string::size_type startPos = buffer.rfind(start_marker);
+//     while (startPos != std::string::npos)
+//     {
+//         std::string::size_type endOfLine = buffer.find("\r\n", startPos);
+//         if (endOfLine != std::string::npos && 
+//             buffer.find(filename_marker, startPos) <= endOfLine)
+//         {
+//             return (buffer.substr(startPos));
+//         }
+
+//         if (startPos == 0) {
+//             break;
+//         }
+//         startPos = buffer.rfind(start_marker, startPos - 1);
+//     }
+//     return ("");
+// }
 
 static bool handle_multipart_form_data(Request& request, size_t MAX_BODY_LENGTH)
 {
+    //(void)MAX_BODY_LENGTH;
     std::string content_type = request.get_header_element("Content-Type");
-    std::cout << "content_type: " << content_type << std::endl;
     std::string boundary = extract_boundary(content_type);
     std::string buffer = request.get_request_buffer();
-    static int i = 0;
-    std::cout << RED "i: " RESET << i++ << std::endl;
+    static int i = 0; //
+    std::cout << RED "i: " RESET << i++ << std::endl; //
     if (boundary.empty()) {
         request.set_is_ready(BAD_HEADER);
         return (false);
@@ -206,18 +197,18 @@ static bool handle_multipart_form_data(Request& request, size_t MAX_BODY_LENGTH)
     if (ends_with_boundary(request, buffer, boundary) == false) {
         request.set_body("");
         request.set_is_ready(MULTIPART_FORM_DATA);
-        std::cout << "AGAIN" << std::endl;
         return (false);
     }
     
     std::string body;
-    body = extract_content(buffer, boundary);
-    buffer = body;
+    //body = extract_content(buffer, boundary);
+    body = buffer;
 
-    request.add_header("Content-Disposition", body.substr(0, body.find("\r\n")));
-    request.add_header("Content-Type", buffer.substr(body.find("Content-Type: "), body.find("\r\n", body.find("Content-Type: ")) - body.find("Content-Type: ")));
+    std::cout << "body: " << body << std::endl;
 
-    body = cleanBuffer(buffer);
+    //request.add_header("Content-Disposition", body.substr(0, body.find("\r\n")));
+    //request.add_header("Content-Type", buffer.substr(body.find("Content-Type: "), body.find("\r\n", body.find("Content-Type: ")) - body.find("Content-Type: ")));
+
     if (body.length() > MAX_BODY_LENGTH) {
         request.set_is_ready(BAD_HEADER);
         return (false);
@@ -245,7 +236,6 @@ Request Request::request_parser(Request &request, std::string& buffer, size_t MA
         else if (content_type.find("multipart/form-data;") != std::string::npos) {
             request.set_request_buffer(buffer.substr(request.get_pos()));
             if (!handle_multipart_form_data(request, MAX_BODY_LENGTH)) {
-                std::cout << "should be AGAIN or BAD_HEADER" << std::endl;
                 return (request);
             }
         }
