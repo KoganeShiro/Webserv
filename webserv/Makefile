@@ -57,6 +57,7 @@ IMAGE_DEST2 = $(UPLOADS_PATH)pokeball.png
 
 # Default target
 all: $(OBJ_PATH) $(NAME) destructor free download_images
+	@echo "\r\033[K\033[38;2;0;170;0;1mSuccessfully compiled to \033[38;2;255;145;5;3m./$(NAME)\033[0m\033[38;2;0;170;0;1m!\033[0m"
 
 # Target to compile destructor utility
 destructor: 
@@ -89,7 +90,7 @@ $(IMAGE_DEST2): $(UPLOADS_PATH)
 # Compile the main executable
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
-	@echo "\r\033[K\033[38;2;0;170;0;1mSuccessfully compiled to \033[38;2;255;145;5;3m./$(NAME)\033[0m\033[38;2;0;170;0;1m!\033[0m"
+	
 
 # Compile object files
 $(OBJ_PATH)srcs/%.o: srcs/%.cpp
