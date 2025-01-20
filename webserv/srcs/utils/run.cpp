@@ -73,7 +73,8 @@ void    ft_manage_answer(Request* request, ConnectionInfo connection)
         std::cout << RED << str << RESET << std::endl;
         ssize_t bytes_sent = send(connection.connection->get_clientfd(), str.c_str(), str.length(),0);
         if (bytes_sent == -1) {
-            perror("write");
+         //   perror("write");
+            std::cerr << "Error when sending response to client" << std::endl;
         }
     }
     else if (answ == AGAIN) { // Don't understand why Georg
@@ -88,41 +89,58 @@ void    ft_manage_answer(Request* request, ConnectionInfo connection)
         //std::cout << GREEN << str << RESET << std::endl;
         ssize_t bytes_sent = send(connection.connection->get_clientfd(), str.c_str(), str.length(),0);
         if (bytes_sent == -1) {
-            perror("write");
+           // perror("write");
+           std::cerr << "Error when sending response to client" << std::endl;
         }
+    }
+}
+
+void    print_listen(std::vector<Server*> servers)
+{
+    for (size_t i = 0; i < servers.size(); i++) {
+        std::cout << "Listening to " BLUE;
+        if (servers[i]->get_data().server_name.empty()) {
+            std::cout << servers[i]->get_data().host;
+        }
+        else {
+            std::cout << servers[i]->get_data().server_name;
+        }
+        std::cout << ":" << servers[i]->get_data().port << RESET
+        << std::endl;
     }
 }
 
 void    run_epoll(int epoll_fd, std::vector<Server*> servers)
 {
     epoll_event events[MAX_EVENTS];
+    // vector de connections 
+    //std::vector<ConnectionInfo> connections;
 
     std::cout << GREEN << "WAITING FOR THE FIRST REQUEST...\n" << RESET;
     while (true) {
-        for (size_t i = 0; i < servers.size(); i++) {
-            std::cout << "Listening to " BLUE;
-            if (servers[i]->get_data().server_name.empty()) {
-                std::cout << servers[i]->get_data().host;
-            }
-            else {
-                std::cout << servers[i]->get_data().server_name;
-            }
-            std::cout << ":" << servers[i]->get_data().port << RESET
-            << std::endl;
-        }
+        print_listen(servers);
+
         int event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
         
         if (event_count < 0) {
-            perror("epoll_wait failed");
+            std::cerr << "epoll_wait failed" << std::endl;
             break;
         }
 
         for (int i = 0; i < event_count; ++i) {
             if (events[i].events & EPOLLIN) {
                 int client_fd = events[i].data.fd;
-                ConnectionInfo client_connection = find_connection(client_fd, servers);
-                Request* request = get_data_from_connection(client_connection);
-                ft_manage_answer(request, client_connection);
+                // rajouter une connection dans le tableau de connections if it is a new connection
+                ConnectionInfo client_connection = find_connection(client_fd, servers);  // the new connection should be added to the epoll list
+                // Connection should contain a request object
+                // Start parsing request or continue parsing if the parsing is not done
+                
+                Request* request = get_data_from_connection(client_connection); // a l'interieur de cette fonction, on fait un seul read et puis on passe a la prochaine connection
+                
+                // only if request is ready.... manage answer and close connection
+
+                ft_manage_answer(request, client_connection); 
+                // remove connection from epoll list if the request is done
                 client_connection.connection->close(); // Georg add: Else the client is still open and it continues to send or wait for data
                 delete client_connection.connection;
             }

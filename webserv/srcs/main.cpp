@@ -32,7 +32,7 @@ void add_to_epoll(int epoll_fd, Server *server)
     }
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, event.data.fd, &event) < 0) {
         std::cerr << "Failed to add socket to epoll: " << strerror(errno) << std::endl;
-        perror("Error details");
+      //  perror("Error details");
         std::cerr << "epoll_fd: " << epoll_fd << ", socket_fd: " << event.data.fd << std::endl;
         close(epoll_fd);
         throw std::runtime_error("Failed to add socket to epoll");
