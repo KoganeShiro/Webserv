@@ -142,13 +142,16 @@ Response::Response(const std::string& header_and_body)
 		_header_and_body_in_one = false;
 		return ;
 	}
-	std::string header = header_and_body.substr(0, header_and_body.find("\r\n\r\n"));
-	std::string body = header_and_body.substr(header_and_body.find("\r\n\r\n") + 4);
+	std::string header = header_and_body.substr(0, header_and_body.find("\n\n"));
+	std::string body = header_and_body.substr(header_and_body.find("\n\n") + 2);
 	std::string status_code = header.substr(header.find("Status: ") + 8, 3);
 	//std::string status_message = header.substr(header.find("Status: ") + 12, header.find("\r\n") - header.find("Status: ") - 12); // a corriger 
 	std::string status_message = header.substr(header.find("Status: ") + 12, header.find("\n", header.find("Status: ") + 12) - (header.find("Status: ") + 12)); // a corriger
 
-	//std::cout << RED "Response constructor status_message: " RESET << status_message << std::endl;
+	std::cout << RED "Response constructor status_message: " RESET << status_message << std::endl;
+	std::cout << RED "Response constructor status_code: " RESET << status_code << std::endl;
+	std::cout << RED "Response constructor header: " RESET << header << std::endl;
+	std::cout << RED "Response constructor body: " RESET << body << std::endl;
 
 	_statusCode = std::atoi(status_code.c_str());
 	_statusMessage = status_message;	

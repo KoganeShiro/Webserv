@@ -162,7 +162,7 @@ std::string extract_content(const std::string& buffer, const std::string& bounda
 // std::string extract_content(const std::string& buffer)
 // {
 //     std::string start_marker = "Content-Disposition: form-data;";
-//     std::string filename_marker = "filename=";
+//     swith Bash Scripttd::string filename_marker = "filename=";
 
 //     std::string::size_type startPos = buffer.rfind(start_marker);
 //     while (startPos != std::string::npos)
@@ -292,7 +292,7 @@ int Request::add_to_request(std::string to_add, size_t MAX_BODY_LENGTH)
 
     this->set_request_buffer(this->_request_buffer.append(to_add));
     *this = request_parser(*this, this->_request_buffer, MAX_BODY_LENGTH);
-    //print_Request(this);
+    print_Request(this);
     return (this->get_is_ready());
 }
 

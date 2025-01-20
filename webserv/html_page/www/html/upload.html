@@ -66,9 +66,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>Upload a File using php script and multipart/form-data</h1>
+        <h1>Upload a File using sh script and multipart/form-data</h1>
         <p>Select a file to upload to the uploads directory.</p>
-        <form action="/cgi-bin/php.php" method="post" enctype="multipart/form-data">
+        <form action="/cgi-bin/bash_post_test.sh" method="post" enctype="multipart/form-data">
             <input type="file" name="file" id="file" required>
         
             <input type="submit" value="Upload File" name="submit">
@@ -90,13 +90,7 @@
             <input type="submit" value="Upload File" name="submit">
         </form>
 
-        <h1>Upload a File using php script and application/x-www-form-urlencoded</h1>
-        <p>Select a file to upload to the uploads directory.</p>
-        <form action="/cgi-bin/php.php" method="post" enctype="application/x-www-form-urlencoded">
-            <input type="file" name="file" id="file" required>
-        
-            <input type="submit" value="Upload File" name="submit">
-        </form>
+     
 
         <h1>Upload a File using py script and application/x-www-form-urlencoded</h1>
         <p>Select a file to upload to the uploads directory.</p>
