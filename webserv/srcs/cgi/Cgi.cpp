@@ -243,7 +243,7 @@ static Config_data parse_server(std::ifstream& file, std::string line)
             Route_config new_route = get_route(file, line);
             current_config.routes.insert(std::pair<std::string, Route_config>(name,new_route));
         }
-        else if (line.find("endserver}" ) != std::string::npos){
+        else if (line.find("}" ) != std::string::npos){
             break;
         }
     }
