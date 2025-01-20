@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--Page where you can upload a file in the uploads directory-->
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -66,33 +66,30 @@
 </head>
 <body>
     <div class="container">
-        <h1>Upload a File using bash script with a multipart/form-data request</h1>
-        <p>Select a file to send to the script.</p>
-        <form action="/cgi-bin/bash_post_test.sh" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" id="file" required>
-        
-            <input type="submit" value="Send File" name="submit">
+ 
+
+        <h2>Send information with Get request to bash script</h2>
+        <!-- Form for file upload with GET request -->
+        <form action="/cgi-bin/bash_get_test.sh" method="GET" enctype="multipart/form-data">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <br><br>
+            <label for="fname">First Name:</label>
+            <input type="text" id="fname" name="fname" required>
+            <input type="submit" value="Send Info to Script">
         </form>
 
-        <h1>Upload a File using pythonscript with a multipart/form-data request</h1>
-        <p>Select a file to send to the script.</p>
-        <form action="/cgi-bin/python_post_script.py" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" id="file" required>
-        
-            <input type="submit" value="Send File" name="submit">
+        <h2>Send information with Get request to python script</h2>
+        <!-- Form for file upload with GET request -->
+        <form action="/cgi-bin/python_get_script.py" method="GET" enctype="multipart/form-data">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <br><br>
+            <label for="fname">First Name:</label>
+            <input type="text" id="fname" name="fname" required>
+            <input type="submit" value="Send Info to Script">
         </form>
 
-        <h1>Upload a File using pure post request and multipart/form-data</h1>
-        <p>Select a file to upload to the uploads directory.</p>
-        <form action="/uploads" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" id="file" required>
-        
-            <input type="submit" value="Upload File" name="submit">
-        </form>
-
-     
-
-   
 
         <p></p>
         <a href="/index.html">Go back to homepage</a>

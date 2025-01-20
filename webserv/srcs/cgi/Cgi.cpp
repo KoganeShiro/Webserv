@@ -123,6 +123,7 @@ static  Route_config get_route(std::ifstream& file, std::string line)
     line = trim(line);
 
     while (line[0] != '}'){
+
         if (line.find("methods ") != std::string::npos){
             line = line.substr(8);
             line = trim(line);
@@ -236,13 +237,13 @@ static Config_data parse_server(std::ifstream& file, std::string line)
         }
 
         // Parse the location /cgi-bin directive
-        else if (line.find("location ") != std::string::npos && line.find("{")) {
+        else if (line.find("location ") != std::string::npos && line.find("{") ) {
             std::string name = line.substr(9);
             name = trim(name.substr(0, name.size() - 1));
             Route_config new_route = get_route(file, line);
             current_config.routes.insert(std::pair<std::string, Route_config>(name,new_route));
         }
-        else if (line.find("}") && line.size() == 1){
+        else if (line.find("endserver}" ) != std::string::npos){
             break;
         }
     }
@@ -252,6 +253,7 @@ static Config_data parse_server(std::ifstream& file, std::string line)
 
 void    print(std::vector<Config_data> data, std::vector<CGI> cgi)
 {
+    std::cout << "Print configs. Nb of servers in config: " << data.size() << std::endl;
     for (size_t i = 0; i < data.size(); i++){
         std::cout
             << "host, " << i << " : " << data[i].host << std::endl
@@ -333,12 +335,13 @@ std::vector<Config_data> parse_config(const char *filename)
     }
     std::string line;
     while (std::getline(file, line)) {
+
         
         // Process each line in the buffer
-            line = trim(line);
+            line = trim(line);            
         // std::cout << "LINE => " << line << std::endl;
             // Start of a new server block
-            if (line.find("server {") != std::string::npos) {
+            if (line.find("server {") != std::string::npos) {                
                 Config_data current_config;
                 current_config = parse_server(file, line); 
                 current_config.tab_cgi = cgi;
@@ -352,6 +355,6 @@ std::vector<Config_data> parse_config(const char *filename)
     }    
     file.close();
     // while
-    // print(configs, cgi);
+    print(configs, cgi);
     return (configs);
 }
