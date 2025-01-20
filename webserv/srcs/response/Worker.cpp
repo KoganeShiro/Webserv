@@ -224,14 +224,16 @@ Worker::Worker(Config_data c, Request *request)
     _route = checkRoute();
     if (! _route.empty())
     {   
-        if (_route == "/")
+        if (_route == "/") {
             _fullpath = _config.routes[_route].root_dir + _request->get_path();
-        else
-            _fullpath = _config.routes[_route].root_dir + (_request->get_path().substr(_route.length()));
-        std::cout << ORANGE "Fullpath check: " RESET << _fullpath << std::endl;
-        
-        if (_fullpath[_fullpath.length() - 1] == '/')            
+            if (_fullpath[_fullpath.length() - 1] == '/')            
            _fullpath += _config.routes[_route].default_file;
+        }
+        else {
+            _fullpath = _config.routes[_route].root_dir + (_request->get_path().substr(_route.length()));
+            if (_route == _request->get_path())
+                _fullpath += "/" + _config.routes[_route].default_file;
+        }
         check_cgi();
         std::cout << ORANGE "Fullpath check: " RESET << _fullpath << std::endl;
     }

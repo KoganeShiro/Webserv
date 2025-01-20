@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,8 +8,10 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #343a40;
+            background-color: #F8F9FA
+;
+            color: #343A40
+;
             text-align: center;
             padding: 50px;
         }
@@ -24,10 +25,12 @@
         .container {
             max-width: 600px;
             margin: auto;
-            border: 1px solid #dee2e6;
+            border: 1px solid #DEE2E6
+;
             padding: 20px;
             border-radius: 5px;
-            background-color: #ffffff;
+            background-color: #FFFFFF
+;
         }
         #random-image {
             max-width: 100%;
@@ -35,16 +38,13 @@
             margin: 20px 0;
         }
         a {
-            color: #3498db;
+            color: #3498DB
+;
             text-decoration: none;
             font-weight: bold;
-        }
-
-        a:hover {
+        }        a:hover {
             text-decoration: underline;
-        }
-
-    </style>
+        }    </style>
 </head>
 <body>
     <div class="container">
@@ -52,7 +52,7 @@
         <h1>GET SUCCESSFULL</h1>
         <p>Thanks for visiting !</p>
         <img id="random-image" src="" alt="Random Error Image">
-        <a href="./../../www/html/index.html"><h2>Go back to homepage</h2></a>
+        <a href="/index.html"><h2>Go back to homepage</h2></a>
     </div>
     <div>
     <script>
@@ -60,7 +60,7 @@
             var images = ['good_man.png', 'good_woman.png', 'hand_good.png', 'kiboshi_iwa_hyrax.png',
                     'stamp_boy.png', 'businessman.png'];
             var randomImage = images[Math.floor(Math.random() * images.length)];
-            document.getElementById('random-image').src = 'images/' + randomImage;
+            document.getElementById('random-image').src = 'success/images/' + randomImage;
         };
     </script>
     </div>
