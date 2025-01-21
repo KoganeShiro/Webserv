@@ -162,7 +162,7 @@ std::string extract_content(const std::string& buffer, const std::string& bounda
 // std::string extract_content(const std::string& buffer)
 // {
 //     std::string start_marker = "Content-Disposition: form-data;";
-//     std::string filename_marker = "filename=";
+//     swith Bash Scripttd::string filename_marker = "filename=";
 
 //     std::string::size_type startPos = buffer.rfind(start_marker);
 //     while (startPos != std::string::npos)
@@ -214,6 +214,7 @@ static bool handle_multipart_form_data(Request& request, size_t MAX_BODY_LENGTH)
         return (false);
     }
     request.set_body(body);
+    request.set_pos(body.length());
     return (true);
 }
 
@@ -242,7 +243,7 @@ Request Request::request_parser(Request &request, std::string& buffer, size_t MA
     }
 
     request.set_request_buffer(buffer.substr(request.get_pos()));
-    std::cout << "reminder: " << request.get_request_buffer() << std::endl;
+    // std::cout << "reminder: " << request.get_request_buffer() << std::endl;
 
     request.set_good_request(true);
     request.set_is_ready(GOOD);
@@ -292,7 +293,7 @@ int Request::add_to_request(std::string to_add, size_t MAX_BODY_LENGTH)
 
     this->set_request_buffer(this->_request_buffer.append(to_add));
     *this = request_parser(*this, this->_request_buffer, MAX_BODY_LENGTH);
-    //print_Request(this);
+   // print_Request(this);
     return (this->get_is_ready());
 }
 

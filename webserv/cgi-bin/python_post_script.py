@@ -13,9 +13,11 @@ print()
 
 # Start HTML content
 print("<html>")
-print("<head><title>CGI Environment and File Upload</title></head>")
+
+print("<head><title>CGI Environment and File Upload with python script</title></head>")
 print("<body>")
-print("<h1>CGI Environment Variables and File Contents</h1>")
+print("<h1>CGI Environment Variables and File Contents with python script</h1>")
+
 
 # Display all environment variables
 print("<h2>Environment Variables</h2>")

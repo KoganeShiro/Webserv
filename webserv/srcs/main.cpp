@@ -8,13 +8,14 @@ std::vector<Server*> ServerManager::servers;
 
 void signalHandler(int signum)
 {
+    (void)signum;
     for (size_t i = 0; i < ServerManager::servers.size(); ++i)
         close(ServerManager::servers[i]->get_socket_fd());
 
     const char *argv[] = {"./free", NULL};
     execve("./free", (char *const *)argv, NULL);
     std::cerr << RED << "Couldn't find 'free'\n";
-    exit(signum);
+   // exit(signum);
 }
 
 void add_to_epoll(int epoll_fd, Server *server)
@@ -31,27 +32,35 @@ void add_to_epoll(int epoll_fd, Server *server)
         throw std::runtime_error("Socket fd is closed or invalid.");
     }
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, event.data.fd, &event) < 0) {
-        std::cerr << "Failed to add socket to epoll: " << strerror(errno) << std::endl;
-        perror("Error details");
+        std::cerr << "Failed to add Server-socket to epoll: " << strerror(errno) << std::endl;
+      //  perror("Error details");
         std::cerr << "epoll_fd: " << epoll_fd << ", socket_fd: " << event.data.fd << std::endl;
         close(epoll_fd);
         throw std::runtime_error("Failed to add socket to epoll");
+    }
+    else {
+        std::cout << BLUE "Server-socket added to epoll: " RESET << event.data.fd << std::endl;
     }
 }
 
 int main(int argc, char **argv)
 {
+    struct stat buffer;
+    if ((stat ("./free", &buffer) != 0) || (stat ("./destructor", &buffer) != 0)) {
+        std::cerr << RED "Please compile the project first by running 'make', free and/or destructor binaries are missing." RESET << std::endl;
+        return (EXIT_FAILURE);
+    }
     if (argc != 2) {
         std::cout <<
             RED "Usage: ./WebServ <configuration file>" RESET
         << std::endl;
-        return(EXIT_FAILURE);
-    }
-    else {
+
         std::cout <<
             EXPLAINATION 
         << std::endl;
+        return(EXIT_FAILURE);
     }
+
 
     // 1. Parser le fichier de configuration
     try {
@@ -84,5 +93,6 @@ int main(int argc, char **argv)
     }
     catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
+        signalHandler(1);
     }
 }

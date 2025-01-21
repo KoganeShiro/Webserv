@@ -6,6 +6,8 @@
 // #include "Connection.hpp"
 #include "Socket.hpp"
 
+#define MAX_OPEN_CONNECTIONS 10
+
 class Server
 {
 private:
@@ -22,7 +24,11 @@ public:
     int  get_socket_fd();
 
     Connection* add_connection(void);
-    void add_to_epoll(int epoll_fd);
+    void remove_connection(int client_fd);
+    
+
+
+   // void add_to_epoll(int epoll_fd); // not used
     Connection* get_connection_by_fd(int client_fd);
 };
 
