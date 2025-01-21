@@ -148,10 +148,10 @@ Response::Response(const std::string& header_and_body)
 	//std::string status_message = header.substr(header.find("Status: ") + 12, header.find("\r\n") - header.find("Status: ") - 12); // a corriger 
 	std::string status_message = header.substr(header.find("Status: ") + 12, header.find("\n", header.find("Status: ") + 12) - (header.find("Status: ") + 12)); // a corriger
 
-	std::cout << RED "Response constructor status_message: " RESET << status_message << std::endl;
-	std::cout << RED "Response constructor status_code: " RESET << status_code << std::endl;
-	std::cout << RED "Response constructor header: " RESET << header << std::endl;
-	std::cout << RED "Response constructor body: " RESET << body << std::endl;
+	// std::cout << RED "Response constructor status_message: " RESET << status_message << std::endl;
+	// std::cout << RED "Response constructor status_code: " RESET << status_code << std::endl;
+	// std::cout << RED "Response constructor header: " RESET << header << std::endl;
+	// std::cout << RED "Response constructor body: " RESET << body << std::endl;
 
 	_statusCode = std::atoi(status_code.c_str());
 	_statusMessage = status_message;	

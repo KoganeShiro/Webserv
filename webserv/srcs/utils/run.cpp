@@ -191,7 +191,6 @@ void    run_epoll(int epoll_fd, std::vector<Server*> servers)
     std::cout << GREEN << "WAITING FOR THE FIRST REQUEST...\n" << RESET;
     while (true) {
         print_listen(servers);
-
         int event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
         
         if (event_count < 0) {
