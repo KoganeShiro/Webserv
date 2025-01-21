@@ -242,7 +242,7 @@ Request Request::request_parser(Request &request, std::string& buffer, size_t MA
     }
 
     request.set_request_buffer(buffer.substr(request.get_pos()));
-    std::cout << "reminder: " << request.get_request_buffer() << std::endl;
+    // std::cout << "reminder: " << request.get_request_buffer() << std::endl;
 
     request.set_good_request(true);
     request.set_is_ready(GOOD);
@@ -292,7 +292,7 @@ int Request::add_to_request(std::string to_add, size_t MAX_BODY_LENGTH)
 
     this->set_request_buffer(this->_request_buffer.append(to_add));
     *this = request_parser(*this, this->_request_buffer, MAX_BODY_LENGTH);
-    print_Request(this);
+   // print_Request(this);
     return (this->get_is_ready());
 }
 

@@ -22,6 +22,10 @@ public:
     int  get_socket_fd();
 
     Connection* add_connection(void);
+    void remove_connection(int client_fd);
+    
+
+
     void add_to_epoll(int epoll_fd);
     Connection* get_connection_by_fd(int client_fd);
 };

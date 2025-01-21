@@ -62,6 +62,22 @@ Connection*    Server::add_connection()
     return (new Connection(new_connection));
 }
 
+void    Server::remove_connection(int client_fd)
+{
+    for (size_t i = 0; i < _connection_tab.size(); ++i) {
+        if (_connection_tab[i].get_clientfd() == client_fd) {
+            _connection_tab.erase(_connection_tab.begin() + i);
+            break;
+        }
+    }    
+}
+
+
+
+
+
+
+
 // Request *init_request(Connection user_connect)
 // {
 //     // Request request;
