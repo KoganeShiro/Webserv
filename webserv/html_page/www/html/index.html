@@ -68,7 +68,7 @@
         <p>This is a static HTML file served by yours truly :relieved::relieved:.</p>
         <p>This is also the default page</p>
         <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHF6dXp1eXdlZDIwcGhrdDhlcXF2bDZsbjEzMDJoeDluNTB3c3JmMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/TzbjriICSe4QE/giphy.webp" alt="Funny GIF">        <div class="redirection">
-            <h2><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">This is a redirection to and external page</a></h2>
+            <h2><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">This is a link to an external page</a></h2>
             <p>These are links to several test pages :</p>
             <ul>
                 <li><a href="upload.html">Upload files with or without CGI, using multipart/form-data</a></li>
@@ -77,7 +77,8 @@
                 <li><a href="delete.html">Delete Method to delete files on the server.</a></li>
                 <li><a href="/success/index.html">Get Method</a></li>
                 <li><a href="/old-page">Redirection to another route on the server.</a></li>
-                <li><a href="/error/error.html">Custom Error page</a></li>
+                <li><a href="/error/error.html">This is a link to a non existing URL, it will show the error page.</a></li>
+                <li><a href="/cgi-bin/error_bash.sh">This is a link to a Problematic CGI Script (sleep 50), it will lead to a timeout and the server will kill it.</a></li>                
             </ul>
         </div>
     </div>

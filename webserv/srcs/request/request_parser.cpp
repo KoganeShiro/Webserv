@@ -214,6 +214,7 @@ static bool handle_multipart_form_data(Request& request, size_t MAX_BODY_LENGTH)
         return (false);
     }
     request.set_body(body);
+    request.set_pos(body.length());
     return (true);
 }
 

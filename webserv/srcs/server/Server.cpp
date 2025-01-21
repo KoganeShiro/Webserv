@@ -11,7 +11,7 @@ Server::Server(const Config_data config): _data(config), _socket(config.port, co
 Server::~Server(){
     std::cout << "DESTROY SEVER\n";
 }
-
+/*
 void Server::add_to_epoll(int epoll_fd)
 {
     epoll_event event;
@@ -28,7 +28,7 @@ void Server::add_to_epoll(int epoll_fd)
         throw std::runtime_error("Failed to add socket to epoll");
     }
 }
-
+*/
 /*
 int  Server::get_socket_fd(){
     return (_socket.get_sockfd());
@@ -52,13 +52,13 @@ Connection*    Server::add_connection()
 
     if (client_fd == -1) {
         //Close le server ?
-        std::cerr << "Error at the connexion." << std::endl;
+        std::cerr << "Error at Server-Socket : " << get_socket_fd() << std::endl;
         return (NULL);
     }
     
     Connection new_connection(client_fd);
     _connection_tab.push_back(new_connection);
-    std::cout << "New Connection at : fd = " << client_fd << std::endl;
+    std::cout << BLUE "Added Client-Socket " RESET << client_fd << BLUE " received from Server-Socket " RESET << get_socket_fd() <<  std::endl;
     return (new Connection(new_connection));
 }
 

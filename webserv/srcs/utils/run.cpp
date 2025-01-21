@@ -2,6 +2,8 @@
 #include "Server.hpp"
 #include "Worker.hpp"
 
+#define READ_PROBLEM -1
+
 struct ConnectionInfo {
     Connection* connection;
     Config_data data;
@@ -43,7 +45,7 @@ Request *get_data_from_connection(ConnectionInfo client_connection)
 int get_data_from_connection(ConnectionInfo client_connection)
 {
     int client_fd = client_connection.connection->get_clientfd();    
-    char buffer[100];
+    char buffer[1024];
     std::string data;
     ssize_t bytes_received;
     Request* request = client_connection.connection->get_request();
@@ -52,7 +54,7 @@ int get_data_from_connection(ConnectionInfo client_connection)
  //   while (1) {
         bytes_received = read(client_fd, buffer, sizeof(buffer) - 1);
         if (bytes_received <= 0) {
-            return (BAD_HEADER); // check if another response would be better
+            return (READ_PROBLEM); // check if another response would be better
      //       break;
         }
         buffer[bytes_received] = '\0';
@@ -111,9 +113,9 @@ void    ft_manage_answer(Request* request, ConnectionInfo connection)
             std::cerr << "Error when sending response to client" << std::endl;
         }
     }
-    else if (answ == AGAIN) { // Don't understand why Georg
-        connection.connection->set_request_is_done(0); 
-    }
+  //  else if (answ == AGAIN) { // Don't understand why Georg
+   //     connection.connection->set_request_is_done(0); 
+  //  }
     else if (answ == GOOD) {
         connection.connection->set_request_is_done(1);
         Request* new_request = request->parsed_request();
@@ -199,12 +201,14 @@ void    run_epoll(int epoll_fd, std::vector<Server*> servers)
 
         for (int i = 0; i < event_count; ++i) {
             int socket = events[i].data.fd;
-            if (events[i].events & EPOLLIN) {
-                //int client_fd = events[i].data.fd;
-                 usleep(500000); // helps to see the debug log
+            if (events[i].events & EPOLLIN) {                
+                // usleep(500000); // helps to see the debug log
                 if (is_server_socket(socket, servers)) {
                     std::cout << MAGENTA "Event at (Server-)socket: " RESET << socket << std::endl;
-
+                    if (connections.size() >= MAX_OPEN_CONNECTIONS) {
+                        std::cerr << RED "Max number of connections reached, ignoring connection request on " RESET << socket << std::endl;
+                        continue;
+                    }
                     ConnectionInfo client_connection = find_connection(socket, servers);
                     if (client_connection.connection == NULL) {
                         std::cerr << RED "Error when adding connection" RESET << std::endl;
@@ -212,7 +216,7 @@ void    run_epoll(int epoll_fd, std::vector<Server*> servers)
                     }
                     add_client_to_epoll(epoll_fd, client_connection.connection->get_clientfd());
                     connections[client_connection.connection->get_clientfd()] = client_connection;
-                    std::cout << MAGENTA "New client connected at : fd = " RESET << client_connection.connection->get_clientfd() << std::endl;
+                    std::cout << MAGENTA "New Client socket is now open: " RESET << client_connection.connection->get_clientfd() << std::endl;
                 }
                 else {
                     std::cout << MAGENTA "Event at Client-socket: " RESET << socket << std::endl;
@@ -228,10 +232,20 @@ void    run_epoll(int epoll_fd, std::vector<Server*> servers)
                         continue;
                     }
                     answer = get_data_from_connection(client_connection);
-                    std:: cout << MAGENTA "Request parser status for client " RESET << socket << MAGENTA " is : " RESET << answer << std::endl;
-                    if (answer == BAD_HEADER || answer == GOOD) {                        
+                    std:: cout << MAGENTA "Request parser status for Client-Socket " RESET << socket << MAGENTA " is : " RESET << answer << std::endl;
+                    if (answer == READ_PROBLEM) {
+                        remove_client_from_epoll(epoll_fd, socket);
+                        client_connection.connection->close();
+                        for (size_t i = 0; i < servers.size(); i++) {
+                            servers[i]->remove_connection(socket);
+                        }
+                        delete client_connection.connection;
+                        connections.erase(socket);
+                        std::cout << MAGENTA "Client connection closed because of read problem and removed from epoll: " RESET << socket << std::endl;
+                    }                    
+                    else if (answer == BAD_HEADER || answer == GOOD) {                        
                         ft_manage_answer(client_connection.connection->get_request(), client_connection);
-                        std::cout << MAGENTA "Request processed (Response sent) for client: " RESET << socket << std::endl;
+                        std::cout << MAGENTA "Request processed (Response sent) for Client-Socket: " RESET << socket << std::endl;
                         
                         remove_client_from_epoll(epoll_fd, socket);
                         client_connection.connection->close();
@@ -243,7 +257,7 @@ void    run_epoll(int epoll_fd, std::vector<Server*> servers)
                         std::cout << MAGENTA "Client connection closed and removed from epoll: " RESET << socket << std::endl;
                     }
                     else if (answer == AGAIN) {
-                        std:: cout << YELLOW "Request for client " RESET << socket << YELLOW "received partially. Will continue parsing next time." RESET << std::endl;
+                        std:: cout << YELLOW "Request for client " RESET << socket << YELLOW " received partially. Will continue parsing next time." RESET << std::endl;
                         continue;
                     }
                //     else {

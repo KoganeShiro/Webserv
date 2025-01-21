@@ -418,6 +418,7 @@ Response Worker::execute_cgi() {
             std::cerr << RED "--- Execute destructor instead of cleaning up manually." RESET << std::endl;
 
             // Execute destructor instead of cleaning up manually
+            clean_up();
             argv[0] = new char[14];
             std::strcpy(argv[0], "./destructor");
             execve(argv[0], argv, NULL);
@@ -431,8 +432,8 @@ Response Worker::execute_cgi() {
             // 
                   
 
-            clean_up();
-            exit(1);
+            
+           // exit(1);
         //check for necessary cleanup
                     
         }
