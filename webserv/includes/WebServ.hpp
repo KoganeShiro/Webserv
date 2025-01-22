@@ -90,6 +90,9 @@ If any of those rule is not apply, it might conduct to a bad configured server a
 #define GOOD 2
 #define MULTIPART_FORM_DATA 3
 
+//DEFINE for run.cpp
+#define READ_PROBLEM -1
+
 /*
 ** utils/request_parsing.cpp
 */

@@ -2,45 +2,10 @@
 #include "Server.hpp"
 #include "Worker.hpp"
 
-#define READ_PROBLEM -1
-
 struct ConnectionInfo {
     Connection* connection;
     Config_data data;
 };
-/*
-Request *get_data_from_connection(ConnectionInfo client_connection)
-{
-    int client_fd = client_connection.connection->get_clientfd();    
-    char buffer[1024];
-    std::string data;
-    ssize_t bytes_received;
-    Request* request = client_connection.connection->get_request();
-    int answer;
-
-    while (1) {
-        bytes_received = read(client_fd, buffer, sizeof(buffer) - 1);
-        if (bytes_received <= 0) {
-            break;
-        }
-        buffer[bytes_received] = '\0';
-        data.append(buffer, bytes_received);
-        //std::cout << MAGENTA << data << RESET << std::endl;
-        answer = request->add_to_request(data, client_connection.data.client_body_size_limit);
-        if (answer == BAD_HEADER || answer == GOOD)
-            break;
-        // else if (answer == MULTIPART_FORM_DATA) {
-        // }
-        data.erase();
-    }
-
-    if (bytes_received < 0) {
-        std::cerr << "Error when reading client's socket : " << client_fd << std::endl;
-        return (NULL);
-    }
-    return (request);
-}
-*/
 
 int get_data_from_connection(ConnectionInfo client_connection)
 {
@@ -51,26 +16,19 @@ int get_data_from_connection(ConnectionInfo client_connection)
     Request* request = client_connection.connection->get_request();
     int answer;
 
- //   while (1) {
-        bytes_received = read(client_fd, buffer, sizeof(buffer) - 1);
-        if (bytes_received <= 0) {
-            return (READ_PROBLEM); // check if another response would be better
-     //       break;
-        }
-        buffer[bytes_received] = '\0';
-        data.append(buffer, bytes_received);
-        //std::cout << MAGENTA << data << RESET << std::endl;
-        answer = request->add_to_request(data, client_connection.data.client_body_size_limit);
-        //if (answer == BAD_HEADER || answer == GOOD)
-        //    break;
-        // else if (answer == MULTIPART_FORM_DATA) {
-        // }
-        data.erase();
+    bytes_received = read(client_fd, buffer, sizeof(buffer) - 1);
+    if (bytes_received <= 0) {
+        return (READ_PROBLEM);
+    }
+    buffer[bytes_received] = '\0';
+    data.append(buffer, bytes_received);
+    //std::cout << MAGENTA << data << RESET << std::endl;
+    answer = request->add_to_request(data, client_connection.data.client_body_size_limit);
+    data.erase();
 
-   // }
     if (bytes_received < 0) {
         std::cerr << "Error when reading client's socket : " << client_fd << std::endl;
-        return (BAD_HEADER); // check if another response would be better
+        return (BAD_HEADER);
     }
     return (answer);
 }
@@ -80,10 +38,9 @@ ConnectionInfo find_connection(int client_fd, std::vector<Server*> servers)
 {
     ConnectionInfo ci;
     ci.connection = NULL;
-// est-ce que il faut vraiment parcourir tous les serveurs ici?
     for (size_t i = 0 ; i < servers.size() ; ++i) {
         if (servers[i]->get_socket_fd() == client_fd) {
-            ci.connection = servers[i]->add_connection(); // removed by Georg
+            ci.connection = servers[i]->add_connection();
             Config_data data = servers[i]->get_data();
             ci.data = data;
             std::cout << "End of find_connection\n";
@@ -103,25 +60,21 @@ void    ft_manage_answer(Request* request, ConnectionInfo connection)
     int answ = request->get_is_ready();
     //std::cout << "answer :" << answ << std::endl;
     if (answ == BAD_HEADER) {
-        //send(error 400) 
         Response response(400, "Bad Request", connection.data);
         std::string str = response.http_response(); //call generate_error_page
         std::cout << RED << str << RESET << std::endl;
         ssize_t bytes_sent = send(connection.connection->get_clientfd(), str.c_str(), str.length(),0);
         if (bytes_sent == -1) {
-         //   perror("write");
+            //perror("write");
             std::cerr << "Error when sending response to client" << std::endl;
         }
     }
-  //  else if (answ == AGAIN) { // Don't understand why Georg
-   //     connection.connection->set_request_is_done(0); 
-  //  }
     else if (answ == GOOD) {
         connection.connection->set_request_is_done(1);
         Request* new_request = request->parsed_request();
         Worker  bob(connection.data, new_request);
         Response response = bob.run();
-        std::string str = response.http_response(); //call generate_error_page
+        std::string str = response.http_response();
         //std::cout << GREEN << str << RESET << std::endl;
         ssize_t bytes_sent = send(connection.connection->get_clientfd(), str.c_str(), str.length(),0);
         if (bytes_sent == -1) {
@@ -155,7 +108,6 @@ int is_server_socket(int fd, std::vector<Server*> servers)
     return (0);
 }
 
-
 void add_client_to_epoll(int epoll_fd, int client_fd)
 {
     epoll_event event;
@@ -171,9 +123,6 @@ void add_client_to_epoll(int epoll_fd, int client_fd)
 
 void remove_client_from_epoll(int epoll_fd, int client_fd)
 {
-  //  epoll_event event;
-   // event.data.fd = client_fd;
-   // event.events = EPOLLIN;
     if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client_fd, NULL) < 0) {
         std::cerr << RED "Failed to remove client from epoll: " RESET << strerror(errno) << std::endl;
         // throw std::runtime_error("Failed to remove client from epoll");
@@ -259,10 +208,6 @@ void    run_epoll(int epoll_fd, std::vector<Server*> servers)
                         std:: cout << YELLOW "Request for client " RESET << socket << YELLOW " received partially. Will continue parsing next time." RESET << std::endl;
                         continue;
                     }
-               //     else {
-                 //       client_connection.connection->close();
-                  //      delete client_connection.connection;
-                   // }
                 }
             }
         }

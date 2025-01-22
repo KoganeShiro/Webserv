@@ -1,5 +1,4 @@
 
-// #include "WebServ.hpp"
 #include "GetMethod.hpp"
 
 bool GetMethod::_file_exists()
@@ -72,8 +71,6 @@ std::string GetMethod::getMimeType(const std::string& fileName)
 
 std::string GetMethod::readfile(std::string filename)
 {
-    //call CGI script
-        //execve
     std::ifstream file(filename.c_str()); // Open the file in read mode
     if (!file) {
         std::cerr << "Get Method Error: Could not open:" << filename << std::endl;        
@@ -94,11 +91,6 @@ std::string GetMethod::readfile(std::string filename)
 
 Response GetMethod::handle(const Request& request, std::string& fullpath, Config_data c, std::string route)
 {
-    // Handle GET request
-    // Read file or generate content
-    // Return Response object
-    /* EXEMPLE */
-    
     _request = request;
     _fullpath = fullpath;
     _config = c;
@@ -137,16 +129,6 @@ Response GetMethod::handle(const Request& request, std::string& fullpath, Config
         std::cout << "Get Method File not readable: " << _fullpath << std::endl;
         return (response);
     }
-//    else if (_is_directory() && ! _config.routes[_route].dir_listing) {
- //       response = Response(403, "Forbidden", _config);
-  //      std::cout << "Get Method Directory listing not allowed: " << _fullpath << std::endl;
- //       return response;
-  //  }
-  //  else if (_is_directory() && _config.routes[_route].dir_listing) {
-  //      response = Response(200, "OK", _fullpath, true, _config);
-  //      std::cout << "Get Method Directory listing OK:" << _fullpath << std::endl;
-  //      return response;
-  //  }
     else {
         std::string content = readfile(_fullpath);                        
         response.set_body(content);

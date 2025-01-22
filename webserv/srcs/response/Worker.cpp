@@ -15,8 +15,6 @@ void Worker::check_cgi()
             _querystring = _fullpath.substr(start_query_str + 1);
             _fullpath = _fullpath.substr(0,start_query_str);
         }
-        //std::string extension_path_query = _fullpath.substr(_fullpath.find('.') + 1);
-        //std::string extension_path;
         std::string cgitype;
      
         size_t extension_start_pos = _fullpath.find('.');
@@ -35,32 +33,10 @@ void Worker::check_cgi()
         if (extension_start_pos != std::string::npos) {            
             cgitype = _fullpath.substr(extension_start_pos + 1, extension_path_start_pos - extension_start_pos - 1);
         }
-        std::cout << BLUE "CGI Type: " RESET << cgitype << std::endl;
-        
-        
-
-//            std::string extension_path_query = _fullpath.substr(extension_path_pos + 1);
-//            _cgi_path = extension_path_query;
-            
-        //    extension_path_query = extension_path_query.substr(0, extension_path_query.find('?'));
- //       }
- //       if (extension_path_query.find('/') != std::string::npos) {
-            // Check the meaning of the line in the subject: 
-            // Because you won’t call the CGI directly, use the full path as PATH_INFO.
-            // maybe it means that the Path_Info is the full path to the CGI script
-            
-   //         _cgi_path = extension_path_query.substr(extension_path_query.find('/'));            
-     //       extension_path_query = extension_path_query.substr(0, extension_path_query.find('/'));        
-       //     _fullpath = _fullpath.substr(0, _fullpath.find('.') + 1) + extension_path_query;
-            // alternative
-            // _cgi_path = _fullpath;
-            
-
-   //     }                
+        std::cout << BLUE "CGI Type: " RESET << cgitype << std::endl;             
         for (std::vector<CGI>::iterator it = _config.tab_cgi.begin(); it != _config.tab_cgi.end(); ++it) {   
             std::cout << YELLOW "Checking CGI type: " RESET << it->get_name() << std::endl;         
             if (it->get_extension() == cgitype) {
-           // if (it->get_extension() == extension_path_query) {
                 _cgi_type = it->get_name();
                 _use_cgi = true;
                 _cgi_timeout = it->get_time_out();
@@ -75,29 +51,6 @@ void Worker::check_cgi()
     if (! _use_cgi)
         std::cout << ORANGE "CGI not available or non CGI file extension." RESET << std::endl;
 }
-/*
-bool Worker::_file_exists()
-{
-    struct stat buffer;
-    return (stat (_fullpath.c_str(), &buffer) == 0);
-}
-
-bool Worker::_file_readable()
-{
-    if (access(_fullpath.c_str(), R_OK) == 0) {
-        return true;
-    }
-    return false;
-}
-
-bool Worker::_file_writable()
-{
-        if (access(_fullpath.c_str(), W_OK) == 0) {
-            return true;
-        }
-        return false;
-}
-*/
 
 std::string Worker::checkRoute() const
 {
@@ -415,27 +368,7 @@ Response Worker::execute_cgi() {
                 }
             delete[] argv[0];
             delete[] argv[1];
-            std::cerr << RED "--- Execute destructor instead of cleaning up manually." RESET << std::endl;
-
-            // Execute destructor instead of cleaning up manually
-            clean_up();
-            argv[0] = new char[14];
-            std::strcpy(argv[0], "./destructor");
-            execve(argv[0], argv, NULL);
-
-            // Test to clean up manually that was not conclusive
-
-           // _config.tab_cgi.clear();            
-           // _config.routes.clear();
-           // _config.tab_cgi.clear();
-            //std::cout << "Starting of CGI script failed. Clean up." << std::endl;
-            // 
-                  
-
-            
-           // exit(1);
-        //check for necessary cleanup
-                    
+            std::cerr << RED "--- Execute destructor instead of cleaning up manually." RESET << std::endl;    
         }
     }
     else {
@@ -452,17 +385,11 @@ Response Worker::execute_cgi() {
         std::string body = _request->get_body();
         write(reqpipe[1], body.c_str(), body.length());
      //   std::cout << ORANGE "Request body sent to CGI script." RESET << body << std::endl;
-      //  write(2, body.c_str(), body.length());
         close(reqpipe[1]);
-
-        
-
         
         // Set up timeout for CGI script
         time_t start_time = time(NULL);        
         int exit_code;
-
-
 
         // Read from pipe and append to result string
         char buffer[1024];
@@ -509,8 +436,6 @@ Response Worker::execute_cgi() {
         close(pipefd[0]);
         close(reqpipe[1]);
 
-
-
         // Wait for child process to finish
         int status;
         waitpid(pid, &status, 0);
@@ -543,5 +468,5 @@ Response Worker::execute_cgi() {
             result = Response(500, "Internal Server Error", _config);            
         }
     }
-    return result;
+    return (result);
 }

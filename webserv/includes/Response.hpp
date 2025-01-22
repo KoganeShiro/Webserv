@@ -33,6 +33,4 @@ public:
     std::string http_response() const; //call generate_error_page
     Response &operator=(const Response &response);
 
-  //  std::string get_status_message(int _status_code);
-   // std::string read_html_file(std::string file_path);
 };

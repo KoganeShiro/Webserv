@@ -29,19 +29,17 @@ int CGI::get_time_out(void)
     return (this->_time_out);
 }
 
-// Fonction de nettoyage isspace
 static std::string trim(const std::string& str)
 {
     size_t first = str.find_first_not_of(" \t\n\r");
     if (first == std::string::npos) {
-        return ("");  // La chaîne est vide ou ne contient que des espaces blancs
+        return ("");
     }
 
     size_t last = str.find_last_not_of(" \t\n\r");
-    return (str.substr(first, last - first + 1));  // Extrait la sous-chaîne entre first et last
+    return (str.substr(first, last - first + 1));
 }
 
-// atoi a string
 static int parse_int(const char *str)
 {
     return (atoi(str));
@@ -247,7 +245,6 @@ static Config_data parse_server(std::ifstream& file, std::string line)
             break;
         }
     }
-    // check_config(current_config);
     return (current_config);
 }
 
@@ -282,14 +279,8 @@ void    print(std::vector<Config_data> data, std::vector<CGI> cgi)
                     std::cout << it->second.accepted_methods[j] << " ; ";
                 }
                 std::cout << std::endl;
-
-                // std::map<int, std::string>::iterator it2;
-                // for (it2 = it->second.redirection.begin(); it2 != it->second.redirection.end(); ++it){
-                //     std::cout << "nb:" << it2->first << ", path: " << it2->second << ";" ;
-                // }
         }
     }
-//ICI
     for (size_t i = 0; i < cgi.size(); i++){
         std::cout 
             << "CGI :"
@@ -301,30 +292,6 @@ void    print(std::vector<Config_data> data, std::vector<CGI> cgi)
     }
 }
 
-// void    ft_check_server(Config_data config)
-// {
-//     // int error = 0;
-
-//     if (config.client_body_size_limit == 0)
-//         config.client_body_size_limit = STD_BODY_SIZE;
-//     if (config.error_pages == ""){
-
-//     }
-//     if (config.host == ""){
-        
-//     }
-//     if (config.port < 0){
-
-//     }
-//     if (config.routes.size() == 0){
-
-//     }
-//     if (config.server_name == ""){
-
-//     }
-// }
-
-// Fonction principale pour parser le fichier de configuration
 std::vector<Config_data> parse_config(const char *filename)
 {
     std::vector<Config_data> configs;
@@ -337,9 +304,9 @@ std::vector<Config_data> parse_config(const char *filename)
     while (std::getline(file, line)) {
 
         
-        // Process each line in the buffer
+        //Process each line in the buffer
             line = trim(line);            
-        // std::cout << "LINE => " << line << std::endl;
+        //std::cout << "LINE => " << line << std::endl;
             // Start of a new server block
             if (line.find("server {") != std::string::npos) {                
                 Config_data current_config;
@@ -354,7 +321,6 @@ std::vector<Config_data> parse_config(const char *filename)
 
     }    
     file.close();
-    // while
-  //  print(configs, cgi);
+    //print(configs, cgi);
     return (configs);
 }

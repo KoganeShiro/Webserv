@@ -38,6 +38,11 @@ if "file" in form:
             # Read and display the contents of the uploaded file
             file_contents = file_item.file.read().decode("utf-8")
             print(file_contents)
+            filename = os.path.basename(file_item.filename)
+            file_path = os.path.join("./../html_page/www/uploads", filename)
+            with open(file_path, 'w') as file:
+                file.write(file_contents)
+            print(f"<p>File successfully created at: {file_path}</p>")
         except Exception as e:
             print(f"Error reading file: {e}")
         print("</pre>")
