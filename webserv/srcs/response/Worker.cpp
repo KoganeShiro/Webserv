@@ -110,16 +110,6 @@ bool Worker::servername_is_valid()
     std::cout << RED "Server name in Header does not correspond to this server." RESET << std::endl;   
     return false;
 }
-/*
-bool Worker::_is_directory()
-{
-    struct stat buffer;
-    if (stat (_fullpath.c_str(), &buffer) == 0) {
-        return S_ISDIR(buffer.st_mode);
-    }
-    return false;
-}
-*/
 
 void Worker::check_for_errors()
 {
@@ -147,21 +137,6 @@ void Worker::check_for_errors()
         std::cout << "Redirection" << std::endl;
         return;
     }
-
-/*  if (!_file_exists()) {
-        _status_code = 404;
-        return;
-    }
-    if (!_file_readable()) {
-        _status_code = 403;
-        return;
-    }
-    if (_is_directory() && !_config.routes[_route].dir_listing) {
-        _status_code = 403;
-        return;
-    }
-    _status_code = 200;
-*/
 }
 
 Worker::Worker(Config_data c, Request *request)
@@ -368,6 +343,10 @@ Response Worker::execute_cgi() {
                 }
             delete[] argv[0];
             delete[] argv[1];
+            clean_up();
+            argv[0] = new char[14];
+            std::strcpy(argv[0], "./destructor");
+            execve(argv[0], argv, NULL);
             std::cerr << RED "--- Execute destructor instead of cleaning up manually." RESET << std::endl;    
         }
     }
