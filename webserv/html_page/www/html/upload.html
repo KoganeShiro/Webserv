@@ -66,7 +66,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Upload a File using bash script with a multipart/form-data request</h1>
+        <h1>Send a (Text-)File using bash script with a multipart/form-data request</h1>
         <p>Select a file to send to the script.</p>
         <form action="/cgi-bin/bash_post_test.sh/this_is_pathinfo" method="post" enctype="multipart/form-data">
             <input type="file" name="file" id="file" required>
@@ -74,7 +74,7 @@
             <input type="submit" value="Send File" name="submit">
         </form>
 
-        <h1>Upload a File using pythonscript with a multipart/form-data request</h1>
+        <h1>Upload a (Text-)File using pythonscript with a multipart/form-data request</h1>
         <p>Select a file to send to the script.</p>
         <form action="/cgi-bin/python_post_script.py/this_is_pathinfo" method="post" enctype="multipart/form-data">
             <input type="file" name="file" id="file" required>
@@ -82,7 +82,7 @@
             <input type="submit" value="Send File" name="submit">
         </form>
 
-        <h1>Upload a File using pure post request and multipart/form-data</h1>
+        <h1>Upload any File using as simple post request and multipart/form-data</h1>
         <p>Select a file to upload to the uploads directory.</p>
         <form action="/uploads" method="post" enctype="multipart/form-data">
             <input type="file" name="file" id="file" required>
