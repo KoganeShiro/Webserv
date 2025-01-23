@@ -1,21 +1,6 @@
 
 #include "Socket.hpp"
 
-/*
-void    listen_on_socket()
-{
-    //fill buffer until end of header (\r\n\r\n)
-    //put this buffer in request_parser() param
-    //on hold
-    request_parser();
-    //if request_parser no ERROR
-    // if require body, resume and fill the buffer
-    worker_response();
-}
-
-*/
-
-//ajout Damien
 void Socket::add_to_epoll(int epoll_fd)
 {
     epoll_event event;
@@ -31,12 +16,10 @@ Socket::Socket(int port, std::string host, std::string server_name)
     this->_sockfd = this->_create_socket(); // Create a new socket
     this->_bind_socket(port, host, server_name); // Bind the socket to the specified port
     this->_listen_for_connections(); // Start listening for incoming connections
-
-    // this->configure_epoll();//check the events happening in the socket
 }
 
-//ajout Damien
-Socket::~Socket() {
+Socket::~Socket()
+{
     std::cout << "Closing socket fd = " << _sockfd << std::endl;
     try {
         close(_sockfd);
@@ -101,22 +84,6 @@ void Socket::_listen_for_connections(void)
         throw std::runtime_error("Failed to listen on socket");
     }
 }
-
-// //Wait for event to appear in the socket
-// void    Socket::configure_epoll(void)
-// {
-//     _epollFd = epoll_create(1);
-//     std::cout << _epollFd << "|||||||||\n"; 
-//     if (_epollFd < 0) {
-//         throw std::runtime_error("Epoll create failed");
-//     }
-
-//     epoll_event event;    
-//     event.data.fd = _sockfd;
-//     event.events = EPOLLIN;
-//     epoll_ctl(_epollFd, EPOLL_CTL_ADD, _sockfd, &event);
-
-// }
 
 void Socket::accept_connection(void)
 {

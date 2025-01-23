@@ -1,9 +1,6 @@
 
 #include "WebServ.hpp"
-
-
 #include "Response.hpp"
-
 
 void replace_string(std::string& str, const std::string& from, const std::string& to) {
     size_t startPos = 0;
@@ -107,7 +104,6 @@ Response::Response()
 	_statusMessage = "OK";
 	set_body("");
 	_header_and_body_in_one = false;
-	//set_header("Content-Type", "text/html");
 	// std::cout << ORANGE "Default Response created: " RESET << _statusCode << std::endl;
 }
 
@@ -162,13 +158,8 @@ Response::Response(const std::string& header_and_body)
 	}
 	_statusMessage = status_message;
 	set_body(body);
-	set_header("Content-Length", to_string(body.size()));	
-
-
+	set_header("Content-Length", to_string(body.size()));
 	_body = header_and_body;
-	//set_body(header_and_body.substr(header_and_body.find("\r\n\r\n") + 4));
-
-
 
 	_header_and_body_in_one = true;	
 	//std::cout << ORANGE "Response created with header and body." RESET << std::endl;
@@ -191,7 +182,6 @@ Response::Response(int statusCode, const std::string& statusMessage, Config_data
 	else {
 		set_body("");
 	}
-	// set_header("Content-Type", "text/html");
 	std::cout << ORANGE "Response created with status code: " RESET << _statusCode << std::endl;
 }
 
@@ -208,8 +198,6 @@ Response &Response::operator=(const Response &response)
 }
 
 
-
-
 /*
 * response body that we will send
 */
@@ -222,48 +210,17 @@ void Response::set_body(const std::string& body)
 	_headers["Content-Length"] = oss.str();
 }
 
-/*
-* HTTP response form
-EXEMPLE:
-
-HTTP/1.1 201 Created
-Content-Type: application/json
-Location: http://example.com/users/123
-
-{
-  "message": "New user created",
-  "user": {
-	"id": 123,
-	"firstName": "Example",
-	"lastName": "Person",
-	"email": "bsmth@example.com"
-  }
-}
-
-*/
 std::string Response::http_response() const
 {
 	std::ostringstream oss;
 	std::map<std::string, std::string>::const_iterator it;
 
-//	if (_header_and_body_in_one)
-//	{
-//		oss << _body;
-//		return (oss.str());		
-//	}
 	oss <<
 		"HTTP/1.1 " << this->_statusCode
 		<< " " << this->_statusMessage
 
 	<< "\r\n";
 
-
-
-//	if (_header_and_body_in_one)
-//	{
-//		oss << _body;
-//		return (oss.str());		
-//	}
 	for (it = _headers.begin(); it != _headers.end(); ++it) {
 		oss << it->first << ": " << it->second << "\r\n";
 	}
@@ -271,13 +228,7 @@ std::string Response::http_response() const
 	{
 		oss << "\r\n";
 	}
-//	oss << "\r\n";
 	oss << _body;
-	//oss << "\r\n";
 	
-//	generate_error_page(this->_statusCode, this->_statusMessage)
-
-//	std::cout << "Response http_response: " << oss.str() << std::endl;
-//	std::cout << "R---" << std::endl;
 	return (oss.str());
 }

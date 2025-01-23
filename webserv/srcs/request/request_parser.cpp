@@ -139,49 +139,6 @@ bool ends_with_boundary(Request& request, const std::string& buffer, const std::
     return (false);
 }
 
-std::string extract_content(const std::string& buffer, const std::string& boundary)
-{
-    std::string start_marker = "Content-Disposition: form-data;";
-    std::string end_marker = "\r\n" + boundary;
-
-    // Find the last occurrence
-    std::string::size_type lastPos = buffer.rfind(start_marker);
-    if (lastPos == std::string::npos) return "";
-
-    // Find the second-to-last occurrence
-    std::string::size_type startPos = buffer.rfind(start_marker, lastPos - 1);
-    if (startPos == std::string::npos) return "";
-
-    std::string::size_type endPos = buffer.find(end_marker, startPos);
-    if (endPos == std::string::npos) return "";
-
-    // Include the start_marker in the result
-    return buffer.substr(startPos, endPos - startPos);
-}
-
-// std::string extract_content(const std::string& buffer)
-// {
-//     std::string start_marker = "Content-Disposition: form-data;";
-//     swith Bash Scripttd::string filename_marker = "filename=";
-
-//     std::string::size_type startPos = buffer.rfind(start_marker);
-//     while (startPos != std::string::npos)
-//     {
-//         std::string::size_type endOfLine = buffer.find("\r\n", startPos);
-//         if (endOfLine != std::string::npos && 
-//             buffer.find(filename_marker, startPos) <= endOfLine)
-//         {
-//             return (buffer.substr(startPos));
-//         }
-
-//         if (startPos == 0) {
-//             break;
-//         }
-//         startPos = buffer.rfind(start_marker, startPos - 1);
-//     }
-//     return ("");
-// }
-
 static bool handle_multipart_form_data(Request& request, size_t MAX_BODY_LENGTH)
 {
     //(void)MAX_BODY_LENGTH;
@@ -199,22 +156,15 @@ static bool handle_multipart_form_data(Request& request, size_t MAX_BODY_LENGTH)
         request.set_is_ready(MULTIPART_FORM_DATA);
         return (false);
     }
-    
-    std::string body;
-    //body = extract_content(buffer, boundary);
-    body = buffer;
 
-    std::cout << "body: " << body << std::endl;
+    std::cout << "body: " << buffer << std::endl;
 
-    //request.add_header("Content-Disposition", body.substr(0, body.find("\r\n")));
-    //request.add_header("Content-Type", buffer.substr(body.find("Content-Type: "), body.find("\r\n", body.find("Content-Type: ")) - body.find("Content-Type: ")));
-
-    if (body.length() > MAX_BODY_LENGTH) {
+    if (buffer.length() > MAX_BODY_LENGTH) {
         request.set_is_ready(BAD_HEADER);
         return (false);
     }
-    request.set_body(body);
-    request.set_pos(body.length());
+    request.set_body(buffer);
+    request.set_pos(buffer.length());
     return (true);
 }
 
@@ -243,7 +193,6 @@ Request Request::request_parser(Request &request, std::string& buffer, size_t MA
     }
 
     request.set_request_buffer(buffer.substr(request.get_pos()));
-    // std::cout << "reminder: " << request.get_request_buffer() << std::endl;
 
     request.set_good_request(true);
     request.set_is_ready(GOOD);
@@ -272,7 +221,6 @@ void print_Request(Request *request)
 
     std::cout << "\nHeaders:" << std::endl;
     std::cout << "--------" << std::endl;
-    // Assuming you have a method to get all headers
     std::map<std::string, std::string> headers = request->get_header();
     for (std::map<std::string, std::string>::const_iterator it = headers.begin(); it != headers.end(); ++it)
     {

@@ -1,39 +1,12 @@
 
 #include "Server.hpp"
 
-Server::Server(const Config_data config): _data(config), _socket(config.port, config.host, config.server_name)
-{
-    // std::cout << GREEN
-	// 	"Server constructor is called"
-	// RESET << std::endl;
-}
+Server::Server(const Config_data config): _data(config), _socket(config.port, config.host, config.server_name) {}
 
-Server::~Server(){
+Server::~Server()
+{
     std::cout << "DESTROY SEVER\n";
 }
-/*
-void Server::add_to_epoll(int epoll_fd)
-{
-    epoll_event event;
-    event.data.fd = get_socket_fd(); // Associer le fd du socket
-    if (event.data.fd < 0) {
-        std::cerr << "Invalid socket file descriptor: " << event.data.fd << std::endl;
-        throw std::runtime_error("Invalid socket file descriptor");
-    }
-    event.events = EPOLLIN;
-    std::cout << "event.data.fd = " << event.data.fd << std::endl;
-    std::cout << "epoll_fd = " << epoll_fd << std::endl;
-    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, event.data.fd, &event) < 0) {
-        std::cerr << "Failed to add socket to epoll: " << strerror(errno) << std::endl;
-        throw std::runtime_error("Failed to add socket to epoll");
-    }
-}
-*/
-/*
-int  Server::get_socket_fd(){
-    return (_socket.get_sockfd());
-}
-*/
 
 int  Server::get_socket_fd(void)
 {
@@ -71,22 +44,6 @@ void    Server::remove_connection(int client_fd)
         }
     }    
 }
-
-
-
-
-
-
-
-// Request *init_request(Connection user_connect)
-// {
-//     // Request request;
-//     // Request *parsed_request;
-//     // std::string request_buffer; //add all the data red
-    
-//     //init new Request() = *this;
-//     return (NULL);
-// }
 
 Connection* Server::get_connection_by_fd(int client_fd)
 {

@@ -3,26 +3,6 @@
 
 #include "WebServ.hpp"
 
-/*
-EXEMPLE
-
-_method /_path HTTP/1.1
-Host: example.com
-Content-Type: application/x-www-form-urlencoded
-Content-Length: 50
-
-_body = "
-name=FirstName%20LastName&email=bsmth%40example.com
-"
-
-*/
-
-/*
-checked body length
-check for chunked
-check if right host ?
-*/
-
 class Request
 {
 private:

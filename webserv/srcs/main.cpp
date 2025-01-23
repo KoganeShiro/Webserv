@@ -15,7 +15,6 @@ void signalHandler(int signum)
     const char *argv[] = {"./free", NULL};
     execve("./free", (char *const *)argv, NULL);
     std::cerr << RED << "Couldn't find 'free'\n";
-   // exit(signum);
 }
 
 void add_to_epoll(int epoll_fd, Server *server)
@@ -61,32 +60,30 @@ int main(int argc, char **argv)
         return(EXIT_FAILURE);
     }
 
-
-    // 1. Parser le fichier de configuration
+    // 1. Parsing of the config file
     try {
         signal(SIGINT, signalHandler);
         std::vector<Config_data> configs = parse_config(argv[1]);
 
-        // 2. Creer une instance epoll
+        // 2. Create epoll
         int epoll_fd = epoll_create(1);
         if (epoll_fd < 0) {
             std::cerr << "epoll_create failed\n";
             return (EXIT_FAILURE);
         }
 
-        // 3. Creer les instances de serveurs
-        // std::vector<Server*> servers;
+        // 3. Create all the "servers"
         for (size_t i = 0; i < configs.size(); ++i) {
             ServerManager::servers.push_back(new Server(configs[i]));
         }
         if (ServerManager::servers.size() <= 0)
             throw std::runtime_error(std::string(BAD_CONFIG));
 
-        // 4. Ajouter les sockets des serveurs a epoll
+        // 4. Add the sockets of the servers to epoll
         for (size_t i = 0; i < ServerManager::servers.size(); ++i) {
             add_to_epoll(epoll_fd, ServerManager::servers[i]);
         }
-        // 5. Demarrer la boucle pour gerer les events
+        // 5. Loop to handle event
         run_epoll(epoll_fd, ServerManager::servers);
 
         return (EXIT_SUCCESS);

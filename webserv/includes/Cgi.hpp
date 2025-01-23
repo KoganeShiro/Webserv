@@ -29,8 +29,6 @@ typedef struct S_Route_config
     S_Route_config()
         : redirection_nb(0), redirection_path(""), root_dir(""), 
         dir_listing(false), use_cgi(false), default_file(""){}
-
-    // std::string upload_dir; //dir where we upload file
 } Route_config;
 
 typedef struct S_Config_data
@@ -65,5 +63,4 @@ typedef struct S_Config_data
 /*
 IN CGI.CPP
 */
-// std::vector<CGI> parse_cgis(std::ifstream& file, std::string line);
 std::vector<Config_data> parse_config(const char *filename);
