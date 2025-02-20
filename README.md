@@ -4,8 +4,9 @@
 1. [Rules](#rules)
 2. [What is a Web Server ?](#what-is-a-web-server)
 3. [HTTP](#http)
-5. [Pseudo code](#pseudo-code)
-4. [Ressources](#ressources-on-webserv)
+4. [Quick Start](#quick-start)
+5. [Usage](#usage)
+6. [Ressources](#ressources-on-webserv)
 
 ## Rules
 **Summary**:
@@ -45,28 +46,6 @@
      Execute CGI based on file extension.
      Handle POST and GET for CGI.
      Accept file uploads and configure save location.
-
-### Useful functions
-    Process and Execution Management:
-       `execve`, `fork`, `waitpid`, `kill`, `signal`: Useful for creating and managing processes, especially for handling CGI scripts.
-
-    File and Directory Operations:
-       `open`, `close`, `read`, `write`, `stat`, `opendir`, `readdir`, `closedir`, `access`: Essential for handling file I/O operations, serving static files, and managing directory listings.
-
-    Network Operations:
-       `socket`, `bind`, `listen`, `accept`, `connect`, `send`, `recv`, `setsockopt`, `getsockname`, `getaddrinfo`, `freeaddrinfo`, `socketpair`, `htons`, `htonl`, `ntohs`, `ntohl`: Crucial for setting up server sockets, accepting client connections, and handling network communication.
-
-    Error Handling:
-       `strerror`, gai_strerror, errno: Helpful for interpreting error codes and handling errors gracefully.
-
-    Multiplexing and I/O Management:
-       `select`, `poll`, `epoll` (epoll_create, epoll_ctl, epoll_wait), `kqueue` (kqueue, kevent), `dup`, `dup2`, `pipe`: Necessary for implementing non-blocking I/O and managing multiple client connections efficiently.
-
-    Utility Functions:
-       `fcntl`: Useful for manipulating file descriptors, such as setting non-blocking modes.
-       `chdir`: Changes the current working directory, useful for CGI execution.
-       `getprotobyname`: Retrieves protocol information, useful for setting up sockets.
-
 
 ## What is a Web Server
 ### Definition
@@ -109,68 +88,30 @@ HTTP is a vital protocol that facilitates communication and data exchange on the
 - [HTTP Methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)
 - [starck overflow](https://stackoverflow.com/questions/60128646/http-in-simple-terms)
 
+## Quick Start
+To get started quickly, follow these steps:
+1. Clone the repository: `git clone git@github.com:KoganeShiro/Webserv.git`
+2. Navigate to the project directory: `cd Webserv/webserv`
+3. Install make if you haven't
+4. Run the application: `make`
 
-## Pseudo Code
-Input parser: handles read
-Worker: handles responses
+## Usage
+To use this project
+You can `make` and execute the execuable `./webServ config_file/default.config`
 
-in all messages : 
-track session and client ID
+You may need to change the config file so it will be ok to use the servername, the address + the port
 
-Start Server
-Parse Config file
-Start Error Log process
-Check Memory Checking process 
-Open several sockets: one for each server (host:port), and a default one
-Listen on all sockets
-    select/poll to check if something happens on sockets and create new session
-    fill buffer from sockets and check if the buffer contains indications for end of header /r/n/r/n OR header too long OR timeout 
-    if indication that end of header is reached , send the first part of buffer (till end of header) to the input-parser, keep 
-        the rest of the buffer - and put this session on hold
-
-    input parser: check the "type of message" (GET POST DELETE...) and parse the header
-         -> if not compliant: send error request to WORKER (send errorpage and ask socket to close session)
-         -> if compliant and body is not expected : send parsed request to WORKER (should send page/file) and inform SOCKET to resume session
-         -> if compliant and body is expected : ask Socket for the body (indicating length of body)
-               -> if body is compliant, parse it and send request to worker
-               -> if not: send error request to WORKER (send errorpage and ask socket to close session)
-
-Worker:
-    
-    manage queue 
-        manage responses from messqges in queue-> error: Prepare errorcode and erropage ? output parse message...-> GET : output parse message...
-
-                error (no permission)/ page not found etc.
-
-                    static page found : OK 200 + header + page
-
-                    dynamic page ?: call cgi ?
-
-                -> POST : output parse message...
-
-                    error (no permission)/ page not found etc.
-
-                    standard Post : save page...
-
-                    call CGI : OK 200 + header + page
-
-
-        -> DELETE : output parse message...
-            
-
-        error (no permission)/ page not found etc.
-
-            standard Post : save page...
-
-            call CGI : OK 200 + header + page
-
-
-CGI: 
-    need to dig...
+![terminal-make-result](/readme/image.png)
+![execute](/readme/image1.png)
+![web-page](/readme/image3.png)
+![web-page1](/readme/image-0.png)
+![web-page2](/readme/image-1.png)
+![web-page3](/readme/image-2.png)
+![web-page4](/readme/image-3.png)
+![web-page5](/readme/image-4.png)
 
 
 ## Ressources on Webserv
-
 - [List of HTTP status code](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
 - [CGI](https://stackoverflow.com/questions/2089271/what-is-common-gateway-interface-cgi)
 
